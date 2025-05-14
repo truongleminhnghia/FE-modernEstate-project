@@ -1,6 +1,6 @@
 import React from "react";
 import "./HomeScreen.css";
-import homeFormImg from '../assets/images/home-form.png';
+// import homeFormImg from '../assets/images/home-form.png';
 import { Select } from 'antd';
 import 'antd/dist/reset.css';
 
@@ -57,12 +57,12 @@ const HomeScreen = () => {
       </div>
       <div className="home-filter-image-outer">
         <div className="home-filter-image-bg"></div>
-        <img
+        {/* <img
           src={homeFormImg}
           alt="Apartment"
           className="home-filter-image"
           style={{ marginBottom: "150px" }}
-        />
+        /> */}
       </div>
     </div>
   );
