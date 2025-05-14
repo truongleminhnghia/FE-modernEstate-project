@@ -16,7 +16,9 @@ const Header = () => (
         <a href="#">Dịch vụ</a>
         <a href="#">Thông tin</a>
       </nav>
-      <button className="login-btn">Đăng nhập</button>
+      <button className="login-btn">
+        <Link to={'/login'}>Đăng nhập</Link>
+      </button>
     </div>
     <div className="header-bottom">
       <nav className="sub-nav">
