@@ -1,11 +1,15 @@
 import React from "react";
 import "./Header.css";
+import { Link } from "react-router-dom";
+
 
 const Header = () => (
   <header className="header">
     <div className="header-top">
       <div className="logo">
-        <img src="/images/logos/logo-estate.png" alt="Modern Estate" />
+        <Link to={'/'}>
+          <img src="/images/logos/logo-estate.png" alt="Modern Estate" />
+        </Link>
       </div>
       <nav className="main-nav">
         <a className="active" href="#">Trang chủ</a>
@@ -16,8 +20,8 @@ const Header = () => (
     </div>
     <div className="header-bottom">
       <nav className="sub-nav">
-        <a href="#">MUA BÁN CĂN HỘ</a>
-        <a href="#">CHO THUÊ CĂN HỘ</a>
+        <a href="/mua-ban-can-ho">MUA BÁN CĂN HỘ</a>
+        <a href="/cho-thue-can-ho">CHO THUÊ CĂN HỘ</a>
         <a href="#">DỰ ÁN</a>
         <a href="#">GIỚI THIỆU</a>
         <a href="#">PHÂN TÍCH ĐÁNH GIÁ</a>
