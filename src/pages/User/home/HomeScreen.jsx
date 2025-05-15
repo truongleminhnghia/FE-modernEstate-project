@@ -6,8 +6,8 @@ import Slider from "react-slick";
 import "antd/dist/reset.css";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import News from "../../../components/layouts/home/news/News";
-import AboutModernEstate from "../../../components/layouts/home/AboutModernEstate";
+import News from "../../../components/ui/layouts/home/news/News";
+import AboutModernEstate from "../../../components/ui/layouts/home/AboutModernEstate";
 
 const { Option } = Select;
 
