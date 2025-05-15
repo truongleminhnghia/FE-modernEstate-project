@@ -3,6 +3,7 @@ import { Outlet } from 'react-router-dom'
 import Footer from '../ui/layouts/footer/Footer'
 import Header from '../ui/layouts/header/Header'
 
+
 const LayoutGuest = () => {
   return (
     <>
