@@ -5,7 +5,6 @@ import {
   MailOutlined,
   PhoneOutlined,
 } from "@ant-design/icons";
-import { SiTiktok } from "react-icons/si";
 
 const { Text, Link, Title } = Typography;
 
