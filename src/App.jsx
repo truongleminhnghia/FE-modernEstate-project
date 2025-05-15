@@ -1,10 +1,10 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import LayoutGuest from "./components/layouts/LayoutGuest";
-import HomeScreen from "./pages/Home/HomeScreen";
 import BuyAndSellProperty from "./pages/BuyAndSellProperty";
 import LeaseProperty from "./pages/LeaseProperty";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
+import HomeScreen from "./pages/User/home/HomeScreen";
 
 const router = createBrowserRouter([
   {
