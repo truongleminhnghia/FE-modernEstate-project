@@ -1,7 +1,7 @@
 import React from 'react'
-import Header from '../ui/layouts/Header'
+import Header from '../ui/layouts/header/Header'
 import { Outlet } from 'react-router-dom'
-import Footer from '../ui/layouts/Footer'
+import Footer from '../ui/layouts/footer/Footer'
 
 const LayoutGuest = () => {
   return (
