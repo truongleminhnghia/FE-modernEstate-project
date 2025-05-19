@@ -12,8 +12,6 @@ import {
 import {
   LockOutlined,
   UserOutlined,
-  GoogleOutlined,
-  FacebookFilled,
 } from "@ant-design/icons";
 
 const { Title, Text, Link } = Typography;
@@ -40,7 +38,7 @@ const LoginScreen = () => {
           maxWidth: 1000,
         }}
       >
-        <Title level={2} style={{ color: "#4a90e2", marginBottom: 8 }}>
+        <Title level={2} style={{ color: "#4a90e2", marginBottom: 8, fontWeight: 'bold' }}>
           Chào mừng bạn quay trở lại!
         </Title>
         <Text
@@ -143,7 +141,7 @@ const LoginScreen = () => {
           >
             <Col>
               <Text>
-                Bạn chưa có tài khoản? <Link href="#">Đăng ký</Link>
+                Bạn chưa có tài khoản? <Link href="/register">Đăng ký</Link>
               </Text>
             </Col>
             <Col>
@@ -174,8 +172,8 @@ const LoginScreen = () => {
       >
         <div
           style={{
-            width: 340,
-            height: 340,
+            width: 400,
+            height: 400,
             borderRadius: "50%",
             overflow: "hidden",
             boxShadow: "0 4px 32px #4a90e222",
