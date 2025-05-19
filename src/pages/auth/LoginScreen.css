@@ -1,0 +1,118 @@
+.login-root {
+  display: flex;
+  min-height: 100vh;
+  background: #fff;
+}
+.login-left {
+  flex: 1;
+  max-width: 500px;
+  padding: 48px 48px 0 10vw;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.login-logo {
+  width: 80px;
+  margin-bottom: 16px;
+}
+.login-title {
+  color: #4a90e2;
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+.login-desc {
+  color: #444;
+  font-size: 16px;
+  margin-bottom: 24px;
+}
+.login-social {
+  margin-bottom: 24px;
+}
+.login-social span {
+  font-weight: 500;
+  margin-right: 16px;
+}
+.login-social-btns {
+  display: inline-flex;
+  gap: 12px;
+  vertical-align: middle;
+}
+.login-form {
+  margin-top: 8px;
+}
+.login-links {
+  margin-top: 8px;
+  font-size: 14px;
+  color: #888;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.login-links a {
+  color: #4a90e2;
+  text-decoration: none;
+}
+.login-right {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  background: #fff;
+}
+.login-img-main {
+  width: 340px;
+  height: 340px;
+  border-radius: 50%;
+  overflow: hidden;
+  box-shadow: 0 4px 32px #4a90e222;
+  position: relative;
+  z-index: 1;
+}
+.login-img-main img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.login-img-user {
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  overflow: hidden;
+  position: absolute;
+  right: 60px;
+  bottom: 60px;
+  border: 6px solid #fff;
+  box-shadow: 0 2px 12px #4a90e222;
+  z-index: 2;
+  background: #fff;
+}
+.login-img-user img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+@media (max-width: 900px) {
+  .login-root {
+    flex-direction: column;
+  }
+  .login-left, .login-right {
+    max-width: 100%;
+    padding: 32px 16px;
+  }
+  .login-right {
+    justify-content: flex-start;
+    min-height: 300px;
+  }
+  .login-img-main {
+    width: 220px;
+    height: 220px;
+  }
+  .login-img-user {
+    width: 80px;
+    height: 80px;
+    right: 20px;
+    bottom: 20px;
+  }
+}
