@@ -5,7 +5,8 @@ import LeaseProperty from "./pages/LeaseProperty";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import HomeScreen from "./pages/User/home/HomeScreen";
-
+import LoginScreen from "./pages/auth/LoginScreen";
+import RegisterScreen from "./pages/auth/RegisterScreen";
 const router = createBrowserRouter([
   {
     path: "/login",
@@ -24,12 +25,12 @@ const router = createBrowserRouter([
         element: <HomeScreen />,
       },
       {
-        path: "/mua-ban-can-ho",
-        element: <BuyAndSellProperty />,
+        path: "/login",
+        element: <LoginScreen />,
       },
       {
-        path: "/cho-thue-can-ho",
-        element: <LeaseProperty />,
+        path: "/register",
+        element: <RegisterScreen />,
       },
     ],
   },

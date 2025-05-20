@@ -1,9 +1,9 @@
 import React from "react";
 import { Card } from "antd";
-import Slider from "react-slick";
-import "slick-carousel/slick/slick.css";
-import "slick-carousel/slick/slick-theme.css";
-import "./News.css"; 
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Pagination, Autoplay } from "swiper/modules"; // Thêm Autoplay
+import "swiper/css";
+import "swiper/css/pagination";
 
 const newsList = [
   {
@@ -38,80 +38,79 @@ const newsList = [
   },
 ];
 
-const sliderSettings = {
-  dots: true,
-  infinite: true,
-  speed: 500,
-  slidesToShow: 3,
-  slidesToScroll: 3,
-  arrows: true,
-  responsive: [
-    {
-      breakpoint: 1200,
-      settings: { slidesToShow: 2, slidesToScroll: 2 },
-    },
-    {
-      breakpoint: 768,
-      settings: { slidesToShow: 1, slidesToScroll: 1 },
-    },
-  ],
-};
-
 const News = () => {
   return (
     <div>
-        <div style={{ fontSize: 26, fontWeight: 600, marginBottom: 24, textAlign: "left" }}>
-          <span style={{ color: "#4a90e2" }}>Tin tức</span> thị trường căn hộ
-        </div>
-        <div style={{ position: "relative" }}>
-          <Slider {...sliderSettings}>
-            {newsList.map((news, idx) => (
-              <div key={news.id} style={{ padding: 12 }}>
-                <Card
-                  hoverable
-                  cover={
-                    <img
-                      alt={news.title}
-                      src={news.image}
-                      style={{
-                        height: 180,
-                        objectFit: "cover",
-                        borderTopLeftRadius: 12,
-                        borderTopRightRadius: 12,
-                      }}
-                    />
-                  }
-                  style={{
-                    borderRadius: 12,
-                    boxShadow: "0 2px 12px #e0e7ef33",
-                    marginBottom: 16,
-                    background: "#fff",
-                    padding: 0,
-                  }}
-                  bodyStyle={{ padding: 16 }}
-                >
-                  <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                    <span
-                      style={{
-                        fontSize: 36,
-                        color: "#4a90e2",
-                        fontWeight: 700,
-                        minWidth: 48,
-                        lineHeight: 1,
-                      }}
-                    >
-                      {String(idx + 1).padStart(2, "0")}
-                    </span>
-                    <span style={{ fontSize: 16, fontWeight: 500, color: "#222" }}>
-                      {news.title}
-                    </span>
-                  </div>
-                </Card>
-              </div>
-            ))}
-          </Slider>
-        </div>
+      <div
+        style={{
+          fontSize: 26,
+          fontWeight: 600,
+          marginBottom: 24,
+          textAlign: "left",
+        }}
+      >
+        <span style={{ color: "#4a90e2" }}>Tin tức</span> thị trường căn hộ
       </div>
+
+      <Swiper
+        modules={[Pagination, Autoplay]}
+        autoplay={{ delay: 3000, disableOnInteraction: false }}
+        pagination={{ clickable: true }}
+        spaceBetween={16}
+        breakpoints={{
+          0: { slidesPerView: 1 },
+          768: { slidesPerView: 2 },
+          1200: { slidesPerView: 3 },
+        }}
+      >
+        {newsList.map((news, idx) => (
+          <SwiperSlide key={news.id}>
+            <div style={{ padding: 12 }}>
+              <Card
+                hoverable
+                cover={
+                  <img
+                    alt={news.title}
+                    src={news.image}
+                    style={{
+                      height: 180,
+                      objectFit: "cover",
+                      borderTopLeftRadius: 12,
+                      borderTopRightRadius: 12,
+                    }}
+                  />
+                }
+                style={{
+                  borderRadius: 12,
+                  boxShadow: "0 2px 12px #e0e7ef33",
+                  marginBottom: 16,
+                  background: "#fff",
+                  padding: 0,
+                }}
+                bodyStyle={{ padding: 16 }}
+              >
+                <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                  <span
+                    style={{
+                      fontSize: 36,
+                      color: "#4a90e2",
+                      fontWeight: 700,
+                      minWidth: 48,
+                      lineHeight: 1,
+                    }}
+                  >
+                    {String(idx + 1).padStart(2, "0")}
+                  </span>
+                  <span style={{ fontSize: 16, fontWeight: 500, color: "#222" }}>
+                    {news.title}
+                  </span>
+                </div>
+              </Card>
+            </div>
+          </SwiperSlide>
+        ))}
+      </Swiper>
+    </div>
   );
 };
 
