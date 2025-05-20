@@ -9,10 +9,7 @@ import {
   Space,
   message,
 } from "antd";
-import {
-  LockOutlined,
-  UserOutlined,
-} from "@ant-design/icons";
+import { LockOutlined, UserOutlined } from "@ant-design/icons";
 import axios from "axios";
 const { Title, Text, Link } = Typography;
 
@@ -21,16 +18,22 @@ const LoginScreen = () => {
 
   const handleLogin = async (values) => {
     try {
-      const response = await axios.post("https://be-modernestate.onrender.com/api/v1/auths/login", {
-        email: values.email,
-        password: values.password,
-      });
-  
+      const response = await axios.post(
+        "https://be-modernestate.onrender.com/api/v1/auths/login",
+        {
+          email: values.email,
+          password: values.password,
+        }
+      );
+
       if (response.data.success) {
         console.log(response.data);
         message.success("Đăng nhập thành công!");
         localStorage.setItem("token", response.data.data.token);
-        localStorage.setItem("user", JSON.stringify(response.data.data.accountCurrent));
+        localStorage.setItem(
+          "user",
+          JSON.stringify(response.data.data.accountCurrent)
+        );
         window.location.href = "/";
       } else {
         message.error("Email hoặc mật khẩu không chính xác!");
@@ -40,7 +43,7 @@ const LoginScreen = () => {
       message.error("Đăng nhập thất bại. Vui lòng thử lại sau.");
     }
   };
-  
+
   return (
     <Row
       style={{
@@ -84,15 +87,30 @@ const LoginScreen = () => {
           Đăng nhập ngay để tiếp tục hành trình tìm kiếm căn hộ lý tưởng của
           bạn!
         </Text>
-        <div style={{ marginBottom: 17, display: "flex", alignItems: "center" }}>
-          <Text strong style={{ marginRight: 16, fontSize: 16, fontWeight: '500', color: '#333' }}>
+        <div
+          style={{ marginBottom: 17, display: "flex", alignItems: "center" }}
+        >
+          <Text
+            strong
+            style={{
+              marginRight: 16,
+              fontSize: 16,
+              fontWeight: "500",
+              color: "#333",
+            }}
+          >
             ĐĂNG NHẬP BẰNG
           </Text>
           <Space size="middle">
             <Button
               shape="circle"
               icon={
-                <span style={{display: 'inline-block', transform: 'translateY(3px)'}}>
+                <span
+                  style={{
+                    display: "inline-block",
+                    transform: "translateY(3px)",
+                  }}
+                >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     width="48"
@@ -120,14 +138,14 @@ const LoginScreen = () => {
               }
               size="large"
               style={{
-                outline: 'none',
-                boxShadow: 'none',
-                background: 'transparent',
-                border: 'none',
-                transition: 'transform 0.2s',
-                ':hover': {
-                  transform: 'scale(1.1)'
-                }
+                outline: "none",
+                boxShadow: "none",
+                background: "transparent",
+                border: "none",
+                transition: "transform 0.2s",
+                ":hover": {
+                  transform: "scale(1.1)",
+                },
               }}
             />
             <Button
@@ -153,31 +171,32 @@ const LoginScreen = () => {
               }
               size="large"
               style={{
-                outline: 'none',
-                boxShadow: 'none',
-                background: 'transparent',
-                border: 'none',
-                transition: 'transform 0.2s',
-                ':hover': {
-                  transform: 'scale(1.1)'
-                }
+                outline: "none",
+                boxShadow: "none",
+                background: "transparent",
+                border: "none",
+                transition: "transform 0.2s",
+                ":hover": {
+                  transform: "scale(1.1)",
+                },
               }}
             />
           </Space>
         </div>
-        <Form
-          layout="vertical"
-          form={form}
-          onFinish={handleLogin}
-        >
+        <Form layout="vertical" form={form} onFinish={handleLogin}>
           <Form.Item
             label={<Text style={{ fontSize: 16 }}>Email</Text>}
             name="email"
-            rules={[{ required: true, message: "Vui lòng nhập email" }]}
+            rules={[
+              { required: true, message: "Vui lòng nhập email" },
+              { type: "email", message: "Email không hợp lệ" },
+            ]}
           >
             <Input
               size="large"
-              prefix={<UserOutlined style={{ marginRight: 8, color: "#4a90e2" }} />}
+              prefix={
+                <UserOutlined style={{ marginRight: 8, color: "#4a90e2" }} />
+              }
               placeholder="Nhập email"
             />
           </Form.Item>
@@ -189,19 +208,30 @@ const LoginScreen = () => {
           >
             <Input.Password
               size="large"
-              prefix={<LockOutlined style={{ marginRight: 8, color: "#4a90e2" }} />}
+              prefix={
+                <LockOutlined style={{ marginRight: 8, color: "#4a90e2" }} />
+              }
               placeholder="Nhập mật khẩu"
             />
           </Form.Item>
 
-          <Row justify="space-between" align="middle" style={{ marginBottom: 24 }}>
+          <Row
+            justify="space-between"
+            align="middle"
+            style={{ marginBottom: 24 }}
+          >
             <Col>
               <Text style={{ fontSize: 15 }}>
-                Bạn chưa có tài khoản? <Link href="/register" style={{ color: "#4a90e2" }}>Đăng ký</Link>
+                Bạn chưa có tài khoản?{" "}
+                <Link href="/register" style={{ color: "#4a90e2" }}>
+                  Đăng ký
+                </Link>
               </Text>
             </Col>
             <Col>
-              <Link href="#" style={{ color: "#4a90e2" }}>Quên mật khẩu?</Link>
+              <Link href="#" style={{ color: "#4a90e2" }}>
+                Quên mật khẩu?
+              </Link>
             </Col>
           </Row>
 
@@ -225,7 +255,11 @@ const LoginScreen = () => {
       </Col>
 
       {/* Right Side */}
-      <Col xs={0} md={12} style={{ position: "relative", height: "80vh", overflow: "hidden" }}>
+      <Col
+        xs={0}
+        md={12}
+        style={{ position: "relative", height: "80vh", overflow: "hidden" }}
+      >
         <img
           src="/images/pages/Life in a city-bro.svg"
           alt="apartment"
