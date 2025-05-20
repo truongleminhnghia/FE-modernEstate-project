@@ -33,72 +33,22 @@ const RegisterScreen = () => {
         xs={0}
         md={12}
         style={{
+          position: "relative",
+          height: "75vh",
+          overflow: "hidden",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          background: "#fff",
-          position: "relative",
         }}
       >
-        <div
+        <img
+          src="/images/pages/At the office-amico.svg"
+          alt="apartment"
           style={{
-            width: 400,
-            height: 400,
-            borderRadius: "50%",
-            overflow: "hidden",
-            boxShadow: "0 40px 25px #4a90e222",
-            position: "relative",
-            zIndex: 1,
+            width: "100%",
+            height: "100%",
           }}
-        >
-          <img
-            src={"/images/pages/register1.jpg"}
-            alt="apartment"
-            style={{ width: "100%", height: "100%", objectFit: "cover" }}
-          />
-        </div>
-        <div
-          style={{
-            width: 200,
-            height: 200,
-            borderRadius: "50%",
-            overflow: "hidden",
-            position: "absolute",
-            right: 100,
-            bottom: 0,
-            border: "6px solid #fff",
-            boxShadow: "0 2px 12px #4a90e222",
-            zIndex: 2,
-            background: "#fff",
-          }}
-        >
-          <img
-            src={"/images/pages/register2.jpg"}
-            alt="user"
-            style={{ width: "100%", height: "100%", objectFit: "cover" }}
-          />
-        </div>
-        <div
-          style={{
-            width: 150,
-            height: 150,
-            borderRadius: "50%",
-            overflow: "hidden",
-            position: "absolute",
-            right: 100,
-            top: 0,
-            border: "6px solid #fff",
-            boxShadow: "0 2px 12px #4a90e222",
-            zIndex: 2,
-            background: "#fff",
-          }}
-        >
-          <img
-            src={"/images/pages/register3.jpg"}
-            alt="user"
-            style={{ width: "100%", height: "100%", objectFit: "cover" }}
-          />
-        </div>
+        />
       </Col>
       {/* Right Side - Form */}
       <Col
@@ -108,7 +58,7 @@ const RegisterScreen = () => {
           display: "flex",
           flexDirection: "column",
           justifyContent: "center",
-          padding: "0 32px 0 10vw",
+          padding: "0 0 20px 6vw",
           maxWidth: 1000,
         }}
       >

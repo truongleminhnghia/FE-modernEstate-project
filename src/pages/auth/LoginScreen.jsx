@@ -20,10 +20,9 @@ const LoginScreen = () => {
   return (
     <Row
       style={{
-        background: "#fff",
+        minHeight: "80vh",
         alignItems: "center",
         justifyContent: "center",
-        marginBottom: 50,
       }}
       gutter={0}
     >
@@ -34,29 +33,35 @@ const LoginScreen = () => {
           display: "flex",
           flexDirection: "column",
           justifyContent: "center",
-          padding: "48px 32px 0 10vw",
+          padding: "0 90px 0 80px",
           maxWidth: 1000,
         }}
       >
-        <Title level={2} style={{ color: "#4a90e2", marginBottom: 8, fontWeight: 'bold' }}>
+        <Title level={2} style={{ 
+          color: "#4a90e2", 
+          marginBottom: 15, 
+          fontWeight: 'bold',
+          fontSize: '2.5rem'
+        }}>
           Chào mừng bạn quay trở lại!
         </Title>
         <Text
           style={{
-            color: "#444",
+            color: "#666",
             fontSize: 16,
-            marginBottom: 24,
+            marginBottom: 15,
             display: "block",
+            lineHeight: 1.6
           }}
         >
           Đăng nhập ngay để tiếp tục hành trình tìm kiếm căn hộ lý tưởng của
           bạn!
         </Text>
-        <div style={{ marginBottom: 15, display: "flex", alignItems: "center" }}>
-          <Text strong style={{ marginRight: 16, fontSize: 16, fontWeight: '500' }}>
+        <div style={{ marginBottom: 17, display: "flex", alignItems: "center" }}>
+          <Text strong style={{ marginRight: 16, fontSize: 16, fontWeight: '500', color: '#333' }}>
             ĐĂNG NHẬP BẰNG
           </Text>
-          <Space>
+          <Space size="middle">
             <Button
               shape="circle"
               icon={
@@ -87,7 +92,16 @@ const LoginScreen = () => {
                 </span>
               }
               size="large"
-              style={{outline: 'none', boxShadow: 'none', background: 'transparent', border: 'none'}}
+              style={{
+                outline: 'none',
+                boxShadow: 'none',
+                background: 'transparent',
+                border: 'none',
+                transition: 'transform 0.2s',
+                ':hover': {
+                  transform: 'scale(1.1)'
+                }
+              }}
             />
             <Button
               shape="circle"
@@ -98,61 +112,108 @@ const LoginScreen = () => {
                     width="41"
                     height="41"
                     viewBox="0 0 256 256"
-                >
-                  <path
-                    fill="#1877f2"
-                    d="M256 128C256 57.308 198.692 0 128 0S0 57.308 0 128c0 63.888 46.808 116.843 108 126.445V165H75.5v-37H108V99.8c0-32.08 19.11-49.8 48.348-49.8C170.352 50 185 52.5 185 52.5V84h-16.14C152.959 84 148 93.867 148 103.99V128h35.5l-5.675 37H148v89.445c61.192-9.602 108-62.556 108-126.445"
-                  />
-                  <path
-                    fill="#fff"
-                    d="m177.825 165l5.675-37H148v-24.01C148 93.866 152.959 84 168.86 84H185V52.5S170.352 50 156.347 50C127.11 50 108 67.72 108 99.8V128H75.5v37H108v89.445A129 129 0 0 0 128 256a129 129 0 0 0 20-1.555V165z"
-                  />
-                </svg>
+                  >
+                    <path
+                      fill="#1877f2"
+                      d="M256 128C256 57.308 198.692 0 128 0S0 57.308 0 128c0 63.888 46.808 116.843 108 126.445V165H75.5v-37H108V99.8c0-32.08 19.11-49.8 48.348-49.8C170.352 50 185 52.5 185 52.5V84h-16.14C152.959 84 148 93.867 148 103.99V128h35.5l-5.675 37H148v89.445c61.192-9.602 108-62.556 108-126.445"
+                    />
+                    <path
+                      fill="#fff"
+                      d="m177.825 165l5.675-37H148v-24.01C148 93.866 152.959 84 168.86 84H185V52.5S170.352 50 156.347 50C127.11 50 108 67.72 108 99.8V128H75.5v37H108v89.445A129 129 0 0 0 128 256a129 129 0 0 0 20-1.555V165z"
+                    />
+                  </svg>
                 </span>
               }
               size="large"
+              style={{
+                outline: 'none',
+                boxShadow: 'none',
+                background: 'transparent',
+                border: 'none',
+                transition: 'transform 0.2s',
+                ':hover': {
+                  transform: 'scale(1.1)'
+                }
+              }}
             />
           </Space>
         </div>
         <Form layout="vertical">
-          <Form.Item label="Email" name="email" style={{ marginBottom: 8 }}>
+          <Form.Item 
+            label={<Text strong style={{ fontSize: 16 }}>Email</Text>} 
+            name="email" 
+            style={{ marginBottom: 16 }}
+          >
             <Input
               size="large"
-              prefix={<UserOutlined style={{marginRight: 8}} />}
+              prefix={<UserOutlined style={{marginRight: 8, color: '#4a90e2'}} />}
               placeholder="Nhập email"
-              style={{marginBottom: 8}}
+              style={{
+                borderRadius: 8,
+                padding: '12px 16px',
+                fontSize: 16,
+                border: '1px solid #e8e8e8',
+                transition: 'all 0.3s',
+                ':hover': {
+                  borderColor: '#4a90e2'
+                }
+              }}
             />
           </Form.Item>
           <Form.Item
-            label="Mật khẩu"
+            label={<Text strong style={{ fontSize: 16 }}>Mật khẩu</Text>}
             name="password"
-            style={{ marginBottom: 10 }}
+            style={{ marginBottom: 13 }}
           >
             <Input.Password
               size="large"
-              prefix={<LockOutlined style={{marginRight: 8}} />}
+              prefix={<LockOutlined style={{marginRight: 8, color: '#4a90e2'}} />}
               placeholder="Nhập mật khẩu"
+              style={{
+                borderRadius: 8,
+                padding: '12px 16px',
+                fontSize: 16,
+                border: '1px solid #e8e8e8',
+                transition: 'all 0.3s',
+                ':hover': {
+                  borderColor: '#4a90e2'
+                }
+              }}
             />
           </Form.Item>
           <Row
             justify="space-between"
             align="middle"
-            style={{ marginBottom: 8 }}
+            style={{ marginBottom: 24 }}
           >
             <Col>
-              <Text>
-                Bạn chưa có tài khoản? <Link href="/register">Đăng ký</Link>
+              <Text style={{ fontSize: 15 }}>
+                Bạn chưa có tài khoản? <Link href="/register" style={{ color: '#4a90e2' }}>Đăng ký</Link>
               </Text>
             </Col>
             <Col>
-              <Link href="#">Quên mật khẩu?</Link>
+              <Link href="#" style={{ color: '#4a90e2' }}>Quên mật khẩu?</Link>
             </Col>
           </Row>
           <Button
             type="primary"
             size="large"
             block
-            style={{ marginTop: 8, borderRadius: 8, background: "#4a90e2" }}
+            style={{ 
+              marginTop: 8, 
+              borderRadius: 8, 
+              background: "#4a90e2",
+              height: 48,
+              fontSize: 16,
+              fontWeight: 500,
+              boxShadow: '0 4px 12px rgba(74, 144, 226, 0.2)',
+              transition: 'all 0.3s',
+              ':hover': {
+                background: '#357abd',
+                transform: 'translateY(-2px)',
+                boxShadow: '0 6px 16px rgba(74, 144, 226, 0.3)'
+              }
+            }}
           >
             ĐĂNG NHẬP
           </Button>
@@ -163,51 +224,19 @@ const LoginScreen = () => {
         xs={0}
         md={12}
         style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          background: "#fff",
           position: "relative",
+          height: "80vh",
+          overflow: "hidden",
         }}
       >
-        <div
+        <img
+          src="/images/pages/Life in a city-bro.svg"
+          alt="apartment"
           style={{
-            width: 400,
-            height: 400,
-            borderRadius: "50%",
-            overflow: "hidden",
-            boxShadow: "0 4px 32px #4a90e222",
-            position: "relative",
-            zIndex: 1,
+            width: "90%",
+            height: "95%",
           }}
-        >
-          <img
-            src={"/images/pages/login1.jpeg"}
-            alt="apartment"
-            style={{ width: "100%", height: "100%", objectFit: "cover" }}
-          />
-        </div>
-        <div
-          style={{
-            width: 200,
-            height: 200,
-            borderRadius: "50%",
-            overflow: "hidden",
-            position: "absolute",
-            right: 100,
-            bottom: 0,
-            border: "6px solid #fff",
-            boxShadow: "0 2px 12px #4a90e222",
-            zIndex: 2,
-            background: "#fff",
-          }}
-        >
-          <img
-            src={"/images/pages/login2.jpg"}
-            alt="user"
-            style={{ width: "100%", height: "100%", objectFit: "cover" }}
-          />
-        </div>
+        />
       </Col>
     </Row>
   );
