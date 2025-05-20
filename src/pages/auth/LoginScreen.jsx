@@ -7,16 +7,40 @@ import {
   Typography,
   Form,
   Space,
-  Divider,
+  message,
 } from "antd";
 import {
   LockOutlined,
   UserOutlined,
 } from "@ant-design/icons";
-
+import axios from "axios";
 const { Title, Text, Link } = Typography;
 
 const LoginScreen = () => {
+  const [form] = Form.useForm();
+
+  const handleLogin = async (values) => {
+    try {
+      const response = await axios.post("https://be-modernestate.onrender.com/api/v1/auths/login", {
+        email: values.email,
+        password: values.password,
+      });
+  
+      if (response.data.success) {
+        console.log(response.data);
+        message.success("Đăng nhập thành công!");
+        localStorage.setItem("token", response.data.data.token);
+        localStorage.setItem("user", JSON.stringify(response.data.data.accountCurrent));
+        window.location.href = "/";
+      } else {
+        message.error("Email hoặc mật khẩu không chính xác!");
+      }
+    } catch (error) {
+      console.error(error);
+      message.error("Đăng nhập thất bại. Vui lòng thử lại sau.");
+    }
+  };
+  
   return (
     <Row
       style={{
@@ -37,12 +61,15 @@ const LoginScreen = () => {
           maxWidth: 1000,
         }}
       >
-        <Title level={2} style={{ 
-          color: "#4a90e2", 
-          marginBottom: 15, 
-          fontWeight: 'bold',
-          fontSize: '2.5rem'
-        }}>
+        <Title
+          level={2}
+          style={{
+            color: "#4a90e2",
+            marginBottom: 15,
+            fontWeight: "bold",
+            fontSize: "2.5rem",
+          }}
+        >
           Chào mừng bạn quay trở lại!
         </Title>
         <Text
@@ -51,7 +78,7 @@ const LoginScreen = () => {
             fontSize: 16,
             marginBottom: 15,
             display: "block",
-            lineHeight: 1.6
+            lineHeight: 1.6,
           }}
         >
           Đăng nhập ngay để tiếp tục hành trình tìm kiếm căn hộ lý tưởng của
@@ -138,104 +165,71 @@ const LoginScreen = () => {
             />
           </Space>
         </div>
-        <Form layout="vertical">
-          <Form.Item 
-            label={<Text strong style={{ fontSize: 16 }}>Email</Text>} 
-            name="email" 
-            style={{ marginBottom: 16 }}
+        <Form
+          layout="vertical"
+          form={form}
+          onFinish={handleLogin}
+        >
+          <Form.Item
+            label={<Text style={{ fontSize: 16 }}>Email</Text>}
+            name="email"
+            rules={[{ required: true, message: "Vui lòng nhập email" }]}
           >
             <Input
               size="large"
-              prefix={<UserOutlined style={{marginRight: 8, color: '#4a90e2'}} />}
+              prefix={<UserOutlined style={{ marginRight: 8, color: "#4a90e2" }} />}
               placeholder="Nhập email"
-              style={{
-                borderRadius: 8,
-                padding: '12px 16px',
-                fontSize: 16,
-                border: '1px solid #e8e8e8',
-                transition: 'all 0.3s',
-                ':hover': {
-                  borderColor: '#4a90e2'
-                }
-              }}
             />
           </Form.Item>
+
           <Form.Item
-            label={<Text strong style={{ fontSize: 16 }}>Mật khẩu</Text>}
+            label={<Text style={{ fontSize: 16 }}>Mật khẩu</Text>}
             name="password"
-            style={{ marginBottom: 13 }}
+            rules={[{ required: true, message: "Vui lòng nhập mật khẩu" }]}
           >
             <Input.Password
               size="large"
-              prefix={<LockOutlined style={{marginRight: 8, color: '#4a90e2'}} />}
+              prefix={<LockOutlined style={{ marginRight: 8, color: "#4a90e2" }} />}
               placeholder="Nhập mật khẩu"
-              style={{
-                borderRadius: 8,
-                padding: '12px 16px',
-                fontSize: 16,
-                border: '1px solid #e8e8e8',
-                transition: 'all 0.3s',
-                ':hover': {
-                  borderColor: '#4a90e2'
-                }
-              }}
             />
           </Form.Item>
-          <Row
-            justify="space-between"
-            align="middle"
-            style={{ marginBottom: 24 }}
-          >
+
+          <Row justify="space-between" align="middle" style={{ marginBottom: 24 }}>
             <Col>
               <Text style={{ fontSize: 15 }}>
-                Bạn chưa có tài khoản? <Link href="/register" style={{ color: '#4a90e2' }}>Đăng ký</Link>
+                Bạn chưa có tài khoản? <Link href="/register" style={{ color: "#4a90e2" }}>Đăng ký</Link>
               </Text>
             </Col>
             <Col>
-              <Link href="#" style={{ color: '#4a90e2' }}>Quên mật khẩu?</Link>
+              <Link href="#" style={{ color: "#4a90e2" }}>Quên mật khẩu?</Link>
             </Col>
           </Row>
+
           <Button
             type="primary"
             size="large"
             block
-            style={{ 
-              marginTop: 8, 
-              borderRadius: 8, 
+            htmlType="submit"
+            style={{
+              marginTop: 8,
+              borderRadius: 8,
               background: "#4a90e2",
               height: 48,
               fontSize: 16,
               fontWeight: 500,
-              boxShadow: '0 4px 12px rgba(74, 144, 226, 0.2)',
-              transition: 'all 0.3s',
-              ':hover': {
-                background: '#357abd',
-                transform: 'translateY(-2px)',
-                boxShadow: '0 6px 16px rgba(74, 144, 226, 0.3)'
-              }
             }}
           >
             ĐĂNG NHẬP
           </Button>
         </Form>
       </Col>
+
       {/* Right Side */}
-      <Col
-        xs={0}
-        md={12}
-        style={{
-          position: "relative",
-          height: "80vh",
-          overflow: "hidden",
-        }}
-      >
+      <Col xs={0} md={12} style={{ position: "relative", height: "80vh", overflow: "hidden" }}>
         <img
           src="/images/pages/Life in a city-bro.svg"
           alt="apartment"
-          style={{
-            width: "90%",
-            height: "95%",
-          }}
+          style={{ width: "90%", height: "95%" }}
         />
       </Col>
     </Row>

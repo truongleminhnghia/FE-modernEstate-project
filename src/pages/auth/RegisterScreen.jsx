@@ -1,22 +1,35 @@
 import React from "react";
-import {
-  Input,
-  Button,
-  Row,
-  Col,
-  Typography,
-  Form,
-  Space,
-} from "antd";
-import {
-  LockOutlined,
-  UserOutlined,
-  MailOutlined,
-} from "@ant-design/icons";
+import { Input, Button, Row, Col, Typography, Form, Space, Select, message } from "antd";
+import { LockOutlined, MailOutlined } from "@ant-design/icons";
+import axios from "axios";
 
 const { Title, Text, Link } = Typography;
+const { Option } = Select;
 
 const RegisterScreen = () => {
+  const [form] = Form.useForm();
+
+  const onFinish = async (values) => {
+    try {
+      const response = await axios.post("https://be-modernestate.onrender.com/api/v1/auths/register", {
+        email: values.email,
+        firstName: values.firstName,
+        lastName: values.lastName,
+        password: values.password,
+        confirmPassword: values.confirmPassword,
+        gender: values.gender,
+      });
+
+      message.success("Đăng ký thành công!");
+      form.resetFields();
+    } catch (error) {
+      console.error("Registration failed:", error.response || error);
+      const errorMsg = error.response?.data?.message || "Đăng ký thất bại. Vui lòng thử lại.";
+      message.error(errorMsg);
+    }
+  };
+
+
   return (
     <Row
       style={{
@@ -50,6 +63,7 @@ const RegisterScreen = () => {
           }}
         />
       </Col>
+
       {/* Right Side - Form */}
       <Col
         xs={24}
@@ -62,7 +76,10 @@ const RegisterScreen = () => {
           maxWidth: 1000,
         }}
       >
-        <Title level={2} style={{ color: "#4a90e2", marginBottom: 8, fontWeight: 'bold'}}>
+        <Title
+          level={2}
+          style={{ color: "#4a90e2", marginBottom: 8, fontWeight: "bold" }}
+        >
           Chào mừng bạn đến với MODERN ESTATE!
         </Title>
         <Text
@@ -73,9 +90,13 @@ const RegisterScreen = () => {
             display: "block",
           }}
         >
-          Chỉ mất 1 phút để tham gia và bắt đầu hành trình tìm kiếm ngôi nhà mơ ước.
+          Chỉ mất 1 phút để tham gia và bắt đầu hành trình tìm kiếm ngôi nhà mơ
+          ước.
         </Text>
-        <div style={{ display: "flex", alignItems: "center", marginBottom: 13 }}>
+
+        <div
+          style={{ display: "flex", alignItems: "center", marginBottom: 13 }}
+        >
           <span style={{ fontWeight: 500, marginRight: 16, fontSize: 16 }}>
             HOẶC ĐĂNG KÝ BẰNG
           </span>
@@ -83,7 +104,12 @@ const RegisterScreen = () => {
             <Button
               shape="circle"
               icon={
-                <span style={{ display: 'inline-block', transform: 'translateY(3px)' }}>
+                <span
+                  style={{
+                    display: "inline-block",
+                    transform: "translateY(3px)",
+                  }}
+                >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     width="48"
@@ -110,7 +136,12 @@ const RegisterScreen = () => {
                 </span>
               }
               size="large"
-              style={{ outline: 'none', boxShadow: 'none', background: 'transparent', border: 'none' }}
+              style={{
+                outline: "none",
+                boxShadow: "none",
+                background: "transparent",
+                border: "none",
+              }}
             />
             <Button
               shape="circle"
@@ -137,43 +168,127 @@ const RegisterScreen = () => {
             />
           </Space>
         </div>
-        <Form layout="vertical">
+
+        <Form layout="vertical" form={form} onFinish={onFinish}>
           <Row gutter={12}>
             <Col span={12}>
-              <Form.Item label="Tên" name="firstName" style={{ marginBottom: 8 }}>
+              <Form.Item
+                label="Tên"
+                name="firstName"
+                style={{ marginBottom: 8 }}
+                rules={[{ required: true, message: "Vui lòng nhập tên" }]}
+              >
                 <Input size="large" placeholder="Nhập tên" />
               </Form.Item>
             </Col>
             <Col span={12}>
-              <Form.Item label="Họ" name="lastName" style={{ marginBottom: 8 }}>
+              <Form.Item
+                label="Họ"
+                name="lastName"
+                style={{ marginBottom: 8 }}
+                rules={[{ required: true, message: "Vui lòng nhập họ" }]}
+              >
                 <Input size="large" placeholder="Nhập họ" />
               </Form.Item>
             </Col>
           </Row>
-          <Form.Item label="Email" name="email" style={{ marginBottom: 8 }}>
-            <Input size="large" prefix={<UserOutlined style={{marginRight: 8}} />} placeholder="Nhập email" />
+          <Row gutter={12}>
+            <Col span={14}>
+              <Form.Item
+                label="Email"
+                name="email"
+                style={{ marginBottom: 8 }}
+                rules={[
+                  { required: true, message: "Vui lòng nhập email" },
+                  { type: "email", message: "Email không hợp lệ" },
+                ]}
+              >
+                <Input
+                  size="large"
+                  prefix={<MailOutlined style={{ marginRight: 8 }} />}
+                  placeholder="Nhập email"
+                />
+              </Form.Item>
+            </Col>
+            <Col span={10}>
+              <Form.Item
+                label="Giới tính"
+                name="gender"
+                style={{ marginBottom: 10 }}
+                rules={[{ required: true, message: "Vui lòng chọn giới tính" }]}
+              >
+                <Select size="large" placeholder="Chọn giới tính">
+                  <Option value="MALE">Nam</Option>
+                  <Option value="FEMALE">Nữ</Option>
+                </Select>
+              </Form.Item>
+            </Col>
+          </Row>
+
+          <Form.Item
+            label="Mật khẩu"
+            name="password"
+            style={{ marginBottom: 8 }}
+            rules={[{ required: true, message: "Vui lòng nhập mật khẩu" }]}
+          >
+            <Input.Password
+              size="large"
+              prefix={<LockOutlined style={{ marginRight: 8 }} />}
+              placeholder="Nhập mật khẩu"
+            />
           </Form.Item>
-          <Form.Item label="Mật khẩu" name="password" style={{ marginBottom: 10 }}>
-            <Input.Password size="large" prefix={<LockOutlined style={{marginRight: 8}} />} placeholder="Nhập mật khẩu" />
+
+          <Form.Item
+            label="Xác nhận mật khẩu"
+            name="confirmPassword"
+            style={{ marginBottom: 8 }}
+            dependencies={["password"]}
+            rules={[
+              { required: true, message: "Vui lòng xác nhận mật khẩu" },
+              ({ getFieldValue }) => ({
+                validator(_, value) {
+                  if (!value || getFieldValue("password") === value) {
+                    return Promise.resolve();
+                  }
+                  return Promise.reject("Mật khẩu xác nhận không khớp");
+                },
+              }),
+            ]}
+          >
+            <Input.Password
+              size="large"
+              prefix={<LockOutlined style={{ marginRight: 8 }} />}
+              placeholder="Xác nhận mật khẩu"
+            />
           </Form.Item>
-          <Row justify="space-between" align="middle" style={{ marginBottom: 8 }}>
+
+          <Row
+            justify="space-between"
+            align="middle"
+            style={{ marginBottom: 8 }}
+          >
             <Col>
               <Text>
                 Bạn đã có tài khoản? <Link href="/login">Đăng nhập</Link>
               </Text>
             </Col>
           </Row>
+
           <Button
             type="primary"
             size="large"
             block
+            htmlType="submit"
             style={{ marginTop: 8, borderRadius: 8, background: "#4a90e2" }}
           >
             ĐĂNG KÝ
           </Button>
         </Form>
-        <div style={{ marginTop: 16, fontSize: 13, color: '#888' }}>
-          Bằng việc đăng ký, bạn đã đồng ý với Modern Estate về <a href="#">Điều khoản dịch vụ</a> và <a href="#">Chính sách bảo mật</a>
+
+        <div style={{ marginTop: 16, fontSize: 13, color: "#888" }}>
+          Bằng việc đăng ký, bạn đã đồng ý với Modern Estate về{" "}
+          <a href="#">Điều khoản dịch vụ</a> và{" "}
+          <a href="#">Chính sách bảo mật</a>
         </div>
       </Col>
     </Row>
