@@ -25,7 +25,7 @@ import {
   CheckCircleOutlined,
   MessageOutlined
 } from '@ant-design/icons';
-import './BrokerProfile.css';
+import '../BrokerProfile.css';
 
 const { Title, Text, Paragraph } = Typography;
 const { TabPane } = Tabs;

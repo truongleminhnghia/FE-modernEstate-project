@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Card, Table, Tag, Space, Button, DatePicker, Select, Input, Row, Col, Typography } from 'antd';
 import { SearchOutlined, DownloadOutlined, EyeOutlined } from '@ant-design/icons';
-import '../profile/BrokerProfile.css';
+import '../BrokerProfile.css';
 
 const { Title } = Typography;
 const { RangePicker } = DatePicker;

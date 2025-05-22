@@ -8,6 +8,7 @@ import TransactionHistory from "./pages/User/transactions/TransactionHistory";
 import FavoriteList from "./pages/User/favorites/FavoritesList";
 import BrokerProfile from "./pages/Broker/profile/BrokerProfile";
 import BrokerTransactionHistory from "./pages/Broker/transaction/BrokerTransactionHistory";
+import BrokerWatchedApartments from "./pages/Broker/favorite/BrokerWatchedApartments";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -44,6 +45,10 @@ const router = createBrowserRouter([
       {
         path: "/broker-transaction",
         element: <BrokerTransactionHistory />,
+      },
+      {
+        path: "/broker-favorite",
+        element: <BrokerWatchedApartments />,
       }
     ],
   },
