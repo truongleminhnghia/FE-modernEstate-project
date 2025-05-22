@@ -1,6 +1,6 @@
 import React from "react";
 import { Input, Button, Row, Col, Typography, Form, Space, Select, message } from "antd";
-import { LockOutlined, MailOutlined } from "@ant-design/icons";
+import { LockOutlined, MailOutlined, PhoneOutlined  } from "@ant-design/icons";
 import axios from "axios";
 
 const { Title, Text, Link } = Typography;
@@ -17,7 +17,7 @@ const RegisterScreen = () => {
         lastName: values.lastName,
         password: values.password,
         confirmPassword: values.confirmPassword,
-        gender: values.gender,
+        phoneNumber: values.phoneNumber,
       });
 
       message.success("Đăng ký thành công!");
@@ -193,7 +193,7 @@ const RegisterScreen = () => {
             </Col>
           </Row>
           <Row gutter={12}>
-            <Col span={14}>
+            <Col span={12}>
               <Form.Item
                 label="Email"
                 name="email"
@@ -210,17 +210,21 @@ const RegisterScreen = () => {
                 />
               </Form.Item>
             </Col>
-            <Col span={10}>
+            <Col span={12}>
               <Form.Item
-                label="Giới tính"
-                name="gender"
-                style={{ marginBottom: 10 }}
-                rules={[{ required: true, message: "Vui lòng chọn giới tính" }]}
+                label="Số điện thoại"
+                name="phoneNumber"
+                style={{ marginBottom: 8 }}
+                rules={[
+                  { required: true, message: "Vui lòng nhập số điện thoại" },
+                  { type: "number", message: "Số điện thoại không hợp lệ" },
+                ]}
               >
-                <Select size="large" placeholder="Chọn giới tính">
-                  <Option value="MALE">Nam</Option>
-                  <Option value="FEMALE">Nữ</Option>
-                </Select>
+                <Input
+                  size="large"
+                  prefix={<PhoneOutlined style={{ marginRight: 8 }} />}
+                  placeholder="Nhập số điện thoại"
+                />
               </Form.Item>
             </Col>
           </Row>
