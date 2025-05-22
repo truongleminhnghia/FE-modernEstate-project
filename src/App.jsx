@@ -12,6 +12,9 @@ import BrokerWatchedApartments from "./pages/Broker/favorite/BrokerWatchedApartm
 import MyProfile from "./pages/User/profile/MyProfile";
 import Introduction from "./pages/publics/Introduction";
 import News from "./pages/publics/News";
+import ProtectedRoute from "./protectedRoute/ProtectedRoute";
+import HiAdmin from "./pages/admins/HiAdmin";
+import LayoutEmployee from "./components/layouts/LayoutEmployee";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -62,6 +65,18 @@ const router = createBrowserRouter([
         element: <BrokerWatchedApartments />,
       }
     ],
+  },
+  {
+    path: '/admin',
+    element: (
+      <ProtectedRoute element={<LayoutEmployee />} allowedRoles={["ROLE_ADMIN"]} />
+    ),
+    children: [
+      {
+        path: 'admin',
+        element: <HiAdmin/>
+      },
+    ]
   },
 ]);
 
