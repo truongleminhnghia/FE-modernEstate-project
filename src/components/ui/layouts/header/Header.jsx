@@ -10,7 +10,7 @@ const Header = () => {
         if (info.key === 'logout') {
           localStorage.removeItem("token");
           localStorage.removeItem("user");
-          window.location.href = "/login";
+          window.location.href = "/";
         }
           if (info.key === 'profile') {
             window.location.href = "/my-profile";
