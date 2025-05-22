@@ -3,15 +3,20 @@ import React from 'react'
 import { Navigate } from 'react-router-dom';
 
 const ProtectedRoute = ({ element, allowedRoles }) => {
-    const currentUser = localStorage.getItem("user");
-    if (!currentUser) {
+    const userString = localStorage.getItem("user")
+    if (!userString) {
         return <Navigate to='/' />
     }
 
-    if (allowedRoles && !allowedRoles.includes(currentUser.roleName)) {
-        return <Navigate to="/login" />;
+    // Parse chuỗi JSON thành object
+    const currentUser = JSON.parse(userString)
+
+    if (allowedRoles && !allowedRoles.includes(currentUser?.role?.roleName)) {
+        return <Navigate to="/login" />
     }
-    return <>{element}</>;
+
+    console.log("role", currentUser?.role?.roleName)
+    return <>{element}</>
 }
 
 export default ProtectedRoute

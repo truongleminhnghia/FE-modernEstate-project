@@ -1,17 +1,18 @@
-import React from 'react'
-import Header from '../ui/layouts/header/Header'
+import React, { useState } from 'react'
 import { Outlet } from 'react-router-dom'
-import Footer from '../ui/layouts/footer/Footer'
+import AdminSidebar from '../ui/layouts/AdminSidebar'
+import AdminHeader from '../ui/layouts/AdminHeader'
 
 const LayoutEmployee = () => {
+    const [selectedKey, setSelectedKey] = useState('dashboard')
     return (
-        <>
-            <Header />
-            <main>
+        <div className="flex min-h-screen">
+            <AdminSidebar selectedKey={selectedKey} onSelect={setSelectedKey} />
+            <div className="flex flex-col flex-1">
+                <AdminHeader />
                 <Outlet />
-            </main>
-            <Footer />
-        </>
+            </div>
+        </div>
     )
 }
 
