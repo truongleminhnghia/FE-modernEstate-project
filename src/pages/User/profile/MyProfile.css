@@ -1,0 +1,96 @@
+.profile-container {
+  padding: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.profile-card {
+  text-align: center;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.profile-header {
+  margin-bottom: 24px;
+  position: relative;
+}
+
+.profile-avatar {
+  margin-bottom: 16px;
+  background-color: #4a90e2;
+}
+
+.avatar-upload-button {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #4a90e2;
+  border-color: #4a90e2;
+}
+
+.avatar-upload-button:hover {
+  background-color: #357abd;
+  border-color: #357abd;
+}
+
+.profile-name {
+  margin-bottom: 8px !important;
+  color: #333;
+}
+
+.profile-email {
+  display: block;
+  margin-bottom: 24px;
+}
+
+.profile-stats {
+  display: flex;
+  justify-content: space-around;
+  padding: 16px 0;
+}
+
+.stat-item {
+  text-align: center;
+}
+
+.stat-item strong {
+  display: block;
+  font-size: 24px;
+  color: #4a90e2;
+  margin-bottom: 4px;
+}
+
+.ant-tabs-nav {
+  margin-bottom: 24px;
+}
+
+.ant-form-item-label > label {
+  font-weight: 500;
+}
+
+.ant-input-affix-wrapper {
+  border-radius: 4px;
+}
+
+.ant-btn-primary {
+  background-color: #4a90e2;
+  border-color: #4a90e2;
+  border-radius: 4px;
+}
+
+.ant-btn-primary:hover {
+  background-color: #357abd;
+  border-color: #357abd;
+}
+
+@media (max-width: 768px) {
+  .profile-container {
+    padding: 16px;
+  }
+  
+  .profile-stats {
+    flex-direction: column;
+    gap: 16px;
+  }
+} 
