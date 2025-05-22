@@ -3,9 +3,11 @@ import LayoutGuest from "./components/layouts/LayoutGuest";
 import HomeScreen from "./pages/User/home/HomeScreen";
 import LoginScreen from "./pages/auth/LoginScreen";
 import RegisterScreen from "./pages/auth/RegisterScreen";
-import MyProfile from "./pages/User/profile/MyProfile";
+import CustomerProfile from "./pages/User/profile/CustomerProfile";
 import TransactionHistory from "./pages/User/transactions/TransactionHistory";
 import FavoriteList from "./pages/User/favorites/FavoritesList";
+import BrokerProfile from "./pages/Broker/profile/BrokerProfile";
+import BrokerTransactionHistory from "./pages/Broker/transaction/BrokerTransactionHistory";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -24,17 +26,25 @@ const router = createBrowserRouter([
         element: <RegisterScreen />,
       },
       {
-        path: "/my-profile",
-        element: <MyProfile />,
+        path: "/user-profile",
+        element: <CustomerProfile />,
       },
       {
-        path: "/my-transactions",
+        path: "/user-transactions",
         element: <TransactionHistory />,
       },
       {
-        path: "/my-favorite",
+        path: "/user-favorite",
         element: <FavoriteList />,
       },
+      {
+        path: "/broker-profile",
+        element: <BrokerProfile />,
+      },
+      {
+        path: "/broker-transaction",
+        element: <BrokerTransactionHistory />,
+      }
     ],
   },
 ]);
