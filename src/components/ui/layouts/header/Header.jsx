@@ -18,6 +18,9 @@ const Header = () => {
           if (info.key === 'transactions') {
             window.location.href = "/my-transactions";
           }
+          if (info.key === 'favorite') {
+            window.location.href = "/my-favorite";
+          }
       }}
       items={[
         {
@@ -27,6 +30,10 @@ const Header = () => {
         {
           label: 'Lịch sử giao dịch',
           key: 'transactions',
+        },
+        {
+          label: 'Danh sách yêu thích',
+          key: 'favorite',
         },
         {
           label: 'Đăng xuất',
