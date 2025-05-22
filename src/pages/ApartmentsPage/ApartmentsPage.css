@@ -1,0 +1,255 @@
+.apartments-bg {
+  background: #f8fafc;
+  min-height: 100vh;
+  padding: 0 0 40px 0;
+}
+
+.apartments-breadcrumb {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px 0 8px 0;
+  font-size: 15px;
+  color: #4a90e2;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.breadcrumb-link {
+  color: #4a90e2;
+  cursor: pointer;
+  text-decoration: underline;
+}
+.breadcrumb-sep {
+  color: #b0c4de;
+}
+.breadcrumb-current {
+  color: #b0c4de;
+}
+
+.apartments-filter-form {
+  max-width: 1200px;
+  margin: 0 auto 32px auto;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  gap: 24px;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 2px 12px #e0e7ef33;
+  padding: 24px 16px;
+}
+
+.apartments-filter-select {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 180px;
+}
+.apartments-filter-select label {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 2px;
+}
+
+.apartments-filter-btn {
+  background-color: #4a90e2;
+  color: white;
+  border: none;
+  padding: 0 32px;
+  border-radius: 20px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  height: 40px;
+  margin-top: 24px;
+  display: flex;
+  align-items: center;
+}
+
+.apartments-filter-btn:hover {
+  background-color: #357abd;
+}
+
+.apartments-grid {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+  margin-bottom: 32px;
+  margin-top: 0;
+}
+
+.apartment-card {
+  border-radius: 16px !important;
+  box-shadow: 0 2px 12px #e0e7ef33;
+  overflow: hidden;
+  border: none;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  min-height: 370px;
+}
+
+.apartment-card-img-wrap {
+  position: relative;
+  width: 100%;
+  height: 180px;
+  overflow: hidden;
+  border-top-left-radius: 16px;
+  border-top-right-radius: 16px;
+}
+.apartment-card-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.apartment-card-tag {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  font-size: 13px;
+  border-radius: 8px;
+  padding: 2px 12px;
+  font-weight: 500;
+}
+
+.apartment-card-title {
+  font-size: 15px;
+  font-weight: 600;
+  min-height: 44px;
+  margin-bottom: 8px;
+  color: #222;
+}
+.apartment-card-info {
+  color: #888;
+  font-size: 14px;
+  display: flex;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+.apartment-card-location {
+  color: #4a90e2;
+  font-size: 14px;
+  margin-bottom: 4px;
+}
+.apartment-card-price {
+  color: #222;
+  font-weight: 600;
+  font-size: 16px;
+  margin-top: 4px;
+}
+
+.apartments-pagination {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 8px;
+}
+.pagination-btn {
+  border: none;
+  background: #f0f4fa;
+  color: #4a90e2;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.pagination-btn.active {
+  background: #4a90e2;
+  color: #fff;
+}
+.pagination-btn:hover:not(.active) {
+  background: #e6f0fa;
+  color: #357abd;
+}
+
+@media (max-width: 1024px) {
+  .apartments-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (max-width: 600px) {
+  .apartments-grid {
+    grid-template-columns: 1fr;
+  }
+  .apartments-filter-form {
+    flex-direction: column;
+    gap: 12px;
+    padding: 16px 8px;
+    align-items: stretch;
+  }
+  .apartments-filter-btn {
+    width: 100%;
+  }
+}
+
+.home-filter-form {
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  gap: 0;
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 2px 12px #e0e7ef33;
+  padding: 18px 24px 12px 24px;
+  width: fit-content;
+  margin: 24px auto 24px auto;
+  position: relative;
+  z-index: 2;
+  top: 0;
+}
+
+.home-filter-select {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  min-width: 180px;
+  padding: 0 24px;
+  position: relative;
+}
+
+.home-filter-select:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  top: 8px;
+  height: 40px;
+  width: 1px;
+  background: #e0e0e0;
+}
+
+.home-filter-select label {
+  font-weight: 700;
+  font-size: 20px;
+  margin-bottom: 2px;
+  color: #222;
+}
+
+.home-filter-btn {
+  background: #396b8c;
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  padding: 12px 32px;
+  font-size: 18px;
+  font-weight: 500;
+  cursor: pointer;
+  margin-left: 24px;
+  margin-bottom: 15px;
+  transition: background 0.2s, box-shadow 0.2s;
+  box-shadow: 0 2px 8px #b3d4fc33;
+}
+
+.home-filter-btn:hover {
+  background: #28506b;
+  box-shadow: 0 4px 16px #b3d4fc55;
+}
