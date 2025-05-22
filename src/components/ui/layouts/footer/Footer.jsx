@@ -23,7 +23,7 @@ const Footer = () => {
             />
             <Space direction="vertical" size={4}>
               <Link href="#">Giới thiệu</Link>
-              <Link href="#">Blogs</Link>
+              <Link href="#">News</Link>
             </Space>
           </Col>
 

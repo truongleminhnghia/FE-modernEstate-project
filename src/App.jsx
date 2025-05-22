@@ -3,12 +3,15 @@ import LayoutGuest from "./components/layouts/LayoutGuest";
 import HomeScreen from "./pages/User/home/HomeScreen";
 import LoginScreen from "./pages/auth/LoginScreen";
 import RegisterScreen from "./pages/auth/RegisterScreen";
-import CustomerProfile from "./pages/User/profile/CustomerProfile";
+// import CustomerProfile from "./pages/User/profile/CustomerProfile";
 import TransactionHistory from "./pages/User/transactions/TransactionHistory";
 import FavoriteList from "./pages/User/favorites/FavoritesList";
 import BrokerProfile from "./pages/Broker/profile/BrokerProfile";
 import BrokerTransactionHistory from "./pages/Broker/transaction/BrokerTransactionHistory";
 import BrokerWatchedApartments from "./pages/Broker/favorite/BrokerWatchedApartments";
+import MyProfile from "./pages/User/profile/MyProfile";
+import Introduction from "./pages/publics/Introduction";
+import News from "./pages/publics/News";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -27,8 +30,16 @@ const router = createBrowserRouter([
         element: <RegisterScreen />,
       },
       {
-        path: "/user-profile",
-        element: <CustomerProfile />,
+        path: "/gio-thieu",
+        element: <Introduction />,
+      },
+      {
+        path: "/news",
+        element: <News/>,
+      },
+      {
+        path: "/my-profile",
+        element: <MyProfile />,
       },
       {
         path: "/user-transactions",
