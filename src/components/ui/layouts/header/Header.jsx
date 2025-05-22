@@ -12,14 +12,21 @@ const Header = () => {
           localStorage.removeItem("user");
           window.location.href = "/login";
         }
-        if (info.key === 'profile') {
-          window.location.href = "/profile";
-        }
+          if (info.key === 'profile') {
+            window.location.href = "/my-profile";
+          }
+          if (info.key === 'transactions') {
+            window.location.href = "/my-transactions";
+          }
       }}
       items={[
         {
           label: 'Tài khoản của tôi',
           key: 'profile',
+        },
+        {
+          label: 'Lịch sử giao dịch',
+          key: 'transactions',
         },
         {
           label: 'Đăng xuất',
