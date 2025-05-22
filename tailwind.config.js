@@ -1,21 +1,18 @@
-/** @type {import('tailwindcss').Config} */
-export default {
-    content: [
-        "./index.html",
-        "./src/**/*.{js,jsx,ts,tsx}"
-    ],
-    theme: {
-        extend: {
-            fontFamily: {
-                poppins: ['Poppins', 'sans-serif'],
-                roboto: ['Roboto', 'sans-serif'],
-            },
-            colors: {
-                primary: '#FF6A00',
-                secondary: '#f97316',
-                textSecondary: '#666666',
-            }
-        },
-    },
-    plugins: [],
+module.exports = {
+  theme: {
+    extend: {
+      keyframes: {
+        fadeInUp: {
+          '0%': { opacity: 0, transform: 'translateY(10px)' },
+          '100%': { opacity: 1, transform: 'translateY(0)' },
+        }
+      },
+      animation: {
+        fadeInUp: 'fadeInUp 0.5s ease forwards',
+      }
+    }
+  },
+  plugins: [
+    require('@tailwindcss/line-clamp'),
+  ],
 }

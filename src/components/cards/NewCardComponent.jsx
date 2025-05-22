@@ -14,7 +14,11 @@ const NewCardComponent = ({
   to
 }) => {
   return (
-    <div className="w-full max-w-sm bg-white rounded-xl shadow-lg overflow-hidden">
+    <div className="w-full max-w-sm bg-white rounded-xl shadow-lg overflow-hidden
+      animate-fadeInUp
+      transition-transform duration-300 ease-in-out
+      hover:scale-[1.03] hover:shadow-2xl"
+    >
       <img
         src={image}
         alt="thumbnail"
