@@ -8,14 +8,13 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 8px 32px;
+    padding: 8px 50px 8px 100px;
   }
   
   .logo {
     display: flex;
     align-items: center;
     gap: 8px;
-    margin-left: 100px;
   }
   
   .logo img {
@@ -77,3 +76,28 @@
   .sub-nav a:hover {
     color: #2196f3;
   }
+  .user-dropdown {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 16px;
+    cursor: pointer;
+    padding: 5px 10px;
+    border-radius: 8px;
+    transition: background-color 0.3s ease;
+  }
+  
+  .user-dropdown:hover {
+    background-color: #f0f5ff;
+  }
+  
+  .user-name {
+    font-weight: 500;
+    color: #333;
+    transition: color 0.3s ease;
+  }
+  
+  .user-name:hover {
+    color: #4a90e2;
+  }
+  
