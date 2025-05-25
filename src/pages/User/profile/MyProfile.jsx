@@ -20,9 +20,11 @@ import {
   EditOutlined,
   CameraOutlined,
   LockOutlined,
-  ShopOutlined
+  ShopOutlined,
+  HomeOutlined
 } from '@ant-design/icons';
-import BrokerRegistration from '../../../components/broker/BrokerRegistration';
+import BrokerRegistration from '../../../components/user/BrokerRegistration';
+import OwnerRegistration from '../../../components/user/OwnerRegistration';
 import './MyProfile.css';
 
 const { Title, Text } = Typography;
@@ -81,6 +83,20 @@ export default function MyProfile() {
     setLoading(false);
   };
 
+  const handleOwnerUpdate = async (ownerInfo) => {
+    setLoading(true);
+    try {
+      setUser(prev => ({
+        ...prev,
+        ...ownerInfo
+      }));
+      message.success('Cập nhật thông tin chủ sở hữu thành công!');
+    } catch (error) {
+      message.error('Có lỗi xảy ra khi cập nhật thông tin chủ sở hữu!');
+    }
+    setLoading(false);
+  };
+
   return (
     <div className="profile-container">
       <Row gutter={[24, 24]}>
@@ -133,6 +149,12 @@ export default function MyProfile() {
                 <div className="stat-item">
                   <Text strong>0</Text>
                   <Text type="secondary">Giao dịch thành công</Text>
+                </div>
+              )}
+              {user?.isOwner && (
+                <div className="stat-item">
+                  <Text strong>{user?.propertyCount || 0}</Text>
+                  <Text type="secondary">Tài sản sở hữu</Text>
                 </div>
               )}
             </div>
@@ -286,6 +308,21 @@ export default function MyProfile() {
                 <BrokerRegistration 
                   userData={user}
                   onUpdate={handleBrokerUpdate}
+                />
+              </TabPane>
+
+              <TabPane 
+                tab={
+                  <span>
+                    <HomeOutlined style={{ marginRight: "5px" }} />
+                    Thông tin chủ sở hữu
+                  </span>
+                } 
+                key="4"
+              >
+                <OwnerRegistration 
+                  userData={user}
+                  onUpdate={handleOwnerUpdate}
                 />
               </TabPane>
             </Tabs>
