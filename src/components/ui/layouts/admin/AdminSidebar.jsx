@@ -1,12 +1,10 @@
 import React from "react";
-import { Layout, Menu, Typography } from "antd";
+import { Layout, Menu} from "antd";
 import {
   DashboardOutlined,
   UserOutlined,
   SettingOutlined,
-  TeamOutlined,
   FileTextOutlined,
-  AppstoreOutlined,
   ShoppingCartOutlined,
 } from "@ant-design/icons";
 import { useNavigate, useLocation } from "react-router-dom";
@@ -25,12 +23,6 @@ const AdminSidebar = ({ collapsed, onCollapse }) => {
       path: "/admin/dashboard",
     },
     {
-      key: "apartments",
-      icon: <AppstoreOutlined />,
-      label: "Quản lý Căn hộ",
-      path: "/admin/apartments",
-    },
-    {
       key: "users",
       icon: <UserOutlined />,
       label: "Quản lý Người dùng",
@@ -39,21 +31,27 @@ const AdminSidebar = ({ collapsed, onCollapse }) => {
           key: "owners",
           icon: <UserOutlined />,
           label: "Chủ sở hữu",
-          path: "/admin/users/owners",
+          path: "/admin/owners",
         },
         {
           key: "customers",
           icon: <UserOutlined />,
-          label: "Người thuê",
-          path: "/admin/users/customers",
+          label: "Khách hàng",
+          path: "/admin/customers",
         },
         {
           key: "brokers",
           icon: <UserOutlined />,
           label: "Môi giới",
-          path: "/admin/users/brokers",
+          path: "/admin/brokers",
         },
       ],
+    },
+    {
+      key: "listings",
+      icon: <FileTextOutlined />,
+      label: "Quản lý tin đăng",
+      path: "/admin/listings",
     },
     {
       key: "transactions",
@@ -61,18 +59,18 @@ const AdminSidebar = ({ collapsed, onCollapse }) => {
       label: "Giao dịch",
       path: "/admin/transactions",
     },
-    {
-      key: "reports",
-      icon: <FileTextOutlined />,
-      label: "Báo cáo thống kê",
-      path: "/admin/reports",
-    },
-    {
-      key: "settings",
-      icon: <SettingOutlined />,
-      label: "Cài đặt",
-      path: "/admin/settings",
-    },
+    // {
+    //   key: "reports",
+    //   icon: <FileTextOutlined />,
+    //   label: "Báo cáo thống kê",
+    //   path: "/admin/reports",
+    // },
+    // {
+    //   key: "settings",
+    //   icon: <SettingOutlined />,
+    //   label: "Cài đặt",
+    //   path: "/admin/settings",
+    // },
   ];
 
   const handleMenuClick = ({ key, keyPath }) => {
