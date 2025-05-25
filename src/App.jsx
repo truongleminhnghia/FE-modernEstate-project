@@ -38,7 +38,7 @@ const router = createBrowserRouter([
       },
       {
         path: "/news",
-        element: <News/>,
+        element: <News />,
       },
       {
         path: "/my-profile",
@@ -63,20 +63,23 @@ const router = createBrowserRouter([
       {
         path: "/broker-favorite",
         element: <BrokerWatchedApartments />,
-      }
+      },
     ],
   },
   {
-    path: '/admin',
+    path: "/admin",
     element: (
-      <ProtectedRoute element={<LayoutEmployee />} allowedRoles={["ROLE_ADMIN"]} />
+      <ProtectedRoute
+        element={<LayoutEmployee />}
+        allowedRoles={["ROLE_ADMIN"]}
+      />
     ),
     children: [
       {
-        path: 'admin',
-        element: <HiAdmin/>
+        path: "admin",
+        element: <HiAdmin />,
       },
-    ]
+    ],
   },
 ]);
 

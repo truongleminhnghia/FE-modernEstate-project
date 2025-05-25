@@ -11,8 +11,7 @@ import {
   Upload, 
   message,
   Tabs,
-  Divider,
-  Space
+  Divider
 } from 'antd';
 import { 
   UserOutlined, 
@@ -20,8 +19,10 @@ import {
   PhoneOutlined, 
   EditOutlined,
   CameraOutlined,
-  LockOutlined
+  LockOutlined,
+  ShopOutlined
 } from '@ant-design/icons';
+import BrokerRegistration from '../../../components/broker/BrokerRegistration';
 import './MyProfile.css';
 
 const { Title, Text } = Typography;
@@ -49,7 +50,6 @@ export default function MyProfile() {
   const handleUpdateProfile = async (values) => {
     setLoading(true);
     try {
-      // Add your API call here to update profile
       message.success('Cập nhật thông tin thành công!');
     } catch (error) {
       message.error('Có lỗi xảy ra khi cập nhật thông tin!');
@@ -60,10 +60,23 @@ export default function MyProfile() {
   const handleChangePassword = async (values) => {
     setLoading(true);
     try {
-      // Add your API call here to change password
       message.success('Đổi mật khẩu thành công!');
     } catch (error) {
       message.error('Có lỗi xảy ra khi đổi mật khẩu!');
+    }
+    setLoading(false);
+  };
+
+  const handleBrokerUpdate = async (brokerInfo) => {
+    setLoading(true);
+    try {
+      setUser(prev => ({
+        ...prev,
+        ...brokerInfo
+      }));
+      message.success('Cập nhật thông tin môi giới thành công!');
+    } catch (error) {
+      message.error('Có lỗi xảy ra khi cập nhật thông tin môi giới!');
     }
     setLoading(false);
   };
@@ -116,6 +129,12 @@ export default function MyProfile() {
                 <Text strong>0</Text>
                 <Text type="secondary">Tin đã lưu</Text>
               </div>
+              {user?.isBroker && (
+                <div className="stat-item">
+                  <Text strong>0</Text>
+                  <Text type="secondary">Giao dịch thành công</Text>
+                </div>
+              )}
             </div>
           </Card>
         </Col>
@@ -253,6 +272,21 @@ export default function MyProfile() {
                     </Button>
                   </Form.Item>
                 </Form>
+              </TabPane>
+
+              <TabPane 
+                tab={
+                  <span>
+                    <ShopOutlined style={{ marginRight: "5px" }} />
+                    Thông tin môi giới
+                  </span>
+                } 
+                key="3"
+              >
+                <BrokerRegistration 
+                  userData={user}
+                  onUpdate={handleBrokerUpdate}
+                />
               </TabPane>
             </Tabs>
           </Card>
