@@ -25,6 +25,7 @@ import CustomerManagement from "./pages/admins/users/CustomerManagement";
 import ListingManagement from "./pages/admins/listings/ListingManagement";
 import TransactionManagement from "./pages/admins/transactions/TransactionManagement";
 import DashboardPage from "./pages/admins/dashboard/DashboardPage";
+import AdminProfile from "./pages/admins/profile/AdminProfile";
 
 const router = createBrowserRouter([
   {
@@ -129,6 +130,10 @@ const router = createBrowserRouter([
       {
         path: "transactions",
         element: <TransactionManagement />,
+      },
+      {
+        path: "profile",
+        element: <AdminProfile />,
       },
       // {
       //   path: "users/renters", 
