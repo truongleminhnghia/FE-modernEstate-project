@@ -23,6 +23,8 @@ import OwnerManagement from "./pages/admins/users/OwnerManagement";
 import BrokerManagement from "./pages/admins/users/BrokerManagement";
 import CustomerManagement from "./pages/admins/users/CustomerManagement";
 import ListingManagement from "./pages/admins/listings/ListingManagement";
+import TransactionManagement from "./pages/admins/transactions/TransactionManagement";
+import DashboardPage from "./pages/admins/dashboard/DashboardPage";
 
 const router = createBrowserRouter([
   {
@@ -104,29 +106,29 @@ const router = createBrowserRouter([
         index: true, 
         element: <Navigate to="test" replace />,
       },
-      // {
-      //   path: "dashboard",
-      //   element: <DashboardPage />,
-      // },
-      // {
-      //   path: "apartments",
-      //   element: <ApartmentManagementPage />,
-      // },
       {
-        path: "users/owners", 
+        path: "dashboard",
+        element: <DashboardPage />,
+      },
+      {
+        path: "owners", 
         element: <OwnerManagement />,
       },
       {
-        path: "users/brokers",
+        path: "brokers",
         element: <BrokerManagement />,
       },
       {
-        path: "users/customers",
+        path: "customers",
         element: <CustomerManagement />,
       },
       {
         path: "listings",
         element: <ListingManagement />,
+      },
+      {
+        path: "transactions",
+        element: <TransactionManagement />,
       },
       // {
       //   path: "users/renters", 
