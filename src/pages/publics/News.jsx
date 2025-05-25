@@ -145,7 +145,7 @@ const News = () => {
             <Row gutter={[24, 24]} className="mt-8">
                 {pagedData.map(item => (
                     <Col key={item.id} xs={24} sm={12} md={8} lg={6}>
-                        <NewCardComponent {...item} />
+                        <NewCardComponent key={item.id} {...item} />
                     </Col>
                 ))}
             </Row>
