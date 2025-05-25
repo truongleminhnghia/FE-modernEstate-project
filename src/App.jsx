@@ -16,6 +16,10 @@ import ProtectedRoute from "./protectedRoute/ProtectedRoute";
 import HiAdmin from "./pages/admins/HiAdmin";
 import LayoutEmployee from "./components/layouts/LayoutEmployee";
 import NewsDetail from "./pages/publics/NewsDetail";
+import OwnerTransactions from "./pages/Owner/OwnerTransactions";
+import OwnerFavorites from "./pages/Owner/OwnerFavorites";
+import OwnerInfo from "./pages/Owner/OwnerInfo";
+
 const router = createBrowserRouter([
   {
     path: "/",
@@ -68,6 +72,18 @@ const router = createBrowserRouter([
       {
         path: "/news-detail",
         element: <NewsDetail />,
+      },
+      {
+        path: "/owner-transactions",
+        element: <OwnerTransactions />,
+      },
+      {
+        path: "/owner-favorites",
+        element: <OwnerFavorites />,
+      },
+      {
+        path: "/owner-profile",
+        element: <OwnerInfo />,
       },
     ],
   },
