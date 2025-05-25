@@ -22,10 +22,12 @@ import AdminLayout from "./components/ui/layouts/admin/AdminLayout";
 import OwnerManagement from "./pages/admins/users/OwnerManagement";
 import BrokerManagement from "./pages/admins/users/BrokerManagement";
 import CustomerManagement from "./pages/admins/users/CustomerManagement";
-import ListingManagement from "./pages/admins/listings/ListingManagement";
+import ListingManagement from "./pages/staff/listings/ListingManagement";
 import TransactionManagement from "./pages/admins/transactions/TransactionManagement";
 import DashboardPage from "./pages/admins/dashboard/DashboardPage";
 import AdminProfile from "./pages/admins/profile/AdminProfile";
+import StaffLayout from "./components/ui/layouts/staff/StaffLayout";
+import ServiceManagementPage from "./pages/staff/listings/services/ServiceManagement";
 
 const router = createBrowserRouter([
   {
@@ -105,7 +107,7 @@ const router = createBrowserRouter([
     children: [
       {
         index: true, 
-        element: <Navigate to="test" replace />,
+        element: <Navigate to="dashboard" replace />,
       },
       {
         path: "dashboard",
@@ -124,39 +126,33 @@ const router = createBrowserRouter([
         element: <CustomerManagement />,
       },
       {
-        path: "listings",
-        element: <ListingManagement />,
-      },
-      {
         path: "transactions",
         element: <TransactionManagement />,
       },
       {
         path: "profile",
         element: <AdminProfile />,
-      },
-      // {
-      //   path: "users/renters", 
-      //   element: <RentersPage />,
-      // },
-      // {
-      //   path: "transactions",
-      //   element: <TransactionsPage />,
-      // },
-      // {
-      //   path: "settings",
-      //   element: <SettingsPage />,
-      // },
-      // {
-      //   path: "profile",
-      //   element: <ProfilePage />,
-      // },
-      {
-        path: "test",
-        element: <HiAdmin />,
-      },
+      }
     ],
   },
+  {
+    path: "/staff",
+    element: <StaffLayout />,
+    children: [
+      {
+        index: true,
+        element: <Navigate to="dashboard" replace />,
+      },
+      {
+        path: "listings",
+        element: <ListingManagement />,
+      },
+      {
+        path: "services",
+        element: <ServiceManagementPage />,
+      }
+    ]
+  }
 ]);
 
 

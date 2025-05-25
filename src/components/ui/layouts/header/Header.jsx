@@ -13,13 +13,13 @@ const Header = () => {
           window.location.href = "/";
         }
           if (info.key === 'profile') {
-            window.location.href = "/my-profile";
+            window.location.href = "/user-profile";
           }
           if (info.key === 'transactions') {
-            window.location.href = "/my-transactions";
+            window.location.href = "/user-transactions";
           }
           if (info.key === 'favorite') {
-            window.location.href = "/my-favorite";
+            window.location.href = "/user-favorite";
           }
       }}
       items={[
@@ -88,7 +88,7 @@ const Header = () => {
         <a href="#">MUA BÁN CĂN HỘ</a>
         <a href="#">CHO THUÊ CĂN HỘ</a>
         <a href="#">DỰ ÁN</a>
-        <a href="/introduction">GIỚI THIỆU</a>
+        <a href="/gio-thieu">GIỚI THIỆU</a>
         <a href="#">PHÂN TÍCH ĐÁNH GIÁ</a>
         <a href="/news">NEWS</a>
       </nav>

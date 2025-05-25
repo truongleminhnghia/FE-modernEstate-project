@@ -48,29 +48,11 @@ const AdminSidebar = ({ collapsed, onCollapse }) => {
       ],
     },
     {
-      key: "listings",
-      icon: <FileTextOutlined />,
-      label: "Quản lý tin đăng",
-      path: "/admin/listings",
-    },
-    {
       key: "transactions",
       icon: <ShoppingCartOutlined />,
       label: "Giao dịch",
       path: "/admin/transactions",
-    },
-    // {
-    //   key: "reports",
-    //   icon: <FileTextOutlined />,
-    //   label: "Báo cáo thống kê",
-    //   path: "/admin/reports",
-    // },
-    // {
-    //   key: "settings",
-    //   icon: <SettingOutlined />,
-    //   label: "Cài đặt",
-    //   path: "/admin/settings",
-    // },
+    }
   ];
 
   const handleMenuClick = ({ key, keyPath }) => {
