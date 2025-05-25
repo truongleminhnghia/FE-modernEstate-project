@@ -7,7 +7,7 @@
 .apartments-breadcrumb {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 24px 0 8px 0;
+  padding: 24px 0 32px 0;
   font-size: 15px;
   color: #4a90e2;
   display: flex;
@@ -74,16 +74,16 @@
 .apartments-grid {
   max-width: 1200px;
   margin: 0 auto;
+  margin-top: 50px;
+  margin-bottom: 32px;
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 24px;
-  margin-bottom: 32px;
-  margin-top: 0;
 }
 
 .apartment-card {
   border-radius: 16px !important;
-  box-shadow: 0 2px 12px #e0e7ef33;
+  box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
   overflow: hidden;
   border: none;
   background: #fff;
@@ -114,6 +114,9 @@
   border-radius: 8px;
   padding: 2px 12px;
   font-weight: 500;
+  /* Removed specific background and color to use Ant Design defaults */
+  /* background-color: #52c41a !important; */
+  /* color: #fff !important; */
 }
 
 .apartment-card-title {
@@ -131,15 +134,17 @@
   margin-bottom: 4px;
 }
 .apartment-card-location {
-  color: #4a90e2;
+  color: #888;
   font-size: 14px;
   margin-bottom: 4px;
+  margin-top: 4px;
 }
 .apartment-card-price {
-  color: #222;
+  color: #4a90e2;
   font-weight: 600;
   font-size: 16px;
   margin-top: 4px;
+  margin-bottom: 4px;
 }
 
 .apartments-pagination {
@@ -148,29 +153,66 @@
   gap: 8px;
   margin-top: 8px;
 }
-.pagination-btn {
-  border: none;
-  background: #f0f4fa;
-  color: #4a90e2;
-  border-radius: 50%;
-  width: 36px;
-  height: 36px;
-  font-size: 16px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: background 0.2s, color 0.2s;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+
+.ant-pagination {
+    display: flex;
+    align-items: center;
 }
-.pagination-btn.active {
-  background: #4a90e2;
-  color: #fff;
+
+.ant-pagination li {
+    margin: 0 4px !important; /* Adjust spacing between buttons */
+    border-radius: 8px !important; /* Rounded corners for all buttons */
+    min-width: 36px !important; /* Ensure consistent button size */
+    height: 36px !important;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid #e0e0e0; /* Add a light grey border */
+    transition: all 0.3s ease;
 }
-.pagination-btn:hover:not(.active) {
-  background: #e6f0fa;
-  color: #357abd;
+
+.ant-pagination-item, .ant-pagination-prev, .ant-pagination-next {
+    background-color: #fff !important; /* Background for inactive/arrow buttons should be white */
+    border-color: #e0e0e0 !important; /* Border color for inactive/arrow buttons */
 }
+
+.ant-pagination-item a {
+    color: #222 !important; /* Text color for inactive numbers */
+    font-weight: 500;
+}
+
+.ant-pagination-item-active {
+    background-color: #fff !important;
+    border-color: #4a90e2 !important; /* Blue border for active */
+}
+
+.ant-pagination-item-active a {
+    color: #4a90e2 !important; /* Blue text for active */
+}
+
+.ant-pagination-prev .ant-pagination-item-link,
+.ant-pagination-next .ant-pagination-item-link {
+    background-color: #fff !important; /* Background for arrow buttons should be white */
+    border-radius: 8px !important;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.ant-pagination-disabled .ant-pagination-item-link {
+    color: #b0c4de !important; /* Light grey color for disabled arrows */
+    background-color: #e9ecef !important; /* Slightly darker grey for disabled background */
+    border-color: transparent !important; /* Disabled buttons have no border */
+    cursor: not-allowed;
+}
+
+/* Style for 'Đang bán' tag text color */
+/* Removed specific rule for dark text on light grey background */
+/*
+.ant-tag-has-color[style*="background-color: rgb(233, 236, 239)"] {
+  color: #222 !important; 
+}
+*/
 
 @media (max-width: 1024px) {
   .apartments-grid {
@@ -252,4 +294,28 @@
 .home-filter-btn:hover {
   background: #28506b;
   box-shadow: 0 4px 16px #b3d4fc55;
+}
+
+.message-button {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 60px;
+  height: 60px;
+  background-color: #4a90e2; /* Blue background */
+  color: #fff; /* White icon */
+  border: none;
+  border-radius: 50%;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 24px;
+  cursor: pointer;
+  z-index: 1000; /* Ensure it's above other content */
+  transition: background-color 0.3s ease;
+}
+
+.message-button:hover {
+  background-color: #357ABD; /* Darker blue on hover */
 }

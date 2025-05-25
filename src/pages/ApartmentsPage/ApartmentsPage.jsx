@@ -1,11 +1,12 @@
 import React, { useState } from "react";
 import "./ApartmentsPage.css";
-import { Select, Card, Tag } from "antd";
+import { Select, Card, Tag, Pagination } from "antd";
 import { useNavigate } from "react-router-dom";
+import { MessageOutlined } from '@ant-design/icons';
 
 const { Option } = Select;
 
-const apartments = Array.from({ length: 20 }).map((_, i) => ({
+const apartments = Array.from({ length: 200 }).map((_, i) => ({
   id: i + 1,
   image: "https://www.nitco.in/nitcoassets/blog/main/scale-down.jpg",
   title: "BÁN GẤP CĂN HỘ CAO CẤP CHUNG CƯ MASTERI AN PHÚ, TP. HCM",
@@ -14,7 +15,7 @@ const apartments = Array.from({ length: 20 }).map((_, i) => ({
   bed: "2 PN",
   bath: "2 WC",
   location: "Q7, TP Hồ Chí Minh",
-  tag: i % 3 === 0 ? "Tin mới" : "Đang bán",
+  tag: i % 3 === 0 ? "Mua" : "Cho thuê",
 }));
 
 const PAGE_SIZE = 20;
@@ -101,12 +102,13 @@ const ApartmentsPage = () => {
             cover={
               <div className="apartment-card-img-wrap">
                 <img alt={apt.title} src={apt.image} className="apartment-card-img" />
-                <Tag className="apartment-card-tag" color={apt.tag === "Tin mới" ? "green" : "blue"}>{apt.tag}</Tag>
+                <Tag className="apartment-card-tag" color={apt.tag === "Mua" ? "#52c41a" : "#4a90e2"}>{apt.tag}</Tag>
               </div>
             }
             bodyStyle={{ padding: 16 }}
           >
             <div className="apartment-card-title">{apt.title}</div>
+            <div className="apartment-card-price">{apt.price}</div>
             <div className="apartment-card-info">
               <span>{apt.area}</span>
               <span>•</span>
@@ -115,23 +117,24 @@ const ApartmentsPage = () => {
               <span>{apt.bath}</span>
             </div>
             <div className="apartment-card-location">{apt.location}</div>
-            <div className="apartment-card-price">{apt.price}</div>
           </Card>
         ))}
       </div>
 
       {/* Pagination */}
       <div className="apartments-pagination">
-        {Array.from({ length: totalPages }).map((_, i) => (
-          <button
-            key={i}
-            className={`pagination-btn${page === i + 1 ? " active" : ""}`}
-            onClick={() => setPage(i + 1)}
-          >
-            {i + 1}
-          </button>
-        ))}
+        <Pagination
+          current={page}
+          pageSize={PAGE_SIZE}
+          total={apartments.length}
+          onChange={(page) => setPage(page)}
+          showSizeChanger={false}
+        />
       </div>
+      {/* Message Button */}
+      <button className="message-button">
+        <MessageOutlined />
+      </button>
     </div>
   );
 };
