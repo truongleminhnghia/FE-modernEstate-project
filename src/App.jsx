@@ -1,4 +1,4 @@
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { createBrowserRouter, Navigate, RouterProvider } from "react-router-dom";
 import LayoutGuest from "./components/layouts/LayoutGuest";
 import HomeScreen from "./pages/User/home/HomeScreen";
 import LoginScreen from "./pages/auth/LoginScreen";
@@ -14,11 +14,12 @@ import Introduction from "./pages/publics/Introduction";
 import News from "./pages/publics/News";
 import ProtectedRoute from "./protectedRoute/ProtectedRoute";
 import HiAdmin from "./pages/admins/HiAdmin";
-import LayoutEmployee from "./components/layouts/LayoutEmployee";
 import NewsDetail from "./pages/publics/NewsDetail";
 import OwnerTransactions from "./pages/Owner/OwnerTransactions";
 import OwnerFavorites from "./pages/Owner/OwnerFavorites";
 import OwnerInfo from "./pages/Owner/OwnerInfo";
+import AdminLayout from "./components/ui/layouts/admin/AdminLayout";
+import OwnerManagement from "./pages/admins/users/OwnerManagement";
 
 const router = createBrowserRouter([
   {
@@ -91,18 +92,51 @@ const router = createBrowserRouter([
     path: "/admin",
     element: (
       <ProtectedRoute
-        element={<LayoutEmployee />}
-        allowedRoles={["ROLE_ADMIN"]}
+        element={<AdminLayout/>}
+        // allowedRoles={["ROLE_ADMIN"]}       
       />
     ),
     children: [
       {
-        path: "admin",
+        index: true, 
+        element: <Navigate to="test" replace />,
+      },
+      // {
+      //   path: "dashboard",
+      //   element: <DashboardPage />,
+      // },
+      // {
+      //   path: "apartments",
+      //   element: <ApartmentManagementPage />,
+      // },
+      {
+        path: "users/owners", 
+        element: <OwnerManagement />,
+      },
+      // {
+      //   path: "users/renters", 
+      //   element: <RentersPage />,
+      // },
+      // {
+      //   path: "transactions",
+      //   element: <TransactionsPage />,
+      // },
+      // {
+      //   path: "settings",
+      //   element: <SettingsPage />,
+      // },
+      // {
+      //   path: "profile",
+      //   element: <ProfilePage />,
+      // },
+      {
+        path: "test",
         element: <HiAdmin />,
       },
     ],
   },
 ]);
+
 
 function App() {
   return <RouterProvider router={router} />;
