@@ -22,6 +22,7 @@ import AdminLayout from "./components/ui/layouts/admin/AdminLayout";
 import OwnerManagement from "./pages/admins/users/OwnerManagement";
 import BrokerManagement from "./pages/admins/users/BrokerManagement";
 import CustomerManagement from "./pages/admins/users/CustomerManagement";
+import ListingManagement from "./pages/admins/listings/ListingManagement";
 
 const router = createBrowserRouter([
   {
@@ -122,6 +123,10 @@ const router = createBrowserRouter([
       {
         path: "users/customers",
         element: <CustomerManagement />,
+      },
+      {
+        path: "listings",
+        element: <ListingManagement />,
       },
       // {
       //   path: "users/renters", 
