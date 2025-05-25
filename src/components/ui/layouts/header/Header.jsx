@@ -88,7 +88,7 @@ const Header = () => {
         <a href="#">MUA BÁN CĂN HỘ</a>
         <a href="#">CHO THUÊ CĂN HỘ</a>
         <a href="#">DỰ ÁN</a>
-        <a href="/gio-thieu">GIỚI THIỆU</a>
+        <a href="/introduction">GIỚI THIỆU</a>
         <a href="#">PHÂN TÍCH ĐÁNH GIÁ</a>
         <a href="/news">NEWS</a>
       </nav>
