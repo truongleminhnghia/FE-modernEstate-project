@@ -20,6 +20,8 @@ import OwnerFavorites from "./pages/Owner/OwnerFavorites";
 import OwnerInfo from "./pages/Owner/OwnerInfo";
 import AdminLayout from "./components/ui/layouts/admin/AdminLayout";
 import OwnerManagement from "./pages/admins/users/OwnerManagement";
+import BrokerManagement from "./pages/admins/users/BrokerManagement";
+import CustomerManagement from "./pages/admins/users/CustomerManagement";
 
 const router = createBrowserRouter([
   {
@@ -112,6 +114,14 @@ const router = createBrowserRouter([
       {
         path: "users/owners", 
         element: <OwnerManagement />,
+      },
+      {
+        path: "users/brokers",
+        element: <BrokerManagement />,
+      },
+      {
+        path: "users/customers",
+        element: <CustomerManagement />,
       },
       // {
       //   path: "users/renters", 

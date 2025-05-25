@@ -42,13 +42,13 @@ const AdminSidebar = ({ collapsed, onCollapse }) => {
           path: "/admin/users/owners",
         },
         {
-          key: "renters",
+          key: "customers",
           icon: <UserOutlined />,
           label: "Người thuê",
-          path: "/admin/users/renters",
+          path: "/admin/users/customers",
         },
         {
-          key: "renters",
+          key: "brokers",
           icon: <UserOutlined />,
           label: "Môi giới",
           path: "/admin/users/brokers",

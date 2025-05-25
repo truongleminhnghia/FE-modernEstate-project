@@ -10,9 +10,9 @@ import {
   Tooltip,
   Row,
   Col,
-  Form, // Thêm Form
-  message, // message đã được import ở dưới, đưa lên đây cho gọn
-  Select, // Thêm Select cho một số trường nếu cần
+  Form, 
+  message, 
+  Select, 
 } from "antd";
 import {
   PlusOutlined,
@@ -22,22 +22,21 @@ import {
   StopOutlined,
   CheckCircleOutlined,
   ExclamationCircleFilled,
-  SaveOutlined, // Icon cho nút Lưu
-  CloseCircleOutlined, // Icon cho nút Hủy
+  SaveOutlined, 
+  CloseCircleOutlined, 
 } from "@ant-design/icons";
 
 const { Title, Text } = Typography;
 const { confirm } = Modal;
-const { Option } = Select; // Cho Select component
+const { Option } = Select; 
 
-// Dữ liệu mẫu (có thể bạn sẽ lấy từ API)
 const initialMockOwners = [
   {
     id: 1,
     name: "Nguyễn Văn An",
     email: "vana@example.com",
     phone: "0901234567",
-    status: "active", // 'active' hoặc 'blocked'
+    status: "active", 
     properties: 5,
     address: "123 Đường ABC, Quận 1, TP. HCM",
     registrationDate: "2023-01-15",
@@ -74,11 +73,9 @@ const OwnerManagement = () => {
   const [isDetailModalVisible, setIsDetailModalVisible] = useState(false);
 
   const [isFormModalVisible, setIsFormModalVisible] = useState(false);
-  const [editingOwner, setEditingOwner] = useState(null); // null: Add mode, object: Edit mode
+  const [editingOwner, setEditingOwner] = useState(null);
+  const [form] = Form.useForm(); 
 
-  const [form] = Form.useForm(); // Hook để quản lý Form instance
-
-  // Filter dữ liệu hiển thị trên bảng dựa vào searchText
   const filteredDataSource = dataSource.filter(
     (owner) =>
       owner.name.toLowerCase().includes(searchText.toLowerCase()) ||
@@ -92,7 +89,7 @@ const OwnerManagement = () => {
     } else {
       form.resetFields();
     }
-  }, [editingOwner, form, isFormModalVisible]); // Reset form khi mở modal hoặc thay đổi editingOwner
+  }, [editingOwner, form, isFormModalVisible]); 
 
   const handleToggleBlockStatus = (ownerId, currentStatus) => {
     const newStatus = currentStatus === "active" ? "blocked" : "active";
@@ -122,16 +119,15 @@ const OwnerManagement = () => {
   };
 
   const showAddModal = () => {
-    setEditingOwner(null); // Đảm bảo là chế độ Add
-    form.resetFields(); // Reset field trước khi mở
+    setEditingOwner(null); 
+    form.resetFields(); 
     setIsFormModalVisible(true);
   };
 
   const showEditModal = (owner) => {
     setEditingOwner(owner);
-    form.setFieldsValue({ // Set giá trị cho form
+    form.setFieldsValue({ 
       ...owner,
-      // Chuyển đổi nếu cần, ví dụ: date objects
     });
     setIsFormModalVisible(true);
   };
@@ -143,20 +139,20 @@ const OwnerManagement = () => {
   };
 
   const handleFormSubmit = (values) => {
-    if (editingOwner) { // Chế độ Sửa
+    if (editingOwner) {
       setDataSource(prevData => 
         prevData.map(owner => 
           owner.id === editingOwner.id ? { ...owner, ...values } : owner
         )
       );
       message.success("Cập nhật thông tin chủ sở hữu thành công!");
-    } else { // Chế độ Thêm mới
+    } else { 
       const newId = dataSource.length > 0 ? Math.max(...dataSource.map(o => o.id)) + 1 : 1;
       const newOwner = {
         id: newId,
         ...values,
-        status: 'active', // Mặc định là active khi thêm mới
-        registrationDate: new Date().toISOString().split('T')[0], // Ngày hiện tại
+        status: 'active', 
+        registrationDate: new Date().toISOString().split('T')[0], 
       };
       setDataSource(prevData => [...prevData, newOwner]);
       message.success("Thêm chủ sở hữu mới thành công!");
@@ -239,7 +235,7 @@ const OwnerManagement = () => {
 
       <Table
         columns={columns}
-        dataSource={filteredDataSource} // Sử dụng dữ liệu đã lọc
+        dataSource={filteredDataSource} 
         rowKey="id"
         bordered
         pagination={{ pageSize: 8, showSizeChanger: true, pageSizeOptions: ['8', '15', '30'], responsive: true }}
@@ -247,7 +243,6 @@ const OwnerManagement = () => {
         style={{ boxShadow: "0 1px 4px rgba(0,0,0,0.1)" }}
       />
 
-      {/* Modal Xem Chi Tiết */}
       <Modal
         title={<span style={{color: primaryColor, fontWeight: 'bold'}}>Thông tin chi tiết Chủ sở hữu</span>}
         visible={isDetailModalVisible}
@@ -269,7 +264,6 @@ const OwnerManagement = () => {
         )}
       </Modal>
 
-      {/* Modal Thêm/Sửa Chủ Sở Hữu */}
       <Modal
         title={
           <span style={{color: primaryColor, fontWeight: 'bold'}}>
@@ -278,15 +272,15 @@ const OwnerManagement = () => {
         }
         visible={isFormModalVisible}
         onCancel={handleFormCancel}
-        footer={null} // Tùy chỉnh footer bằng các nút trong Form
+        footer={null} 
         width={600}
-        destroyOnClose // Reset form fields khi đóng modal
+        destroyOnClose 
       >
         <Form
           form={form}
           layout="vertical"
           onFinish={handleFormSubmit}
-          initialValues={editingOwner || { properties: 0, status: 'active' }} // Giá trị mặc định cho form thêm mới
+          initialValues={editingOwner || { properties: 0, status: 'active' }} 
         >
           <Form.Item name="name" label="Tên chủ sở hữu" rules={[{ required: true, message: 'Vui lòng nhập tên!' }]}>
             <Input placeholder="Nhập tên chủ sở hữu"/>
