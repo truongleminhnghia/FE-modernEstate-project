@@ -15,6 +15,7 @@ import News from "./pages/publics/News";
 import ProtectedRoute from "./protectedRoute/ProtectedRoute";
 import HiAdmin from "./pages/admins/HiAdmin";
 import LayoutEmployee from "./components/layouts/LayoutEmployee";
+import NewsDetail from "./pages/publics/NewsDetail";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -33,7 +34,7 @@ const router = createBrowserRouter([
         element: <RegisterScreen />,
       },
       {
-        path: "/gio-thieu",
+        path: "/introduction",
         element: <Introduction />,
       },
       {
@@ -41,7 +42,7 @@ const router = createBrowserRouter([
         element: <News />,
       },
       {
-        path: "/my-profile",
+        path: "/user-profile",
         element: <MyProfile />,
       },
       {
@@ -63,6 +64,10 @@ const router = createBrowserRouter([
       {
         path: "/broker-favorite",
         element: <BrokerWatchedApartments />,
+      },
+      {
+        path: "/news-detail",
+        element: <NewsDetail />,
       },
     ],
   },

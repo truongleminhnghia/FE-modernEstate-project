@@ -28,7 +28,6 @@ const FavoritesList = () => {
   const [loading, setLoading] = useState(false);
   const [searchText, setSearchText] = useState("");
 
-  // Mock data - replace with actual API data
   const favorites = [
     {
       id: "1",
@@ -234,11 +233,8 @@ const FavoritesList = () => {
                         </span>
                       </Space>
                     </div>
-                    <div className="favorite-location">
+                    <div>
                       <EnvironmentOutlined /> {item.location}
-                    </div>
-                    <div className="favorite-date">
-                      Đã lưu: {item.savedDate}
                     </div>
                   </div>
                 </Card>
