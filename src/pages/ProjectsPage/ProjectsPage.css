@@ -16,9 +16,9 @@
   width: 100%;
   max-width: 1200px;
   margin: 0 auto 32px auto;
-  border-radius: 16px;
+  border-radius: 5px;
   overflow: hidden;
-  box-shadow: 0 2px 12px #e0e7ef33;
+  box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
   height: 140px;
   display: flex;
   align-items: center;
@@ -29,7 +29,7 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  border-radius: 16px;
+  border-radius: 5px;
 }
 .projects-grid-wrapper {
   max-width: 1200px;
@@ -42,8 +42,8 @@
 }
 .project-card {
   background: #fff;
-  border-radius: 16px;
-  box-shadow: 0 2px 12px #e0e7ef33;
+  border-radius: 5px;
+  box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
   overflow: hidden;
   display: flex;
   flex-direction: column;
@@ -56,10 +56,10 @@
 }
 .project-card img {
   width: 100%;
-  height: 120px;
+  height: 160px;
   object-fit: cover;
-  border-top-left-radius: 16px;
-  border-top-right-radius: 16px;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
 }
 .project-card-content {
   padding: 14px 16px 12px 16px;
@@ -67,6 +67,8 @@
   flex-direction: column;
   gap: 4px;
   flex: 1;
+  border-bottom: 1px solid #eee;
+  margin-bottom: 12px;
 }
 .project-card-title {
   font-size: 16px;
@@ -78,23 +80,46 @@
   color: #27ae60;
   font-size: 13px;
   font-weight: 500;
-  margin-bottom: 2px;
+}
+.project-status-badge {
+  display: inline-block;
+  background-color: #d4edda;
+  color: #155724;
+  font-size: 12px;
+  font-weight: 500;
+  padding: 3px 9px;
+  border-radius: 12px;
+  margin-bottom: 8px;
+  align-self: flex-start;
 }
 .project-card-area {
-  color: #888;
+  color: #555;
   font-size: 13px;
 }
 .project-card-address {
-  color: #888;
+  color: #555;
   font-size: 13px;
-  margin-bottom: 2px;
+  margin-bottom: 0;
+}
+.project-area-address {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}
+.project-card-type {
+  color: #555;
+  font-size: 13px;
 }
 .project-card-company {
-  color: #4a90e2;
+  color: #222;
   font-size: 13px;
-  font-weight: 500;
-  margin-bottom: 6px;
+  font-weight: 700;
 }
+
+.project-card-featured .project-card-company {
+  padding: 0 20px;
+}
+
 .project-card-btn {
   background: #4a90e2;
   color: #fff;
@@ -114,13 +139,31 @@
 .project-card-featured {
   grid-column: span 2;
   grid-row: span 2;
-  min-height: 320px;
+  min-height: 350px;
 }
 .project-card-featured img {
-  height: 180px;
+  height: 70%;
+  object-fit: cover;
 }
 .project-card-featured .project-card-title {
   font-size: 20px;
+  margin-bottom: 4px;
+  margin-top: 8px;
+}
+.project-card-featured .project-status-badge {
+  margin-bottom: 4px;
+  margin-top: 16px;
+}
+.project-card-featured .project-card-content {
+  gap: 0;
+  padding: 12px 36px;
+}
+.project-card-featured .project-area-address {
+  margin-bottom: 4px;
+  margin-top: 20px;
+}
+.project-card-featured .project-card-type {
+  margin-bottom: 0;
 }
 @media (max-width: 1024px) {
   .projects-grid {
@@ -142,4 +185,59 @@
   .projects-banner {
     height: 90px;
   }
+}
+.loading-text {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 40px;
+  font-size: 18px;
+  color: #666;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 2px 12px #e0e7ef33;
+}
+.error-text {
+  color: #dc3545;
+  font-weight: 500;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.login-btn-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  margin-top: 20px;
+}
+
+.login-btn-container .project-card-btn {
+  min-width: 200px;
+}
+.project-card-footer {
+  padding: 0 16px 12px 16px;
+}
+
+.message-button {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 60px;
+  height: 60px;
+  background-color: #4a90e2; /* Blue background */
+  color: #fff; /* White icon */
+  border: none;
+  border-radius: 50%;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 24px;
+  cursor: pointer;
+  z-index: 1000; /* Ensure it's above other content */
+  transition: background-color 0.3s ease;
+}
+
+.message-button:hover {
+  background-color: #357ABD; /* Darker blue on hover */
 }
