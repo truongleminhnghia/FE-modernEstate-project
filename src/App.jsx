@@ -28,6 +28,14 @@ import DashboardPage from "./pages/admins/dashboard/DashboardPage";
 import AdminProfile from "./pages/admins/profile/AdminProfile";
 import StaffLayout from "./components/ui/layouts/staff/StaffLayout";
 import ServiceManagementPage from "./pages/staff/listings/services/ServiceManagement";
+import ApartmentsPage from "./pages/ApartmentsPage/ApartmentsPage";
+import LeaseProperty from "./pages/LeaseProperty";
+import LoginPage from "./pages/LoginPage";
+import RegisterPage from "./pages/RegisterPage";
+import HomeScreen from "./pages/User/home/HomeScreen";
+import ApartmentDetailsPage from "./pages/ApartmentDetailsPage/ApartmentDetailsPage";
+import ProjectsPage from "./pages/ProjectsPage/ProjectsPage";
+import ProjectDetailsPage from "./pages/ProjectDetailsPage/ProjectDetailsPage";
 
 const router = createBrowserRouter([
   {
@@ -41,6 +49,14 @@ const router = createBrowserRouter([
       {
         path: "/login",
         element: <LoginScreen />,
+      },
+      {
+        path: "/mua-ban-can-ho",
+        element: <ApartmentsPage />,
+      },
+      {
+        path: "/mua-ban-can-ho/:id",
+        element: <ApartmentDetailsPage />,
       },
       {
         path: "/register",
@@ -93,6 +109,14 @@ const router = createBrowserRouter([
       {
         path: "/owner-profile",
         element: <OwnerInfo />,
+      },
+      {
+        path: "/du-an",
+        element: <ProjectsPage />,
+      },
+      {
+        path: "/du-an/:id",
+        element: <ProjectDetailsPage />,
       },
     ],
   },

@@ -85,9 +85,9 @@ const Header = () => {
     </div>
     <div className="header-bottom">
       <nav className="sub-nav">
-        <a href="#">MUA BÁN CĂN HỘ</a>
-        <a href="#">CHO THUÊ CĂN HỘ</a>
-        <a href="#">DỰ ÁN</a>
+        <a href="/mua-ban-can-ho">MUA BÁN CĂN HỘ</a>
+        <a href="/cho-thue-can-ho">CHO THUÊ CĂN HỘ</a>
+        <a href="/du-an">DỰ ÁN</a>
         <a href="/gio-thieu">GIỚI THIỆU</a>
         <a href="#">PHÂN TÍCH ĐÁNH GIÁ</a>
         <a href="/news">NEWS</a>
