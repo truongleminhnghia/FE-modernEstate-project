@@ -15,7 +15,7 @@ export default defineConfig({
 
     // 2. Whitelist your ngrok domain (or use a pattern)
     allowedHosts: [
-      'ae38-2402-800-63b9-ee8f-518d-abfa-4a9f-b7ad.ngrok-free.app'
+      '1682-2402-800-63b9-ee8f-2986-b716-287e-877f.ngrok-free.app'
       // or to allow any ngrok subdomain:
       // '.ngrok-free.app'
     ]
