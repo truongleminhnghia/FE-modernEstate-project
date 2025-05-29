@@ -11,7 +11,19 @@
   max-width: 1200px;
   margin-left: auto;
   margin-right: auto;
+  text-decoration: none;
+  transition: color 0.2s ease;
 }
+
+.apartment-detail-breadcrumb a:hover {
+  color: #357ABD;
+  text-decoration: underline;
+}
+
+.apartment-detail-breadcrumb span {
+  color: #666;
+}
+
 .apartment-detail-breadcrumb .active {
   color: #222;
   font-weight: 500;

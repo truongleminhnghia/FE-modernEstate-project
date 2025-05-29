@@ -11,7 +11,19 @@
   max-width: 1200px;
   margin-left: auto;
   margin-right: auto;
+  text-decoration: none;
+  transition: color 0.2s ease;
 }
+
+.projects-breadcrumb a:hover {
+  color: #357ABD;
+  text-decoration: underline;
+}
+
+.projects-breadcrumb span {
+  color: #666;
+}
+
 .projects-banner {
   width: 100%;
   max-width: 1200px;

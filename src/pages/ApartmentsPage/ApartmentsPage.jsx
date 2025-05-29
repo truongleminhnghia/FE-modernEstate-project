@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import "./ApartmentsPage.css";
 import { Select, Card, Tag, Pagination } from "antd";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { MessageOutlined } from '@ant-design/icons';
 
 const { Option } = Select;
@@ -30,9 +30,7 @@ const ApartmentsPage = () => {
     <div className="apartments-bg">
       {/* Breadcrumb */}
       <div className="apartments-breadcrumb">
-        <span className="breadcrumb-link">Trang chủ</span>
-        <span className="breadcrumb-sep">/</span>
-        <span className="breadcrumb-current">Danh sách căn hộ</span>
+        <Link to="/">Trang chủ</Link> / <span>Căn hộ</span>
       </div>
 
       {/* Filter */}
