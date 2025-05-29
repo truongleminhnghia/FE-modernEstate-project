@@ -13,7 +13,20 @@
   display: flex;
   align-items: center;
   gap: 6px;
+  text-decoration: none;
+  transition: color 0.2s ease;
 }
+
+.apartments-breadcrumb a:hover {
+  color: #357ABD;
+  text-decoration: underline;
+}
+
+.apartments-breadcrumb span {
+  color: #666;
+}
+
+
 .breadcrumb-link {
   color: #4a90e2;
   cursor: pointer;

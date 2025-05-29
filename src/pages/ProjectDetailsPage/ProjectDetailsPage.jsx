@@ -1,6 +1,6 @@
-import React from "react";
+import React, { useState } from "react";
 import "./ProjectDetailsPage.css";
-import { useParams } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import { MessageOutlined } from '@ant-design/icons';
 
 const projects = [
@@ -44,7 +44,7 @@ const projects = [
     image: "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267",
     featured: false,
   },
-  ...Array.from({ length: 8 }).map((_, i) => ({
+  ...Array.from({ length: 9 }).map((_, i) => ({
     id: 5 + i,
     name: "HONAS RESIDENCE",
     status: "Đang xây dựng",
@@ -59,13 +59,30 @@ const projects = [
 const ProjectDetailsPage = () => {
   const { id } = useParams();
   const project = projects.find((p) => p.id === Number(id));
+  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [activeLocationTab, setActiveLocationTab] = useState('school');
+  const [activeCategoryTab, setActiveCategoryTab] = useState('kindergarten');
 
   if (!project) return <div>Không tìm thấy dự án.</div>;
+
+  const toggleCollapse = () => {
+    setIsCollapsed(!isCollapsed);
+  };
+
+  const handleLocationTabChange = (tab) => {
+    setActiveLocationTab(tab);
+  };
+
+  const handleCategoryTabChange = (tab) => {
+    setActiveCategoryTab(tab);
+  };
 
   return (
     <div className="project-details-bg">
       <div className="project-details-header-row">
-        <div className="project-details-breadcrumb">Trang chủ / Dự án / Chi tiết dự án</div>
+        <div className="project-details-breadcrumb">
+          <Link to="/">Trang chủ</Link> / <Link to="/du-an">Dự án</Link> / <span>Chi tiết dự án</span>
+        </div>
         <div className="project-details-header-content">
           <div className="project-details-header-images-group">
             <div className="project-details-header-main-img-wrap">
@@ -94,12 +111,14 @@ const ProjectDetailsPage = () => {
         </div>
       </div>
       {/* Thông tin chi tiết dự án bên dưới */}
+      <div className="sidebar-right">
+        
       <div className="project-details-section-row">
         {/* LEFT: Project Info */}
         <div className="project-details-section-main">
           <div className="project-details-section-label">THÔNG TIN DỰ ÁN</div>
           <div className="project-details-section-title">Tổng quan dự án Ariyana Lakeside Văn Quán (Hesco Văn Quán)</div>
-          <div className="project-details-section-content">
+          <div className={`project-details-section-content ${isCollapsed ? 'collapsed' : ''}`}>
             <div className="project-details-summary-table">
               <div className="project-details-summary-grid">
                 <div className="project-details-summary-row">
@@ -121,7 +140,7 @@ const ProjectDetailsPage = () => {
             <div className="project-details-desc">
               <b>Dự án do Gamuda Land phát triển</b> sở hữu vị trí đắc địa nhất Quận Hà Đông nằm tại ngã tư giao đường Nguyễn Khuyến, Vũ Trọng Khánh Mỗ Lao, Trần Phú, Quang Trãi. Đây là vị trí có tọa độ kim cương khi tận dụng cơ sở hạ tầng giao thông, hạ tầng kỹ thuật, xã hội hoàn chỉnh được đánh giá là đẹp, kết nối thuận tiện bậc nhất quận Hà Đông, Hà Nội. Dự án được liên doanh bởi hai công ty là công ty cổ phần thiết bị Thủy Lợi (HESCO) & Tập đoàn phát triển nhà và đô thị Thăng Long với vốn đầu tư 1.000 tỷ đồng và diện tích xây dựng là 3199.88m2.
             </div>
-            <img src="#" alt="Ariyana Lakeside" className="project-details-main-img-desc" />
+            <img src="/src/assets/images/map.jpg" alt="Ariyana Lakeside" className="project-details-main-img-desc" />
             <div className="project-details-img-caption">
               (Phối cảnh dự án Ariyana Lakeside Văn Quán (Hesco Văn Quán))
             </div>
@@ -141,59 +160,88 @@ const ProjectDetailsPage = () => {
               <li><b>Pháp lý:</b> Quyết định của UBND TP số 4132-QĐ/UBND ngày 06/07/2017.</li>
             </ul>
             <div className="project-details-collapse">
-              <span>Thu gọn ▲</span>
+              <span onClick={toggleCollapse}>{isCollapsed ? 'Mở rộng ▼' : 'Thu gọn ▲'}</span>
             </div>
-          </div>
-        </div>
-        {/* RIGHT: Sidebar */}
-        <div className="project-details-section-sidebar">
-          <div className="project-details-download-box">
-            <div className="project-details-download-title">Tải tài liệu và báo giá</div>
-            <form>
-              <div className="project-details-download-form">
-                <input type="text" placeholder="Họ và tên" className="project-details-input" />
-                <input type="email" placeholder="Email" className="project-details-input" />
-                <input type="text" placeholder="Số điện thoại" className="project-details-input" />
+            {isCollapsed && (
+              <div className="project-details-expand-overlay">
+                <button className="project-details-expand-btn" onClick={toggleCollapse}>
+                  Mở rộng ▼
+                </button>
               </div>
-              <button type="submit" className="project-details-btn">Đăng ký</button>
-            </form>
-          </div>
-          <div className="project-details-toc-box">
-            <div className="project-details-toc-title">Mục lục</div>
-            <ul className="project-details-toc-list">
-              <li><a href="#tongquan">Tổng quan dự án</a></li>
-              <li><a href="#vitri">Vị trí</a></li>
-              <li><a href="#tienich">Tiện ích</a></li>
-              <li><a href="#tien_do">Tiến độ dự án <b>Ariyana Lakeside Văn Quán</b></a></li>
-            </ul>
+            )}
           </div>
         </div>
-      </div>
+      
       {/* Section: Vị trí dự án */}
       <div className="project-location-section">
         <div className="project-location-section-title">Vị trí dự án Ariyana Lakeside Văn Quán (Hesco Văn Quán)</div>
         <div className="project-location-box">
           <div className="project-location-tabs">
-            <button className="project-location-tab project-location-tab-active">Trường học</button>
-            <button className="project-location-tab">Siêu thị</button>
-            <button className="project-location-tab">Bến xe tàu</button>
-            <button className="project-location-tab">Y tế</button>
-            <button className="project-location-tab">Ngân hàng</button>
+            <button 
+              className={`project-location-tab ${activeLocationTab === 'school' ? 'project-location-tab-active' : ''}`}
+              onClick={() => handleLocationTabChange('school')}
+            >
+              Trường học
+            </button>
+            <button 
+              className={`project-location-tab ${activeLocationTab === 'market' ? 'project-location-tab-active' : ''}`}
+              onClick={() => handleLocationTabChange('market')}
+            >
+              Siêu thị
+            </button>
+            <button 
+              className={`project-location-tab ${activeLocationTab === 'station' ? 'project-location-tab-active' : ''}`}
+              onClick={() => handleLocationTabChange('station')}
+            >
+              Bến xe tàu
+            </button>
+            <button 
+              className={`project-location-tab ${activeLocationTab === 'hospital' ? 'project-location-tab-active' : ''}`}
+              onClick={() => handleLocationTabChange('hospital')}
+            >
+              Y tế
+            </button>
+            <button 
+              className={`project-location-tab ${activeLocationTab === 'bank' ? 'project-location-tab-active' : ''}`}
+              onClick={() => handleLocationTabChange('bank')}
+            >
+              Ngân hàng
+            </button>
           </div>
 
           <div className="project-location-map-wrap">
             <img
-              src="https://images.unsplash.com/photo-1526778548025-fa2f459cd5ce?w=800&auto=format&fit=crop&q=60"
+              src="/src/assets/images/map.jpg"
               alt="Bản đồ vị trí dự án"
               className="project-location-map"
             />
           </div>
 
           <div className="project-location-category-header">
-            <div className="project-location-category-item project-location-category-item-active">Trường mầm non</div>
-            <div className="project-location-category-item">Trường Tiểu học</div>
-            <div className="project-location-category-item">THCS & THPT</div>
-            <div className="project-location-category-item">Trường Đại học</div>
+            <div 
+              className={`project-location-category-item ${activeCategoryTab === 'kindergarten' ? 'project-location-category-item-active' : ''}`}
+              onClick={() => handleCategoryTabChange('kindergarten')}
+            >
+              Trường mầm non
+            </div>
+            <div 
+              className={`project-location-category-item ${activeCategoryTab === 'primary' ? 'project-location-category-item-active' : ''}`}
+              onClick={() => handleCategoryTabChange('primary')}
+            >
+              Trường Tiểu học
+            </div>
+            <div 
+              className={`project-location-category-item ${activeCategoryTab === 'secondary' ? 'project-location-category-item-active' : ''}`}
+              onClick={() => handleCategoryTabChange('secondary')}
+            >
+              THCS & THPT
+            </div>
+            <div 
+              className={`project-location-category-item ${activeCategoryTab === 'university' ? 'project-location-category-item-active' : ''}`}
+              onClick={() => handleCategoryTabChange('university')}
+            >
+              Trường Đại học
+            </div>
           </div>
 
           <div className="project-location-list-table">
@@ -269,12 +317,12 @@ const ProjectDetailsPage = () => {
             Dự án do Gamuda Land phát triển tọa lạc trên mặt đường đôi Nguyễn Khuyến, cách mặt đường Nguyễn Trãi – Trần Phú khoảng 50m chưa đầy 50 giây xe máy, đây là vị trí được giới chuyên gia bất động sản Modern Estate đánh giá là vị trí vàng khi hạ tầng – Thủy quận tại và đồng thời là "mảnh đất cuối cùng" ở quận Hà Đông.
           </div>
           <div className="project-location-sodo-box">
-            <img src="https://nhadatxanhmienbac.com/wp-content/uploads/2023/08/Vi-tri-Du-an-Ariyana-Lakeside.jpg" alt="sơ đồ vị trí" className="project-location-sodo-img" />
+            <img src="/src/assets/images/ap2.jpg" />
             <div className="project-location-sodo-caption">(Sơ đồ vị trí dự án)</div>
           </div>
           <div className="project-location-desc">Với vị trí giao thông thuận lợi, Dự án do Gamuda Land phát triển còn nằm gần hệ thống các trung tâm chăm sóc sức khỏe, trung tâm thể dục thể thao hiện đại và hệ sinh thái môi trường trong lành của hồ Văn Quán, hồ Con Tằm….và thuận tiện trong việc kết nối.</div>
           <div className="project-location-tienich-list">
-            <div className="project-location-tienich-item"><span className="project-location-tienich-dot"></span>Cách hồ văn quán 150m, view toàn cảnh hồ văn quán cư dân có thể thỏa thích ngắm pháo hoa các dịp tết hàng năm ngay tại ban công nhà mình với tầm view toàn cảnh hồ văn quán.</div>
+            <div className="project-location-tienich-item"><span className="project-location-tienich-dot"></span>Cách hồ văn quán 150m, view toàn cảnh hồ văn quán cư dân có thỏa thích ngắm pháo hoa các dịp tết hàng năm ngay tại ban công nhà mình với tầm view toàn cảnh hồ văn quán.</div>
             <div className="project-location-tienich-item"><span className="project-location-tienich-dot"></span>Cách khu đô thị mỗ lao, làng việt kiều châu Âu, Khu Đô Thị Chung Cư Quốc Tế Booyoung Hàn Quốc 500m.</div>
             <div className="project-location-tienich-item"><span className="project-location-tienich-dot"></span>Sát ngay cạnh Học Viện An Ninh, Đại Học Kiến Trúc, Học Viện Bưu Chính Viễn Thông.</div>
             <div className="project-location-tienich-item"><span className="project-location-tienich-dot"></span>Ga tàu điện Metro Q. Hà Đông: Cách 1.1km - Chợ Hà Đông cách 1.3km - Cách Bệnh Viện Hà Đông: 1.73km - Cách TT hành chính Quận Hà Đông: 1.2km - Cách Siêu thị Mê Linh Plaza Hà Đông: 1km, Cách Bệnh Viện 103: 1km.</div>
@@ -296,14 +344,14 @@ const ProjectDetailsPage = () => {
           Ariyana Lakeside Văn Quán (Hesco Văn Quán) có thiết kế cực kỳ đặc biệt mang phong cách Châu Âu với diện tích xây dựng là 3199.88m2. Các căn hộ được bố trí hài hòa, không gian mở mang lại cảm giác thông thoáng, tràn ngập ánh sáng tự nhiên cho từng căn hộ.
         </div>
         <div className="project-matbang-details-image-box">
-          <img src="#" alt=""/>
+          <img src="/src/assets/images/ap2.jpg" alt="" />
           <div className="project-matbang-details-caption">Mặt bằng của dự án Ariyana Lakeside Văn Quán (Hesco Văn Quán)</div>
         </div>
         <div className="project-matbang-details-desc">
           Với diện tích mỗi căn hộ giao động từ 87-134 m2 và được thiết kế kế từ 2-3 phòng ngủ có gần 1.024 căn hộ chung cư cao cấp đáp ứng số lượng lớn khách hàng có nhu cầu trong tương lai. Dự án được liên doanh bởi hai công ty là công ty cổ phần thiết bị Thủy Lợi (HESCO) & Tập đoàn phát triển nhà và đô thị Thăng Long cùng nhau hợp tác xây dựng dựa trên Quyết định của UBND TP số 4132-QĐ/UBND ngày 06/07/2017 với vốn đầu tư hơn 1000 tỷ đồng, mật độ xây dựng 55,6%.
         </div>
         <div className="project-matbang-details-image-box">
-          <img src="#" />
+          <img src="/src/assets/images/ap3.jpg" />
           <div className="project-matbang-details-caption">Các căn hộ được thiết kế tối ưu, tiết kiệm diện tích nhưng không mang lại cảm giác gò bó mà làm cho người dùng cảm nhận được không gian thoải mái sinh hoạt cho gia đình. Đặc biệt, hành lang rộng, thông thoáng, khả năng thông gió và chống cháy tốt cũng là một ưu điểm mà Ariyana Lakeside Văn Quán (Hesco Văn Quán) đưa đến giúp cho cư dân tương lai ở đây càng thêm yêu thích.</div>
         </div>
         <div className="project-matbang-details-desc">
@@ -312,6 +360,7 @@ const ProjectDetailsPage = () => {
       </div>
 
       {/* Section: Tiện ích dự án */}
+      <div className="project-tienich-box">
       <div className="project-tienich-title">Tiện ích dự án Ariyana Lakeside Văn Quán (Hesco Văn Quán)</div>
       <div className="project-tienich-section">
         <div className="project-tienich-grid">
@@ -379,7 +428,7 @@ const ProjectDetailsPage = () => {
           Dự án Ariyana Lakeside Văn Quán (Hesco Văn Quán) là dự án tiện ích 5 sao hướng rất nhiều hệ thống tiện ích đẳng cấp có sẵn như: Nhà hàng, khu vui chơi, spa, khu thể dục... kiến tạo cuộc sống của cư dân tại đây trở nên viên mãn hơn. Hứa hẹn trong thời gian tới, Ariyana Lakeside Văn Quán (Hesco Văn Quán) sẽ là điểm nhấn Trung tâm du lịch, dịch vụ, vui chơi, giải trí, hoạt động kinh doanh, thương mại,... phía tây Hà Nội.
         </div>
         <div className="project-tienich-image-box">
-          <img src="#" />
+          <img src="/src/assets/images/ap4.jpg" />
           <div className="project-tienich-caption">Tiện ích Ariyana Lakeside Văn Quán (Hesco Văn Quán)</div>
         </div>
         <div className="project-tienich-list">
@@ -397,22 +446,52 @@ const ProjectDetailsPage = () => {
           </ul>
         </div>
         <div className="project-tienich-image-box">
-          <img src="#" />
+          <img src="/src/assets/images/ap1.jpg" />
           <div className="project-tienich-caption">Tiện ích Ariyana Lakeside Văn Quán (Hesco Văn Quán)</div>
         </div>
       </div>
-      {/* Section: Tiến độ dự án */}        
+      </div>
+      {/* Section: Tiến độ dự án */}
+      <div className="project-progress-box">
       <div className="project-progress-title">Tiến độ dự án Ariyana Lakeside Văn Quán</div>
       <div className="project-progress-section">
         <div className="project-progress-image-box">
-          <img src="#" />
+          <img src="/src/assets/images/ap5.jpg" />
           <div className="project-progress-caption">Tiến độ dự án Ariyana Lakeside Văn Quán (Hesco Văn Quán)</div>
         </div>
         <div className="project-progress-image-box">
-          <img src="#" />
+          <img src="/src/assets/images/ap5.jpg" />
           <div className="project-progress-caption">Tiến độ dự án Ariyana Lakeside Văn Quán (Hesco Văn Quán)</div>
         </div>
       </div>
+      </div>
+      </div>
+
+      {/* RIGHT: Sidebar */}
+      <div className="project-details-section-sidebar">
+          <div className="project-details-download-box">
+            <div className="project-details-download-title">Tải tài liệu và báo giá</div>
+            <form>
+              <div className="project-details-download-form">
+                <input type="text" placeholder="Họ và tên" className="project-details-input" />
+                <input type="email" placeholder="Email" className="project-details-input" />
+                <input type="text" placeholder="Số điện thoại" className="project-details-input" />
+              </div>
+              <button type="submit" className="project-details-btn">Đăng ký</button>
+            </form>
+          </div>
+          <div className="project-details-toc-box">
+            <div className="project-details-toc-title">Mục lục</div>
+            <ul className="project-details-toc-list">
+              <li><a href="#tongquan">Tổng quan dự án</a></li>
+              <li><a href="#vitri">Vị trí</a></li>
+              <li><a href="#tienich">Tiện ích</a></li>
+              <li><a href="#tien_do">Tiến độ dự án <b>Ariyana Lakeside Văn Quán</b></a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
       {/* Section: Dự án lân cận */}
       <div className="nearby-projects-section">
         <div className="nearby-projects-header">
@@ -484,7 +563,8 @@ const ProjectDetailsPage = () => {
           </div>
         </div>
       </div>
-
+      
+      
       {/* Message Button */}
       <button className="message-button">
         <MessageOutlined />

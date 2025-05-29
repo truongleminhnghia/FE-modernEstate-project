@@ -2,13 +2,14 @@ import React, { useState } from "react";
 import "./ApartmentDetailsPage.css";
 import { Breadcrumb, Tabs } from "antd";
 import { RightOutlined, ShareAltOutlined, HeartOutlined, LeftOutlined, HomeOutlined, BorderOutlined, BoxPlotOutlined, PhoneFilled, CalendarOutlined, MessageOutlined } from '@ant-design/icons';
+import { Link } from "react-router-dom";
 
 const images = [
-  "https://placehold.co/600x400/gray/gray",
-  "https://placehold.co/600x400/gray/gray",
-  "https://placehold.co/600x400/gray/gray",
-  "https://placehold.co/600x400/gray/gray",
-  "https://placehold.co/600x400/gray/gray"
+  "/src/assets/images/ap1.jpg",
+  "/src/assets/images/ap2.jpg",
+  "/src/assets/images/ap3.jpg",
+  "/src/assets/images/ap4.jpg",
+  "/src/assets/images/ap5.jpg"
 ];
 
 const details = {
@@ -49,6 +50,7 @@ const related = Array.from({ length: 4 }).map((_, i) => ({
 
 const ApartmentDetailsPage = () => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [activeTab, setActiveTab] = useState('details');
 
   const handlePrevClick = () => {
     setCurrentImageIndex((prevIndex) =>
@@ -62,11 +64,15 @@ const ApartmentDetailsPage = () => {
     );
   };
 
+  const handleTabChange = (tab) => {
+    setActiveTab(tab);
+  };
+
   return (
     <div className="apartment-detail-bg">
       {/* Breadcrumb */}
       <div className="apartment-detail-breadcrumb">
-        <span>Trang chủ</span> / <span>Mua bán căn hộ</span> / <span className="active">Chi tiết</span>
+        <Link to="/">Trang chủ</Link> / <Link to="/mua-ban-can-ho">Căn hộ</Link> / <span>Chi tiết căn hộ</span>
       </div>
 
       {/* Top section: Image + Info */}
@@ -154,25 +160,75 @@ const ApartmentDetailsPage = () => {
       {/* Tabs */}
       <div className="apartment-detail-tabs-container">
         <div className="apartment-detail-tabs">
-          <div className="tab active">Thông tin chi tiết</div>
-          <div className="tab">Thông tin dự án</div>
-          <div className="tab">Bản đồ khu vực</div>
+          <div 
+            className={`tab ${activeTab === 'details' ? 'active' : ''}`}
+            onClick={() => handleTabChange('details')}
+          >
+            Thông tin chi tiết
+          </div>
+          <div 
+            className={`tab ${activeTab === 'project' ? 'active' : ''}`}
+            onClick={() => handleTabChange('project')}
+          >
+            Thông tin dự án
+          </div>
+          <div 
+            className={`tab ${activeTab === 'map' ? 'active' : ''}`}
+            onClick={() => handleTabChange('map')}
+          >
+            Bản đồ khu vực
+          </div>
         </div>
         <div className="apartment-detail-tab-content">
-          <div className="apartment-detail-desc-title">Chi tiết căn</div>
-          <div className="apartment-detail-tab-underline"></div>
-          <div className="apartment-detail-desc-body">
-          Sở hữu vị trí đẹp cạnh các trục đường chính, bất động sản với công năng shophouse mang đến cơ hội kinh doanh hấp dẫn tới các khách hàng. Bất động sản được hoàn thiện tiêu chuẩn có đồ rời được hoàn thiện phòng ngủ, nhà vệ sinh, khu vực bếp để sẵn sàng cho cư dân sử dụng. Tầng 1 được để trống để làm mặt bằng kinh doanh. Những căn hộ được hoàn thiện với phòng khách có sofa, khu vực bếp với bộ bàn ghế ăn, phòng ngủ với giường và rèm, nhà vệ sinh giúp cư dân về ở nhanh chóng và thuận tiện hơn. Bất động sản được thiết kế thông thoáng, đón gió và ánh sáng tự nhiên cùng nội khu đa tiện ích, rộng rãi hứa hẹn mang đến không gian sống thoải mái. Shophouse là sự kết hợp hoàn hảo giữa ở và kinh doanh giúp cư dân tiết kiệm chi phí đầu tư và vận hành kinh doanh tiện lợi hơn. Tiêu chuẩn bàn giao của bất động sản có thể thay đổi bởi Modern Estate tùy thuộc từng giai đoạn mà không có thông báo trước.        </div>
-          <div className="apartment-detail-features-title">Chi tiết căn</div>
-          <div className="apartment-detail-tab-underline"></div>
-          <div className="features-list">
-            {details.features.map((f, i) => (
-              <div className="feature-item" key={i}>
-                <span className="feature-icon">{f.icon}</span>
-                <span>{f.label}</span>
+          {activeTab === 'details' && (
+            <>
+              <div className="apartment-detail-desc-title">Chi tiết căn</div>
+              <div className="apartment-detail-tab-underline"></div>
+              <div className="apartment-detail-desc-body">
+                Sở hữu vị trí đẹp cạnh các trục đường chính, bất động sản với công năng shophouse mang đến cơ hội kinh doanh hấp dẫn tới các khách hàng. Bất động sản được hoàn thiện tiêu chuẩn có đồ rời được hoàn thiện phòng ngủ, nhà vệ sinh, khu vực bếp để sẵn sàng cho cư dân sử dụng. Tầng 1 được để trống để làm mặt bằng kinh doanh. Những căn hộ được hoàn thiện với phòng khách có sofa, khu vực bếp với bộ bàn ghế ăn, phòng ngủ với giường và rèm, nhà vệ sinh giúp cư dân về ở nhanh chóng và thuận tiện hơn. Bất động sản được thiết kế thông thoáng, đón gió và ánh sáng tự nhiên cùng nội khu đa tiện ích, rộng rãi hứa hẹn mang đến không gian sống thoải mái. Shophouse là sự kết hợp hoàn hảo giữa ở và kinh doanh giúp cư dân tiết kiệm chi phí đầu tư và vận hành kinh doanh tiện lợi hơn. Tiêu chuẩn bàn giao của bất động sản có thể thay đổi bởi Modern Estate tùy thuộc từng giai đoạn mà không có thông báo trước.
               </div>
-            ))}
-          </div>
+              <div className="apartment-detail-features-title">Chi tiết căn</div>
+              <div className="apartment-detail-tab-underline"></div>
+              <div className="features-list">
+                {details.features.map((f, i) => (
+                  <div className="feature-item" key={i}>
+                    <span className="feature-icon">{f.icon}</span>
+                    <span>{f.label}</span>
+                  </div>
+                ))}
+              </div>
+            </>
+          )}
+
+          {activeTab === 'project' && (
+            <>
+              <div className="apartment-detail-desc-title">Thông tin dự án</div>
+              <div className="apartment-detail-tab-underline"></div>
+              <div className="apartment-detail-desc-body">
+                VINHOMES GRAND PARK là một dự án bất động sản cao cấp được phát triển bởi Vinhomes tại Quận 9, TP.HCM. Dự án có tổng diện tích 120.000m2, bao gồm các căn hộ cao cấp, biệt thự và shophouse. Với vị trí đắc địa, tiện ích đẳng cấp và thiết kế hiện đại, VINHOMES GRAND PARK mang đến không gian sống lý tưởng cho cư dân.
+              </div>
+            </>
+          )}
+
+          {activeTab === 'map' && (
+            <>
+              <div className="apartment-detail-desc-title">Bản đồ khu vực</div>
+              <div className="apartment-detail-tab-underline"></div>
+              <div className="apartment-detail-desc-body">
+                <div style={{ width: '100%', height: '400px', overflow: 'hidden', borderRadius: '8px' }}>
+                  <img 
+                    src="/src/assets/images/map.jpg" 
+                    alt="Bản đồ khu vực" 
+                    style={{ 
+                      width: '100%', 
+                      height: '100%', 
+                      objectFit: 'cover' 
+                    }} 
+                  />
+                </div>
+              </div>
+            </>
+          )}
         </div>
       </div>
 

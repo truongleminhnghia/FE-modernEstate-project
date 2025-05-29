@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "./ProjectsPage.css";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
 import { MessageOutlined } from '@ant-design/icons';
 
@@ -96,7 +96,7 @@ const ProjectsPage = () => {
     return (
       <div className="projects-bg">
         <div className="projects-breadcrumb">
-          <span>Trang chủ</span> / <span>Danh sách dự án</span>
+          <Link to="/">Trang chủ</Link> / <span>Dự án</span>
         </div>
         <div className="projects-banner">
           <img src="https://unsplash.com/fr/photos/une-ville-la-nuit-avec-beaucoup-de-grands-immeubles-vLOA_KJ_pj0" alt="banner" />
@@ -114,7 +114,7 @@ const ProjectsPage = () => {
     return (
       <div className="projects-bg">
         <div className="projects-breadcrumb">
-          <span>Trang chủ</span> / <span>Danh sách dự án</span>
+          <Link to="/">Trang chủ</Link> / <span>Dự án</span>
         </div>
         <div className="projects-banner">
           <img src="https://unsplash.com/fr/photos/une-ville-la-nuit-avec-beaucoup-de-grands-immeubles-vLOA_KJ_pj0" alt="banner" />
@@ -132,7 +132,7 @@ const ProjectsPage = () => {
     return (
       <div className="projects-bg">
         <div className="projects-breadcrumb">
-          <span>Trang chủ</span> / <span>Danh sách dự án</span>
+          <Link to="/">Trang chủ</Link> / <span>Dự án</span>
         </div>
         <div className="projects-banner">
           <img src="https://unsplash.com/fr/photos/une-ville-la-nuit-avec-beaucoup-de-grands-immeubles-vLOA_KJ_pj0" alt="banner" />
@@ -153,7 +153,7 @@ const ProjectsPage = () => {
     <div className="projects-bg">
       {/* Breadcrumb */}
       <div className="projects-breadcrumb">
-        <span>Trang chủ</span> / <span>Danh sách dự án</span>
+        <Link to="/">Trang chủ</Link> / <span>Dự án</span>
       </div>
       {/* Banner */}
       <div className="projects-banner">
