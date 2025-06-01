@@ -36,6 +36,7 @@ import ProjectsPage from "./pages/ProjectsPage/ProjectsPage";
 import ProjectDetailsPage from "./pages/ProjectDetailsPage/ProjectDetailsPage";
 import CheckEmailNotice from './pages/auth/CheckEmailNotice';
 import NotFound from './pages/auth/NotFound';
+import ServicePage from "./pages/services/ServicePage";
 
 const router = createBrowserRouter([
   {
@@ -63,7 +64,7 @@ const router = createBrowserRouter([
         element: <RegisterScreen />,
       },
       {
-        path: "/introduction",
+        path: "/information",
         element: <Introduction />,
       },
       {
@@ -125,6 +126,10 @@ const router = createBrowserRouter([
       {
         path: "/check-email-notice",
         element: <CheckEmailNotice />,
+      },
+      {
+        path: "/services",
+        element: <ServicePage />,
       },
       {
         path: "*",
