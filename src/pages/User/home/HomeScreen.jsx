@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import "./HomeScreen.css";
 import { Select, Card, Button, Row, Col, Tag } from "antd";
 import { LeftOutlined, RightOutlined } from "@ant-design/icons";
@@ -12,7 +12,7 @@ import AboutModernEstate from "../../../components/ui/layouts/home/AboutModernEs
 const { Option } = Select;
 
 const HomeScreen = () => {
-  const sliderRef = React.useRef();
+  const sliderRef = useRef();
   const areas = [
     {
       id: 1,
@@ -182,6 +182,14 @@ const HomeScreen = () => {
   ];
   const featured = projects.find((p) => p.featured);
   const normalProjects = projects.filter((p) => !p.featured);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      sliderRef.current?.slickNext();
+    }, 3000);
+    return () => clearInterval(interval);
+  }, []);
+
   return (
     <div className="home-filter-bg">
       <h1 className="home-filter-title">Chọn nhà ưng ý, giá trị xứng tầm</h1>
@@ -288,7 +296,7 @@ const HomeScreen = () => {
         <div style={{ marginTop: 24 }}>
           <Slider {...sliderSettings} ref={sliderRef}>
             {apartments.map((apt) => (
-              <div key={apt.id} style={{ padding: 12 }}>
+              <div key={apt.id} style={{ padding: 12}}>
                 <Card
                   hoverable
                   cover={
@@ -307,8 +315,8 @@ const HomeScreen = () => {
                   style={{
                     marginTop: 5,
                     borderRadius: 16,
-                    boxShadow: "0 2px 12px #e0e7ef33",
-                    marginBottom: 16,
+                    boxShadow: "0 6px 12px rgba(66, 107, 148, 0.2)",
+                    marginBottom: 20,
                   }}
                 >
                   <div style={{ fontWeight: 600, fontSize: 15, minHeight: 48 }}>
