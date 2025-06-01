@@ -1,34 +1,52 @@
 import React from "react";
-import { Input, Button, Row, Col, Typography, Form, Space, Select, message } from "antd";
-import { LockOutlined, MailOutlined, PhoneOutlined  } from "@ant-design/icons";
+import {
+  Input,
+  Button,
+  Row,
+  Col,
+  Typography,
+  Form,
+  Space,
+  Select,
+  message,
+} from "antd";
+import { LockOutlined, MailOutlined, PhoneOutlined } from "@ant-design/icons";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const { Title, Text, Link } = Typography;
 const { Option } = Select;
 
 const RegisterScreen = () => {
   const [form] = Form.useForm();
+  const navigate = useNavigate();
 
   const onFinish = async (values) => {
     try {
-      const response = await axios.post("https://be-modernestate.onrender.com/api/v1/auths/register", {
-        email: values.email,
-        firstName: values.firstName,
-        lastName: values.lastName,
-        password: values.password,
-        confirmPassword: values.confirmPassword,
-        phoneNumber: values.phoneNumber,
-      });
+      const response = await axios.post(
+        "https://be-modernestate.onrender.com/api/v1/auths/register",
+        {
+          email: values.email,
+          firstName: values.firstName,
+          lastName: values.lastName,
+          password: values.password,
+          confirmPassword: values.confirmPassword,
+          phone: values.phoneNumber,
+        }
+      );
 
-      message.success("Đăng ký thành công!");
+      message.success(
+        "Đăng ký thành công! Vui lòng kiểm tra email để xác thực tài khoản."
+      );
       form.resetFields();
+      navigate('/check-email-notice');
     } catch (error) {
       console.error("Registration failed:", error.response || error);
-      const errorMsg = error.response?.data?.message || "Đăng ký thất bại. Vui lòng thử lại.";
+      const errorMsg =
+        error.response?.data?.message || "Đăng ký thất bại. Vui lòng thử lại.";
       message.error(errorMsg);
     }
   };
-
 
   return (
     <Row
@@ -217,7 +235,10 @@ const RegisterScreen = () => {
                 style={{ marginBottom: 8 }}
                 rules={[
                   { required: true, message: "Vui lòng nhập số điện thoại" },
-                  { type: "number", message: "Số điện thoại không hợp lệ" },
+                  {
+                    pattern: /^0[0-9]{9}$/,
+                    message: "Số điện thoại không hợp lệ",
+                  },
                 ]}
               >
                 <Input

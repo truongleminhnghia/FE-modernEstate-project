@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   Input,
   Button,
@@ -14,10 +14,30 @@ import {
   UserOutlined,
 } from "@ant-design/icons";
 import axios from "axios";
+import { useLocation, useNavigate } from 'react-router-dom';
+import { verifyEmail } from '../../apis/auth';
 const { Title, Text, Link } = Typography;
 
 const LoginScreen = () => {
   const [form] = Form.useForm();
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const token = params.get('token');
+    if (token) {
+      verifyEmail(token)
+        .then(() => {
+          message.success('Xác thực email thành công! Bạn có thể đăng nhập.');
+          navigate('/login', { replace: true });
+        })
+        .catch(() => {
+          message.error('Xác thực email thất bại hoặc token không hợp lệ!');
+          navigate('/login', { replace: true });
+        });
+    }
+  }, [location, navigate]);
 
   const handleLogin = async (values) => {
     try {

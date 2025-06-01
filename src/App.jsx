@@ -3,7 +3,6 @@ import LayoutGuest from "./components/layouts/LayoutGuest";
 import HomeScreen from "./pages/User/home/HomeScreen";
 import LoginScreen from "./pages/auth/LoginScreen";
 import RegisterScreen from "./pages/auth/RegisterScreen";
-// import CustomerProfile from "./pages/User/profile/CustomerProfile";
 import TransactionHistory from "./pages/User/transactions/TransactionHistory";
 import FavoriteList from "./pages/User/favorites/FavoritesList";
 import BrokerProfile from "./pages/Broker/profile/BrokerProfile";
@@ -13,7 +12,6 @@ import MyProfile from "./pages/User/profile/MyProfile";
 import Introduction from "./pages/publics/Introduction";
 import News from "./pages/publics/News";
 import ProtectedRoute from "./protectedRoute/ProtectedRoute";
-import HiAdmin from "./pages/admins/HiAdmin";
 import NewsDetail from "./pages/publics/NewsDetail";
 import OwnerTransactions from "./pages/Owner/OwnerTransactions";
 import OwnerFavorites from "./pages/Owner/OwnerFavorites";
@@ -29,10 +27,11 @@ import AdminProfile from "./pages/admins/profile/AdminProfile";
 import StaffLayout from "./components/ui/layouts/staff/StaffLayout";
 import ServiceManagementPage from "./pages/staff/listings/services/ServiceManagement";
 import ApartmentsPage from "./pages/ApartmentsPage/ApartmentsPage";
-import LeaseProperty from "./pages/LeaseProperty";
 import ApartmentDetailsPage from "./pages/ApartmentDetailsPage/ApartmentDetailsPage";
 import ProjectsPage from "./pages/ProjectsPage/ProjectsPage";
 import ProjectDetailsPage from "./pages/ProjectDetailsPage/ProjectDetailsPage";
+import CheckEmailNotice from './pages/auth/CheckEmailNotice';
+import VerifySuccess from './pages/auth/VerifySuccess';
 
 const router = createBrowserRouter([
   {
@@ -114,6 +113,14 @@ const router = createBrowserRouter([
       {
         path: "/du-an/:id",
         element: <ProjectDetailsPage />,
+      },
+      {
+        path: "/check-email-notice",
+        element: <CheckEmailNotice />,
+      },
+      {
+        path: "/verify-success",
+        element: <VerifySuccess />,
       },
     ],
   },
