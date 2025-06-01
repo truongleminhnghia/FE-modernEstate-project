@@ -32,6 +32,7 @@ import ProjectsPage from "./pages/ProjectsPage/ProjectsPage";
 import ProjectDetailsPage from "./pages/ProjectDetailsPage/ProjectDetailsPage";
 import CheckEmailNotice from './pages/auth/CheckEmailNotice';
 import VerifySuccess from './pages/auth/VerifySuccess';
+import ServicePage from "./pages/services/ServicePage";
 
 const router = createBrowserRouter([
   {
@@ -65,6 +66,10 @@ const router = createBrowserRouter([
       {
         path: "/news",
         element: <News />,
+      },
+      {
+        path: "/services",
+        element: <ServicePage />,
       },
       {
         path: "/user-profile",
