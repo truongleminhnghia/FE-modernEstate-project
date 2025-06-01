@@ -1,9 +1,10 @@
 import React, { useState } from "react";
 import "./Header.css";
-import { Link } from "react-router-dom";
+import { Link, Navigate, useNavigate } from "react-router-dom";
 import { Dropdown, List, Menu, Select } from "antd";
 
 const Header = () => {
+  const navigate = useNavigate();
   const menu = (
     <Menu
       onClick={(info) => {
@@ -48,10 +49,10 @@ const Header = () => {
     <header className="header">
       <div className="header-top">
         <div className="logo">
-          <img src="/images/logos/logo-estate.png" alt="Modern Estate" />
+          <img className="cursor-pointer" src="/images/logos/logo-estate.png" alt="Modern Estate" onClick={() => navigate('/')} />
       </div>
       <nav className="main-nav">
-        <a className="active" href="#">
+        <a className="active" href="/">
           Trang chủ
         </a>
         <a href="#">Dịch vụ</a>
