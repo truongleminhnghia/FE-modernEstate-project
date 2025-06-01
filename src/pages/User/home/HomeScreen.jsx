@@ -305,6 +305,7 @@ const HomeScreen = () => {
                     />
                   }
                   style={{
+                    marginTop: 5,
                     borderRadius: 16,
                     boxShadow: "0 2px 12px #e0e7ef33",
                     marginBottom: 16,
@@ -378,7 +379,7 @@ const HomeScreen = () => {
         </div>
       </div>
       <div className="main-container">
-        <div style={{ margin: "40px 0" }} className="project-card">
+        <div style={{ margin: "40px 0" }}>
           <div style={{ marginBottom: 24, textAlign: "left" }}>
             <span style={{ fontSize: 28, fontWeight: 600 }}>
               <span style={{ color: "#4a90e2" }}>Dự án</span> trọng điểm

@@ -244,5 +244,54 @@
     flex-direction: column;
     justify-content: center;
   }
-  
-  
+
+.apartment-section .ant-card {
+transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.apartment-section .ant-card:hover {
+transform: translateY(-4px); 
+}
+
+.area-section .area-card {
+transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.area-section .area-card:hover {
+transform: scale(1.03); 
+box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+}
+
+.area-section .area-grid-large .area-card:hover {
+transform: scale(1.01); 
+}
+
+.main-container .ant-row > .ant-col > .ant-card {
+transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.main-container .ant-row > .ant-col > .ant-card:hover {
+transform: translateY(-3px);
+box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+
+.main-container .ant-row > .ant-col > .ant-card:has(.featured-ribbon):hover {
+transform: translateY(-5px);
+box-shadow: 0 6px 20px rgba(255, 215, 0, 0.3); 
+}
+
+.featured-ribbon {
+position: absolute;
+top: 16px;
+left: -16px;
+background: #FFD700;
+color: #fff;
+font-weight: 700;
+padding: 4px 24px;
+border-top-left-radius: 16px;
+border-bottom-right-radius: 16px;
+font-size: 15px;
+box-shadow: 0 2px 8px rgba(255, 215, 0, 0.5);
+zIndex: 2;
+}
