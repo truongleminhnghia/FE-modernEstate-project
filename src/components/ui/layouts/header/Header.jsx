@@ -1,10 +1,11 @@
 import React, { useState } from "react";
-import "./Header.css"
-import { Link, useNavigate } from "react-router-dom"; 
-import { Dropdown, Menu, Button } from "antd"; 
+import "./Header.css"; 
+import { Link, useNavigate, useLocation } from "react-router-dom"; 
+import { Dropdown, Menu, Button } from "antd";
 
 const Header = () => {
-  const navigate = useNavigate(); 
+  const navigate = useNavigate();
+  const location = useLocation(); 
   const [isLoginButtonHovered, setIsLoginButtonHovered] = useState(false);
 
   const menu = (
@@ -36,33 +37,36 @@ const Header = () => {
           key: 'favorite',
         },
         {
-          type: 'divider', 
+          type: 'divider',
         },
         {
           label: 'Đăng xuất',
           key: 'logout',
-          danger: true, 
+          danger: true,
         },
       ]}
     />
   );
 
   const loginButtonStyle = {
-    backgroundColor: '#4a90e2', 
-    borderColor: '#4a90e2',     
-    color: '#fff',             
+    backgroundColor: '#4a90e2',
+    borderColor: '#4a90e2',
+    color: '#fff',
     borderRadius: '4px',
     transition: 'background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease',
   };
 
   const loginButtonHoverStyle = {
-    backgroundColor: '#357abd', 
-    borderColor: '#357abd',     
-    color: '#fff',             
+    backgroundColor: '#357abd',
+    borderColor: '#357abd',
+    color: '#fff',
   };
 
-
   const user = localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user")) : null;
+
+  const getNavLinkClass = (path) => {
+    return location.pathname === path ? "active" : "";
+  };
 
   return (
     <header className="header">
@@ -73,11 +77,15 @@ const Header = () => {
           </Link>
         </div>
         <nav className="main-nav">
-          <Link className="active" to="/">
+          <Link className={getNavLinkClass("/")} to="/">
             Trang chủ
           </Link>
-          <Link to="/services">Dịch vụ</Link>
-          <Link to="/information">Thông tin</Link>
+          <Link className={getNavLinkClass("/services")} to="/services">
+            Dịch vụ
+          </Link>
+          <Link className={getNavLinkClass("/information")} to="/information">
+            Thông tin
+          </Link>
         </nav>
         {localStorage.getItem("token") && user ? (
           <Dropdown overlay={menu} trigger={['click']}>
@@ -90,16 +98,16 @@ const Header = () => {
                 gap: "10px",
                 fontSize: "16px",
                 cursor: "pointer",
-                padding: "5px 10px", 
-                borderRadius: "4px", 
-                transition: "background-color 0.2s ease" 
+                padding: "5px 10px",
+                borderRadius: "4px",
+                transition: "background-color 0.2s ease"
               }}
               onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f0f0f0'}
               onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                width="28" 
+                width="28"
                 height="28"
                 fill="#4a90e2"
                 viewBox="0 0 16 16"
@@ -131,12 +139,12 @@ const Header = () => {
       </div>
       <div className="header-bottom">
         <nav className="sub-nav">
-          <Link to="/mua-ban-can-ho">MUA BÁN CĂN HỘ</Link>
-          <Link to="/cho-thue-can-ho">CHO THUÊ CĂN HỘ</Link>
-          <Link to="/du-an">DỰ ÁN</Link>
-          <Link to="/introduction">GIỚI THIỆU</Link>
-          <Link to="/market-analysis">PHÂN TÍCH ĐÁNH GIÁ</Link>
-          <Link to="/news">NEWS</Link>
+          <Link className={getNavLinkClass("/mua-ban-can-ho")} to="/mua-ban-can-ho">MUA BÁN CĂN HỘ</Link>
+          <Link className={getNavLinkClass("/cho-thue-can-ho")} to="/cho-thue-can-ho">CHO THUÊ CĂN HỘ</Link>
+          <Link className={getNavLinkClass("/du-an")} to="/du-an">DỰ ÁN</Link>
+          <Link className={getNavLinkClass("/introduction")} to="/introduction">GIỚI THIỆU</Link>
+          <Link className={getNavLinkClass("/market-analysis")} to="/market-analysis">PHÂN TÍCH ĐÁNH GIÁ</Link>
+          <Link className={getNavLinkClass("/news")} to="/news">NEWS</Link>
         </nav>
       </div>
     </header>
