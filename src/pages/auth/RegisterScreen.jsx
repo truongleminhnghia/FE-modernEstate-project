@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Input,
   Button,
@@ -20,6 +20,7 @@ const { Option } = Select;
 const RegisterScreen = () => {
   const [form] = Form.useForm();
   const navigate = useNavigate();
+  const [isButtonHovered, setIsButtonHovered] = useState(false);
 
   const onFinish = async (values) => {
     try {
@@ -48,6 +49,20 @@ const RegisterScreen = () => {
     }
   };
 
+  const registerButtonStyle = {
+    marginTop: 8,
+    borderRadius: 8,
+    background: "#4a90e2",
+    height: 48,
+    fontSize: 16,
+    fontWeight: 500,
+    border: 'none',
+    transition: 'background-color 0.3s ease',
+  };
+  
+  const registerButtonHoverStyle = {
+    background: "#357ABD", 
+  };
   return (
     <Row
       style={{
@@ -300,11 +315,16 @@ const RegisterScreen = () => {
           </Row>
 
           <Button
-            type="primary"
+            type="primary" 
             size="large"
             block
             htmlType="submit"
-            style={{ marginTop: 8, borderRadius: 8, background: "#4a90e2" }}
+            style={{
+              ...registerButtonStyle, 
+              ...(isButtonHovered ? registerButtonHoverStyle : {}) 
+            }}
+            onMouseEnter={() => setIsButtonHovered(true)} 
+            onMouseLeave={() => setIsButtonHovered(false)} 
           >
             ĐĂNG KÝ
           </Button>

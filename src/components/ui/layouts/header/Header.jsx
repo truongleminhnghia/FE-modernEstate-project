@@ -1,27 +1,26 @@
 import React, { useState } from "react";
-import "./Header.css";
-import { Link, Navigate, useNavigate } from "react-router-dom";
-import { Dropdown, List, Menu, Select } from "antd";
+import "./Header.css"
+import { Link, useNavigate } from "react-router-dom"; 
+import { Dropdown, Menu, Button } from "antd"; 
 
 const Header = () => {
-  const navigate = useNavigate();
+  const navigate = useNavigate(); 
+  const [isLoginButtonHovered, setIsLoginButtonHovered] = useState(false);
+
   const menu = (
     <Menu
       onClick={(info) => {
         if (info.key === 'logout') {
           localStorage.removeItem("token");
           localStorage.removeItem("user");
-          window.location.href = "/";
+          navigate("/");
+        } else if (info.key === 'profile') {
+          navigate("/user-profile");
+        } else if (info.key === 'transactions') {
+          navigate("/user-transactions");
+        } else if (info.key === 'favorite') {
+          navigate("/user-favorite");
         }
-          if (info.key === 'profile') {
-            window.location.href = "/user-profile";
-          }
-          if (info.key === 'transactions') {
-            window.location.href = "/user-transactions";
-          }
-          if (info.key === 'favorite') {
-            window.location.href = "/user-favorite";
-          }
       }}
       items={[
         {
@@ -37,62 +36,108 @@ const Header = () => {
           key: 'favorite',
         },
         {
+          type: 'divider', 
+        },
+        {
           label: 'Đăng xuất',
           key: 'logout',
+          danger: true, 
         },
       ]}
     />
   );
-  
+
+  const loginButtonStyle = {
+    backgroundColor: '#4a90e2', 
+    borderColor: '#4a90e2',     
+    color: '#fff',             
+    borderRadius: '4px',
+    transition: 'background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease',
+  };
+
+  const loginButtonHoverStyle = {
+    backgroundColor: '#357abd', 
+    borderColor: '#357abd',     
+    color: '#fff',             
+  };
+
+
+  const user = localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user")) : null;
 
   return (
     <header className="header">
       <div className="header-top">
         <div className="logo">
-          <img className="cursor-pointer" src="/images/logos/logo-estate.png" alt="Modern Estate" onClick={() => navigate('/')} />
-      </div>
-      <nav className="main-nav">
-        <a className="active" href="/">
-          Trang chủ
-        </a>
-        <a href="#">Dịch vụ</a>
-        <a href="#">Thông tin</a>
-      </nav>
-      {localStorage.getItem("token") ? (
+          <Link to="/">
+            <img src="/images/logos/logo-estate.png" alt="Modern Estate" />
+          </Link>
+        </div>
+        <nav className="main-nav">
+          <Link className="active" to="/">
+            Trang chủ
+          </Link>
+          <Link to="/services">Dịch vụ</Link>
+          <Link to="/information">Thông tin</Link>
+        </nav>
+        {localStorage.getItem("token") && user ? (
           <Dropdown overlay={menu} trigger={['click']}>
-            <div className="user-dropdown" onClick={(e) => e.preventDefault()} style={{display: "flex", alignItems: "center", gap: "10px", fontSize: "16px", cursor: "pointer"}}>
-            <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="30"
-            height="30"
-            fill="#4a90e2"
-            class="bi bi-person-circle"
-            viewBox="0 0 16 16"
-          >
-            <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0" />
-            <path
-              fill-rule="evenodd"
-              d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8m8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1"
-            />
-          </svg>
-          {JSON.parse(localStorage.getItem("user")).firstName + " " + JSON.parse(localStorage.getItem("user")).lastName}
+            <div
+              className="user-dropdown"
+              onClick={(e) => e.preventDefault()}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "10px",
+                fontSize: "16px",
+                cursor: "pointer",
+                padding: "5px 10px", 
+                borderRadius: "4px", 
+                transition: "background-color 0.2s ease" 
+              }}
+              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f0f0f0'}
+              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="28" 
+                height="28"
+                fill="#4a90e2"
+                viewBox="0 0 16 16"
+              >
+                <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0" />
+                <path
+                  fillRule="evenodd"
+                  d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8m8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1"
+                />
+              </svg>
+              <span style={{ fontWeight: 500 }}>
+                {user.firstName + " " + user.lastName}
+              </span>
             </div>
           </Dropdown>
-      ) : (
-        <button className="login-btn">
-          <Link to="/login">Đăng nhập</Link>
-        </button>
-      )}
-    </div>
-    <div className="header-bottom">
-      <nav className="sub-nav">
-        <a href="/mua-ban-can-ho">MUA BÁN CĂN HỘ</a>
-        <a href="/cho-thue-can-ho">CHO THUÊ CĂN HỘ</a>
-        <a href="/du-an">DỰ ÁN</a>
-        <a href="/introduction">GIỚI THIỆU</a>
-        <a href="#">PHÂN TÍCH ĐÁNH GIÁ</a>
-        <a href="/news">NEWS</a>
-      </nav>
+        ) : (
+          <Button
+            style={{
+              ...loginButtonStyle,
+              ...(isLoginButtonHovered ? loginButtonHoverStyle : {})
+            }}
+            onMouseEnter={() => setIsLoginButtonHovered(true)}
+            onMouseLeave={() => setIsLoginButtonHovered(false)}
+            onClick={() => navigate('/login')}
+          >
+            Đăng nhập
+          </Button>
+        )}
+      </div>
+      <div className="header-bottom">
+        <nav className="sub-nav">
+          <Link to="/mua-ban-can-ho">MUA BÁN CĂN HỘ</Link>
+          <Link to="/cho-thue-can-ho">CHO THUÊ CĂN HỘ</Link>
+          <Link to="/du-an">DỰ ÁN</Link>
+          <Link to="/introduction">GIỚI THIỆU</Link>
+          <Link to="/market-analysis">PHÂN TÍCH ĐÁNH GIÁ</Link>
+          <Link to="/news">NEWS</Link>
+        </nav>
       </div>
     </header>
   );

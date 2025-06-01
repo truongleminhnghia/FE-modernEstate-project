@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useState } from "react";
 import {
   Input,
   Button,
@@ -14,30 +14,11 @@ import {
   UserOutlined,
 } from "@ant-design/icons";
 import axios from "axios";
-import { useLocation, useNavigate } from 'react-router-dom';
-// import { verifyEmail } from '../../apis/auth';
 const { Title, Text, Link } = Typography;
 
 const LoginScreen = () => {
   const [form] = Form.useForm();
-  const location = useLocation();
-  const navigate = useNavigate();
-
-  // useEffect(() => {
-  //   const params = new URLSearchParams(location.search);
-  //   const token = params.get('token');
-  //   if (token) {
-  //     verifyEmail(token)
-  //       .then(() => {
-  //         message.success('Xác thực email thành công! Bạn có thể đăng nhập.');
-  //         navigate('/login', { replace: true });
-  //       })
-  //       .catch(() => {
-  //         message.error('Xác thực email thất bại hoặc token không hợp lệ!');
-  //         navigate('/login', { replace: true });
-  //       });
-  //   }
-  // }, [location, navigate]);
+  const [isButtonHovered, setIsButtonHovered] = useState(false);
 
   const handleLogin = async (values) => {
     try {
@@ -61,6 +42,20 @@ const LoginScreen = () => {
     }
   };
   
+  const loginButtonStyle = {
+    marginTop: 8,
+    borderRadius: 8,
+    background: "#4a90e2",
+    height: 48,
+    fontSize: 16,
+    fontWeight: 500,
+    border: 'none',
+    transition: 'background-color 0.3s ease', 
+  };
+  
+  const loginButtonHoverStyle = {
+    background: "#357ABD", 
+  };
   return (
     <Row
       style={{
@@ -226,18 +221,16 @@ const LoginScreen = () => {
           </Row>
 
           <Button
-            type="primary"
+            type="primary" 
             size="large"
             block
             htmlType="submit"
             style={{
-              marginTop: 8,
-              borderRadius: 8,
-              background: "#4a90e2",
-              height: 48,
-              fontSize: 16,
-              fontWeight: 500,
+              ...loginButtonStyle,
+              ...(isButtonHovered ? loginButtonHoverStyle : {})
             }}
+            onMouseEnter={() => setIsButtonHovered(true)} 
+            onMouseLeave={() => setIsButtonHovered(false)} 
           >
             ĐĂNG NHẬP
           </Button>
