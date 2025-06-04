@@ -3,6 +3,8 @@ import "./ApartmentsPage.css";
 import { Select, Card, Tag, Pagination } from "antd";
 import { useNavigate, Link } from "react-router-dom";
 import { MessageOutlined } from '@ant-design/icons';
+import MessagePopup from '../../components/popup/MessagePopup';
+import ChatPopup from '../../components/popup/ChatPopup';
 
 const { Option } = Select;
 
@@ -25,6 +27,24 @@ const ApartmentsPage = () => {
   const totalPages = Math.ceil(apartments.length / PAGE_SIZE);
   const pagedApts = apartments.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
   const navigate = useNavigate();
+
+  const [showPopup, setShowPopup] = useState(false);
+  const [currentPopupView, setCurrentPopupView] = useState('message');
+
+  const togglePopup = () => {
+    setShowPopup(!showPopup);
+    if (!showPopup) {
+      setCurrentPopupView('message');
+    }
+  };
+
+  const switchToChatView = () => {
+    setCurrentPopupView('chat');
+  };
+
+  const switchToMessageView = () => {
+    setCurrentPopupView('message');
+  };
 
   return (
     <div className="apartments-bg">
@@ -130,9 +150,17 @@ const ApartmentsPage = () => {
         />
       </div>
       {/* Message Button */}
-      <button className="message-button">
+      <button className="message-button" onClick={togglePopup}>
         <MessageOutlined />
       </button>
+
+      {showPopup && currentPopupView === 'message' && (
+        <MessagePopup showPopup={showPopup} togglePopup={togglePopup} onSwitchToChat={switchToChatView} />
+      )}
+
+      {showPopup && currentPopupView === 'chat' && (
+        <ChatPopup showPopup={showPopup} togglePopup={togglePopup} onSwitchToMessage={switchToMessageView} />
+      )}
     </div>
   );
 };
