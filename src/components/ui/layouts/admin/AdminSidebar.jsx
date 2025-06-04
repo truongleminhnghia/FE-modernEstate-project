@@ -25,27 +25,8 @@ const AdminSidebar = ({ collapsed, onCollapse }) => {
     {
       key: "users",
       icon: <UserOutlined />,
-      label: "Quản lý Người dùng",
-      children: [
-        {
-          key: "owners",
-          icon: <UserOutlined />,
-          label: "Chủ sở hữu",
-          path: "/admin/owners",
-        },
-        {
-          key: "customers",
-          icon: <UserOutlined />,
-          label: "Khách hàng",
-          path: "/admin/customers",
-        },
-        {
-          key: "brokers",
-          icon: <UserOutlined />,
-          label: "Môi giới",
-          path: "/admin/brokers",
-        },
-      ],
+      label: "Quản lý tài khoản",
+      path: "/admin/users",
     },
     {
       key: "transactions",

@@ -18,6 +18,7 @@ const initialSummaryStats = {
   totalListings: 850,
   activeListings: 620,
   pendingListings: 35,
+  revenue: 120000000, // doanh thu mẫu
 };
 
 const DashboardPage = () => {
@@ -46,9 +47,9 @@ const DashboardPage = () => {
           <StatCard title="Tổng Tin đăng" value={summaryStats.totalListings} icon={<ContainerOutlined />} color="#FAAD14" loading={loadingStats} />
         </Col>
         <Col xs={24} sm={12} md={12} lg={6}>
-          <StatCard title="Tin đang hoạt động" value={summaryStats.activeListings} icon={<CheckSquareOutlined />} color="#52C41A" loading={loadingStats} />
+          <StatCard title="Doanh thu" value={summaryStats.revenue?.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })} icon={<DollarCircleOutlined />} color="#13C2C2" loading={loadingStats} />
         </Col>
-         <Col xs={24} sm={12} md={12} lg={6}>
+        <Col xs={24} sm={12} md={12} lg={6}>
           <StatCard title="Tin chờ duyệt" value={summaryStats.pendingListings} icon={<ClockCircleOutlined />} color="#FF4D4F" loading={loadingStats} />
         </Col>
       </Row>
