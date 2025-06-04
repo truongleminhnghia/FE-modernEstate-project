@@ -31,8 +31,8 @@ import ProjectsPage from "./pages/ProjectsPage/ProjectsPage";
 import ProjectDetailsPage from "./pages/ProjectDetailsPage/ProjectDetailsPage";
 import CheckEmailNotice from './pages/auth/CheckEmailNotice';
 import NotFound from './pages/auth/NotFound';
-import ServicePage from "./pages/services/ServicePage";
 import UserManagement from "./pages/admins/users/UserManagement";
+import ServicePage from "./pages/services/ServicePage";
 
 const router = createBrowserRouter([
   {
@@ -48,11 +48,11 @@ const router = createBrowserRouter([
         element: <LoginScreen />,
       },
       {
-        path: "/mua-ban-can-ho",
+        path: "/can-ho",
         element: <ApartmentsPage />,
       },
       {
-        path: "/mua-ban-can-ho/:id",
+        path: "/can-ho/:id",
         element: <ApartmentDetailsPage />,
       },
       {
