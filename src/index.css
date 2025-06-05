@@ -1,7 +1,0 @@
-@import "tailwindcss";
-/* @import "tailwindcss/preflight";
-@import "tailwindcss/utilities"; */ 
-
-@tailwind utilities;
-@import "@fontsource/poppins";
-@import "@fontsource/roboto";
