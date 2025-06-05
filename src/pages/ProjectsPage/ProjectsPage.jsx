@@ -3,6 +3,8 @@ import "./ProjectsPage.css";
 import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
 import { MessageOutlined } from '@ant-design/icons';
+import MessagePopup from '../../components/popup/MessagePopup';
+import ChatPopup from '../../components/popup/ChatPopup';
 
 
 // Mock data
@@ -70,6 +72,8 @@ const ProjectsPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
+  const [showPopup, setShowPopup] = useState(false);
+  const [currentPopupView, setCurrentPopupView] = useState('message');
 
   useEffect(() => {
     // Giả lập việc gọi API
@@ -91,6 +95,21 @@ const ProjectsPage = () => {
 
     fetchProjects();
   }, []);
+
+  const togglePopup = () => {
+    setShowPopup(!showPopup);
+    if (!showPopup) {
+      setCurrentPopupView('message');
+    }
+  };
+
+  const switchToChatView = () => {
+    setCurrentPopupView('chat');
+  };
+
+  const switchToMessageView = () => {
+    setCurrentPopupView('message');
+  };
 
   if (loading) {
     return (
@@ -199,9 +218,17 @@ const ProjectsPage = () => {
       </div>
 
       {/* Message Button */}
-      <button className="message-button">
+      <button className="message-button" onClick={togglePopup}>
         <MessageOutlined />
       </button>    
+
+      {showPopup && currentPopupView === 'message' && (
+        <MessagePopup showPopup={showPopup} togglePopup={togglePopup} onSwitchToChat={switchToChatView} />
+      )}
+
+      {showPopup && currentPopupView === 'chat' && (
+        <ChatPopup showPopup={showPopup} togglePopup={togglePopup} onSwitchToMessage={switchToMessageView} />
+      )}
 
     </div>
   );
