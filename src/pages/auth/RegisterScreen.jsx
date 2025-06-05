@@ -96,8 +96,6 @@ const RegisterScreen = () => {
           }}
         />
       </Col>
-
-      {/* Right Side - Form */}
       <Col
         xs={24}
         md={12}

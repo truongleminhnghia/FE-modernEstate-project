@@ -2,6 +2,9 @@
     border: 1px solid #b3d4fc;
     background: #fff;
     font-family: 'Roboto', Arial, sans-serif;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
   }
   
   .header-top {

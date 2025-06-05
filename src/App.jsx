@@ -32,8 +32,9 @@ import ProjectDetailsPage from "./pages/ProjectDetailsPage/ProjectDetailsPage";
 import CheckEmailNotice from './pages/auth/CheckEmailNotice';
 import NotFound from './pages/auth/NotFound';
 import ServicePage from "./pages/services/ServicePage";
-import UserManagement from "./pages/admins/users/UserManagement";
+import UserManagement from "./pages/admins/users/UserManagement"; 
 import { ROLES } from './constants/roles';
+import ForgotPassword from "./pages/auth/ForgotPassword";
 
 const router = createBrowserRouter([
   {
@@ -67,7 +68,7 @@ const router = createBrowserRouter([
       {
         path: "/news",
         element: <News />,
-      },
+      }, // Stray brace removed from here
       {
         path: "/user-profile",
         element: (
@@ -174,6 +175,10 @@ const router = createBrowserRouter([
         element: <ServicePage />,
       },
       {
+        path: "/forgot-password",
+        element: <ForgotPassword />,
+      },
+      {
         path: "*",
         element: <NotFound />,
       },
@@ -184,12 +189,12 @@ const router = createBrowserRouter([
     element: (
       <ProtectedRoute
         element={<AdminLayout/>}
-        allowedRoles={[ROLES.ADMIN]}       
+        allowedRoles={[ROLES.ADMIN]}
       />
     ),
     children: [
       {
-        index: true, 
+        index: true,
         element: <Navigate to="dashboard" replace />,
       },
       {
@@ -221,7 +226,7 @@ const router = createBrowserRouter([
     children: [
       {
         index: true,
-        element: <Navigate to="dashboard" replace />,
+        element: <Navigate to="listings" replace />, 
       },
       {
         path: "listings",

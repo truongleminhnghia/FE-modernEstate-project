@@ -40,7 +40,7 @@ const LoginScreen = () => {
             window.location.href = "/admin/dashboard";
             break;
           case 'ROLE_STAFF':
-            window.location.href = "/staff/dashboard";
+            window.location.href = "/staff/listings";
             break;
           case 'ROLE_BROKER':
             window.location.href = "/broker-profile";
@@ -238,7 +238,7 @@ const LoginScreen = () => {
               </Text>
             </Col>
             <Col>
-              <Link href="#" style={{ color: "#4a90e2" }}>Quên mật khẩu?</Link>
+              <Link href="/forgot-password" style={{ color: "#4a90e2" }}>Quên mật khẩu?</Link>
             </Col>
           </Row>
 

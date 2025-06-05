@@ -17,42 +17,42 @@ const StaffSidebar = ({ collapsed, onCollapse }) => {
   const location = useLocation();
 
   const menuItems = [
-    {
-      key: "dashboard",
-      icon: <DashboardOutlined />,
-      label: "Tổng quan",
-      path: "/staff/dashboard",
-    },
+    // {
+    //   key: "dashboard",
+    //   icon: <DashboardOutlined />,
+    //   label: "Tổng quan",
+    //   path: "/staff/dashboard",
+    // },
     {
       key: "listings",
       icon: <UserOutlined />,
       label: "Quản lý tin đăng",
       path: "/staff/listings",
     },
-    {
-      key: "contracts",
-      icon: <FileTextOutlined />,
-      label: "Quản lý hợp đồng",
-      path: "/staff/contracts",
-    },
+    // {
+    //   key: "contracts",
+    //   icon: <FileTextOutlined />,
+    //   label: "Quản lý hợp đồng",
+    //   path: "/staff/contracts",
+    // },
     {
       key: "services",
       icon: <FileTextOutlined />,
       label: "Quản lý dịch vụ",
       path: "/staff/services",
     },
-    {
-      key: "notifications",
-      icon: <BellOutlined />,
-      label: "Thông báo",
-      path: "/staff/notifications",
-    },
-    {
-      key: "settings",
-      icon: <SettingOutlined />,
-      label: "Cài đặt",
-      path: "/staff/settings",
-    },
+    // {
+    //   key: "notifications",
+    //   icon: <BellOutlined />,
+    //   label: "Thông báo",
+    //   path: "/staff/notifications",
+    // },
+    // {
+    //   key: "settings",
+    //   icon: <SettingOutlined />,
+    //   label: "Cài đặt",
+    //   path: "/staff/settings",
+    // },
   ];
 
   const handleMenuClick = ({ key }) => {

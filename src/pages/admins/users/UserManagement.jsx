@@ -110,19 +110,15 @@ const UserManagement = () => {
         form.setFieldsValue({
           firstName: editingCustomer.firstName || '',
           lastName: editingCustomer.lastName || '',
-          email: editingCustomer.email, // Email is disabled for edit but good to set
+          email: editingCustomer.email, 
           phone: editingCustomer.phone || '',
           address: editingCustomer.address || '',
           avatar: editingCustomer.avatar || '',
-          gender: editingCustomer.gender || undefined, // Use undefined to show placeholder if gender is empty/null
-          status: editingCustomer.status || undefined, // Use undefined for placeholder if status is empty/null
-          // Password is not set for editing form
-          // Role is handled as a disabled input displaying current role name
+          gender: editingCustomer.gender || undefined, 
+          status: editingCustomer.status || undefined, 
         });
       } else {
-        form.resetFields(); // For adding new, reset fields. destroyOnClose also helps.
-        // Optionally set default values for new account form, e.g.:
-        // form.setFieldsValue({ status: "WAIT_CONFIRM", gender: "MALE", role: "ROLE_CUSTOMER" });
+        form.resetFields(); 
       }
     }
   }, [editingCustomer, form, isFormModalVisible]);
