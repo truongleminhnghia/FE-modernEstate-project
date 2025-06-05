@@ -96,7 +96,7 @@ const ApartmentsPage = () => {
             key={apt.id}
             className="apartment-card"
             hoverable
-            onClick={() => navigate(`/mua-ban-can-ho/${apt.id}`)}
+            onClick={() => navigate(`/can-ho/${apt.id}`)}
             cover={
               <div className="apartment-card-img-wrap">
                 <img alt={apt.title} src={apt.image} className="apartment-card-img" />

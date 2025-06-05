@@ -35,6 +35,7 @@ import ServicePage from "./pages/services/ServicePage";
 import UserManagement from "./pages/admins/users/UserManagement"; 
 import { ROLES } from './constants/roles';
 import ForgotPassword from "./pages/auth/ForgotPassword";
+import MarketAnalysis from "./pages/User/marketAnalysis/MarketAnalysis";
 
 const router = createBrowserRouter([
   {
@@ -50,11 +51,11 @@ const router = createBrowserRouter([
         element: <LoginScreen />,
       },
       {
-        path: "/mua-ban-can-ho",
+        path: "/can-ho",
         element: <ApartmentsPage />,
       },
       {
-        path: "/mua-ban-can-ho/:id",
+        path: "/can-ho/:id",
         element: <ApartmentDetailsPage />,
       },
       {
@@ -64,6 +65,10 @@ const router = createBrowserRouter([
       {
         path: "/information",
         element: <Introduction />,
+      },
+      {
+        path: "/market-analysis",
+        element: <MarketAnalysis />,
       },
       {
         path: "/news",

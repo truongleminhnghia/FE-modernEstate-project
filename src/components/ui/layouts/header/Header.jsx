@@ -143,8 +143,7 @@ const Header = () => {
       </div>
       <div className="header-bottom">
         <nav className="sub-nav">
-          <Link className={getNavLinkClass("/mua-ban-can-ho")} to="/mua-ban-can-ho">MUA BÁN CĂN HỘ</Link>
-          <Link className={getNavLinkClass("/cho-thue-can-ho")} to="/cho-thue-can-ho">CHO THUÊ CĂN HỘ</Link>
+          <Link className={getNavLinkClass("/can-ho")} to="/mua-ban-can-ho">CĂN HỘ</Link>
           <Link className={getNavLinkClass("/du-an")} to="/du-an">DỰ ÁN</Link>
           <Link className={getNavLinkClass("/market-analysis")} to="/market-analysis">PHÂN TÍCH ĐÁNH GIÁ</Link>
           <Link className={getNavLinkClass("/news")} to="/news">NEWS</Link>

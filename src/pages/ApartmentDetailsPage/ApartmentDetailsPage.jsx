@@ -70,12 +70,10 @@ const ApartmentDetailsPage = () => {
 
   return (
     <div className="apartment-detail-bg">
-      {/* Breadcrumb */}
       <div className="apartment-detail-breadcrumb">
-        <Link to="/">Trang chủ</Link> / <Link to="/mua-ban-can-ho">Căn hộ</Link> / <span>Chi tiết căn hộ</span>
+        <Link to="/">Trang chủ</Link> / <Link to="/can-ho">Căn hộ</Link> / <span>Chi tiết căn hộ</span>
       </div>
 
-      {/* Top section: Image + Info */}
       <div className="apartment-detail-top">
         <div className="apartment-detail-images">
           <img className="main-img" src={images[currentImageIndex]} alt="main" onClick={handleNextClick} />
