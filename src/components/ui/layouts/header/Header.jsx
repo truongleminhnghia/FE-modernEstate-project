@@ -131,7 +131,11 @@ const Header = () => {
             }}
             onMouseEnter={() => setIsLoginButtonHovered(true)}
             onMouseLeave={() => setIsLoginButtonHovered(false)}
-            onClick={() => navigate('/login')}
+            onClick={() => {
+              localStorage.removeItem("token");
+              localStorage.removeItem("user");
+              navigate('/login');
+            }}
           >
             Đăng nhập
           </Button>

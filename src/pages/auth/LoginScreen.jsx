@@ -32,7 +32,29 @@ const LoginScreen = () => {
         message.success("Đăng nhập thành công!");
         localStorage.setItem("token", response.data.data.token);
         localStorage.setItem("user", JSON.stringify(response.data.data.accountCurrent));
-        window.location.href = "/";
+        
+        const userRole = response.data.data.accountCurrent?.role?.roleName;
+        
+        switch (userRole) {
+          case 'ROLE_ADMIN':
+            window.location.href = "/admin/dashboard";
+            break;
+          case 'ROLE_STAFF':
+            window.location.href = "/staff/dashboard";
+            break;
+          case 'ROLE_BROKER':
+            window.location.href = "/broker-profile";
+            break;
+          case 'ROLE_OWNER':
+            window.location.href = "/owner-profile";
+            break;
+          case 'ROLE_USER':
+            window.location.href = "/user-profile";
+            break;
+          default:
+            console.log("Unknown role:", userRole); 
+            window.location.href = "/";
+        }
       } else {
         message.error("Email hoặc mật khẩu không chính xác!");
       }
