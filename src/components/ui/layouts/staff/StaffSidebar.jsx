@@ -42,6 +42,18 @@ const StaffSidebar = ({ collapsed, onCollapse }) => {
       path: "/staff/services",
     },
     {
+      key: "projects",
+      icon: <FileTextOutlined />,
+      label: "Quản lý dự án",
+      path: "/staff/projects",
+    },
+    {
+      key: "news",
+      icon: <FileTextOutlined />,
+      label: "Quản lý tin tức",
+      path: "/staff/news",
+    },
+    {
       key: "notifications",
       icon: <BellOutlined />,
       label: "Thông báo",

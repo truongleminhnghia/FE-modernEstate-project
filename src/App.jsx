@@ -33,6 +33,8 @@ import CheckEmailNotice from './pages/auth/CheckEmailNotice';
 import NotFound from './pages/auth/NotFound';
 import UserManagement from "./pages/admins/users/UserManagement";
 import ServicePage from "./pages/services/ServicePage";
+import ProjectManagement from "./pages/staff/listings/ProjectManagement";
+import NewsManagement from "./pages/staff/listings/NewsManagement";
 
 const router = createBrowserRouter([
   {
@@ -179,6 +181,14 @@ const router = createBrowserRouter([
       {
         path: "services",
         element: <ServiceManagementPage />,
+      },
+      {
+        path: "projects",
+        element: <ProjectManagement />,
+      },
+      {
+        path: "news",
+        element: <NewsManagement />,
       }
     ]
   }
