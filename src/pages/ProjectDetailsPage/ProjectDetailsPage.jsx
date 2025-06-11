@@ -1,10 +1,12 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import "./ProjectDetailsPage.css";
 import { useParams, Link } from "react-router-dom";
 import { MessageOutlined, LeftOutlined, RightOutlined } from '@ant-design/icons';
 import MessagePopup from '../../components/popup/MessagePopup';
 import ChatPopup from '../../components/popup/ChatPopup';
 import { Carousel } from 'antd';
+import axios from 'axios';
+import { GoogleMap, Marker, useLoadScript } from '@react-google-maps/api';
 
 export function MaterialSymbolsSchool(props) {
   return (<svg xmlns="http://www.w3.org/2000/svg" width={24} height={24} viewBox="0 0 24 24" {...props}><path fill="currentColor" d="M21 17v-6.9L12 15L1 9l11-6l11 6v8zm-9 4l-7-3.8v-5l7 3.8l7-3.8v5z"></path></svg>);
@@ -142,71 +144,106 @@ export function SolarBasketballLinear(props) {
 	return (<svg xmlns="http://www.w3.org/2000/svg" width={24} height={24} viewBox="0 0 24 24" {...props}><g fill="none" stroke="currentColor" strokeWidth={1.5}><path d="M3.34 17c2.76 4.783 8.876 6.42 13.66 3.66a9.96 9.96 0 0 0 4.196-4.731a9.99 9.99 0 0 0-.536-8.93a9.99 9.99 0 0 0-7.465-4.928A9.96 9.96 0 0 0 7 3.339C2.217 6.101.578 12.217 3.34 17Z"></path><path strokeLinecap="round" d="M16.95 20.573S16.01 13.982 14 10.5S7.05 3.427 7.05 3.427"></path><path strokeLinecap="round" d="M21.864 12.58c-5.411-1.187-12.805 3.768-14.287 8.238m8.837-17.609c-1.488 4.42-8.74 9.303-14.125 8.243"></path></g></svg>);
 }
 
+const containerStyle = {
+  width: '100%',
+  height: '400px',
+};
 
-
-const projects = [
-  {
-    id: 1,
-    name: "HONAS RESIDENCE",
-    status: "Đang xây dựng",
-    area: "9200 m²",
-    address: "Thuận Giao D5, Nguyễn Văn Bá, Dĩ An, Bình Dương",
-    company: "Cty CP DTTM BĐS Đại Quang Minh",
-    image: "https://images.unsplash.com/photo-1506744038136-46273834b3fb",
-    featured: true,
-  },
-  {
-    id: 2,
-    name: "HT PEARL",
-    status: "Đang xây dựng",
-    area: "5000 m²",
-    address: "Thuận Giao D5, Nguyễn Văn Bá, Dĩ An, Bình Dương",
-    company: "Cty CP DTTM BĐS Đại Quang Minh",
-    image: "https://images.unsplash.com/photo-1465101046530-73398c7f28ca",
-    featured: false,
-  },
-  {
-    id: 3,
-    name: "HT PEARL",
-    status: "Đang xây dựng",
-    area: "5000 m²",
-    address: "Thuận Giao D5, Nguyễn Văn Bá, Dĩ An, Bình Dương",
-    company: "Cty CP DTTM BĐS Đại Quang Minh",
-    image: "https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd",
-    featured: false,
-  },
-  {
-    id: 4,
-    name: "HT PEARL",
-    status: "Đang xây dựng",
-    area: "5000 m²",
-    address: "Thuận Giao D5, Nguyễn Văn Bá, Dĩ An, Bình Dương",
-    company: "Cty CP DTTM BĐS Đại Quang Minh",
-    image: "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267",
-    featured: false,
-  },
-  ...Array.from({ length: 9 }).map((_, i) => ({
-    id: 5 + i,
-    name: "HONAS RESIDENCE",
-    status: "Đang xây dựng",
-    area: "9200 m²",
-    address: "Thuận Giao D5, Nguyễn Văn Bá, Dĩ An, Bình Dương",
-    company: "Cty CP DTTM BĐS Đại Quang Minh",
-    image: "https://images.unsplash.com/photo-1500534314209-a25ddb2bd429",
-    featured: false,
-  })),
-];
+const defaultCenter = {
+  lat: 10.762622,
+  lng: 106.660172,
+};
 
 const ProjectDetailsPage = () => {
   const { id } = useParams();
-  const project = projects.find((p) => p.id === Number(id));
+  const [project, setProject] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [activeLocationTab, setActiveLocationTab] = useState('school');
   const [activeCategoryTab, setActiveCategoryTab] = useState('kindergarten');
   const [showPopup, setShowPopup] = useState(false);
   const [currentPopupView, setCurrentPopupView] = useState('message');
+  const [location, setLocation] = useState(null);
   const carouselRef = useRef(null);
-  
+
+  const { isLoaded } = useLoadScript({
+    googleMapsApiKey: "AIzaSyDH65U1tsUHeWw-XMgtSyaVU9Sh4QO4J1o",
+  });
+
+  useEffect(() => {
+    const fetchProjectDetails = async () => {
+      try {
+        setLoading(true);
+        const response = await axios.get(`https://222.255.117.195:8443/api/v1/projects/${id}`);
+        const projectData = response.data?.data;
+        
+        if (projectData) {
+          setProject({
+            id: projectData.id,
+            name: projectData.title,
+            status: projectData.status?.replace(/_/g, " "),
+            area: `${projectData.projectArea?.toLocaleString()} ${projectData.unitArea || "m²"}`,
+            address: projectData.address?.addressDetail || "Địa chỉ không rõ",
+            company: projectData.invetor?.companyName || "Chủ đầu tư không rõ",
+            image: projectData.images?.[0]?.imageUrl || "https://via.placeholder.com/300x200.png?text=No+Image",
+            type: projectData.typeProject,
+            description: projectData.description,
+          });
+
+          // Geocode the address
+          if (projectData.address?.addressDetail) {
+            const geocodeUrl = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(
+              projectData.address.addressDetail
+            )}&key=AIzaSyDH65U1tsUHeWw-XMgtSyaVU9Sh4QO4J1o`;
+
+            try {
+              const response = await fetch(geocodeUrl);
+              const data = await response.json();
+              if (data.results && data.results.length > 0) {
+                const { lat, lng } = data.results[0].geometry.location;
+                setLocation({ lat, lng });
+              }
+            } catch (error) {
+              console.error("Lỗi khi tìm địa chỉ:", error);
+            }
+          }
+        }
+        setLoading(false);
+      } catch (err) {
+        console.error("Error fetching project details:", err);
+        setError("Không thể tải thông tin dự án");
+        setLoading(false);
+      }
+    };
+
+    fetchProjectDetails();
+  }, [id]);
+
+  if (loading) {
+    return (
+      <div className="project-details-container">
+        <div className="loading-text">Đang tải thông tin dự án...</div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="project-details-container">
+        <div className="error-text">{error}</div>
+      </div>
+    );
+  }
+
+  if (!project) {
+    return (
+      <div className="project-details-container">
+        <div className="error-text">Không tìm thấy thông tin dự án</div>
+      </div>
+    );
+  }
+
   const nearbyProjects = [
     {
       id: 1,
@@ -260,8 +297,6 @@ const ProjectDetailsPage = () => {
     }
   ];
 
-  if (!project) return <div>Không tìm thấy dự án.</div>;
-
   const toggleCollapse = () => {
     setIsCollapsed(!isCollapsed);
   };
@@ -299,26 +334,26 @@ const ProjectDetailsPage = () => {
         <div className="project-details-header-content">
           <div className="project-details-header-images-group">
             <div className="project-details-header-main-img-wrap">
-              <img src="https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=800&auto=format&fit=crop&q=60" alt="main" className="project-details-header-main-img" />
+              <img src={project.image} alt="main" className="project-details-header-main-img" />
             </div>
             <div className="project-details-header-thumbs">
-              <img src="https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=800&auto=format&fit=crop&q=60" alt="img1" className="project-details-header-thumb" />
-              <img src="https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=800&auto=format&fit=crop&q=60" alt="img2" className="project-details-header-thumb" />
-              <img src="https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=800&auto=format&fit=crop&q=60" alt="img3" className="project-details-header-thumb" />
+              <img src={project.image} alt="img1" className="project-details-header-thumb" />
+              <img src={project.image} alt="img2" className="project-details-header-thumb" />
+              <img src={project.image} alt="img3" className="project-details-header-thumb" />
               <div className="project-details-header-thumb project-details-header-thumb-last">
-                <img src="https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=800&auto=format&fit=crop&q=60" alt="img4" className="project-details-header-thumb-img" />
+                <img src={project.image} alt="img4" className="project-details-header-thumb-img" />
                 <span className="project-details-header-thumb-more">Xem 8 ảnh</span>
               </div>
             </div>
           </div>
           <div className="project-details-header-info-box">
-            <div className="project-details-header-title">Ariyana Lakeside Văn Quán (Hesco Văn Quán)</div>
-            <div className="project-details-header-address">Số 3, đường Nguyễn Khuyến, Phường 12, Quận Bình Thạnh, TP.HCM</div>
+            <div className="project-details-header-title">{project.name}</div>
+            <div className="project-details-header-address">{project.address}</div>
             <hr className="project-details-header-hr" />
             <div className="project-details-header-info-list">
-              <div><b>Giá từ:</b> <span>Đang cập nhật</span></div>
-              <div><b>Chủ đầu tư:</b> <span>Công ty cổ phần thiết bị Thủy lợi (HESCO)</span></div>
-              <div><b>Loại hình:</b> <span>Nhà biệt thự, liền kề, Căn hộ</span></div>
+              <div><b>Giá từ:</b> <span>{project.price || 'Đang cập nhật'}</span></div>
+              <div><b>Chủ đầu tư:</b> <span>{project.company}</span></div>
+              <div><b>Loại hình:</b> <span>{project.type}</span></div>
             </div>
           </div>
         </div>
@@ -331,47 +366,59 @@ const ProjectDetailsPage = () => {
             {/* LEFT: Project Info */}
             <div className="project-details-section-main">
               <div className="project-details-section-label">THÔNG TIN DỰ ÁN</div>
-              <div className="project-details-section-title">Tổng quan dự án Ariyana Lakeside Văn Quán (Hesco Văn Quán)</div>
+              <div className="project-details-section-title">Tổng quan dự án {project.name}</div>
               <div className={`project-details-section-content ${isCollapsed ? 'collapsed' : ''}`}>
                 <div className="project-details-summary-table">
                   <div className="project-details-summary-grid">
                     <div className="project-details-summary-row">
-                      <div><b>Giá từ:</b> Đang cập nhật</div>
-                      <div><b>Chủ đầu tư:</b> Công ty cổ phần Modern Estate</div>
-                      <div><b>Thời gian khởi công:</b> Quý 2/2021</div>
-                      <div><b>Số tòa nhà:</b> 2 tòa tháp cao 45 và 50 tầng</div>
-                      <div><b>Các loại diện tích:</b> 62m² – 73m² – 82m² – 89m² – 99m² – 111m²</div>
+                      <div><b>Giá từ:</b> {project.price || 'Đang cập nhật'}</div>
+                      <div><b>Chủ đầu tư:</b> {project.company}</div>
+                      <div><b>Thời gian khởi công:</b> {project.startDate || 'Đang cập nhật'}</div>
+                      <div><b>Số tòa nhà:</b> {project.numberOfBuildings || 'Đang cập nhật'}</div>
+                      <div><b>Các loại diện tích:</b> {project.areaTypes || 'Đang cập nhật'}</div>
                     </div>
                     <div className="project-details-summary-row">
-                      <div><b>Diện tích khu đất:</b> 5.784.000 m2</div>
-                      <div><b>Diện tích xây dựng:</b> 3.188.990 m2</div>
-                      <div><b>Thời gian hoàn thành:</b> Đang cập nhật</div>
-                      <div><b>Số sản phẩm:</b> 1024 căn hộ cao cấp</div>
-                      <div><b>Trạng thái:</b> Đang mở bán</div>
+                      <div><b>Diện tích khu đất:</b> {project.totalArea || 'Đang cập nhật'}</div>
+                      <div><b>Diện tích xây dựng:</b> {project.builtArea || 'Đang cập nhật'}</div>
+                      <div><b>Thời gian hoàn thành:</b> {project.completionDate || 'Đang cập nhật'}</div>
+                      <div><b>Số sản phẩm:</b> {project.numberOfProducts || 'Đang cập nhật'}</div>
+                      <div><b>Trạng thái:</b> {project.status || 'Đang cập nhật'}</div>
                     </div>
                   </div>
                 </div>
                 <div className="project-details-desc">
-                  <b>Dự án do Gamuda Land phát triển</b> sở hữu vị trí đắc địa nhất Quận Hà Đông nằm tại ngã tư giao đường Nguyễn Khuyến, Vũ Trọng Khánh Mỗ Lao, Trần Phú, Quang Trãi. Đây là vị trí có tọa độ kim cương khi tận dụng cơ sở hạ tầng giao thông, hạ tầng kỹ thuật, xã hội hoàn chỉnh được đánh giá là đẹp, kết nối thuận tiện bậc nhất quận Hà Đông, Hà Nội. Dự án được liên doanh bởi hai công ty là công ty cổ phần thiết bị Thủy Lợi (HESCO) & Tập đoàn phát triển nhà và đô thị Thăng Long với vốn đầu tư 1.000 tỷ đồng và diện tích xây dựng là 3199.88m2.
+                  <b>Dự án {project.name}</b> {project.description}
                 </div>
-                <img src="/src/assets/images/map.jpg" alt="Ariyana Lakeside" className="project-details-main-img-desc" />
+                <div className="project-details-map-container">
+                  {isLoaded ? (
+                    <GoogleMap
+                      mapContainerStyle={containerStyle}
+                      center={location || defaultCenter}
+                      zoom={15}
+                    >
+                      <Marker position={location || defaultCenter} />
+                    </GoogleMap>
+                  ) : (
+                    <div>Loading map...</div>
+                  )}
+                </div>
                 <div className="project-details-img-caption">
-                  (Phối cảnh dự án Ariyana Lakeside Văn Quán (Hesco Văn Quán))
+                  (Vị trí dự án {project.name})
                 </div>
                 <div className="project-details-desc">
-                  Dự án do Gamuda Land phát triển là dự án duy nhất có quy mô 2 tòa tháp cao 45 và 50 tầng, 03 tầng hầm. Sở hữu trung tâm thương mại quy mô tổng diện tích lớn nhất khu vực này, tổng 5,748.50m2, chiều cao tối đa 182m, có thiết kế đa dạng 2-3 phòng ngủ.
+                  {project.detailedDescription || project.description}
                 </div>
-                <ul className="project-details-list">
-                  <li><b>Dự án:</b> Ariyana Lakeside Văn Quán (Hesco Văn Quán)</li>
-                  <li><b>Vị trí:</b> Đường số 3, Nguyễn Khuyến, Hà Đông, Hà Nội</li>
-                  <li><b>Chủ đầu tư:</b> Công ty cổ phần thiết bị Thủy Lợi (HESCO) Tập đoàn phát triển nhà và đô thị Thăng Long</li>
-                  <li><b>Tổng diện tích:</b> 5748.5m2</li>
-                  <li><b>Diện tích xây dựng:</b> 3199.88m2</li>
-                  <li><b>Mật độ xây dựng:</b> 55.6%</li>
-                  <li><b>Loại hình:</b> Căn hộ</li>
-                  <li><b>Số lượng sản phẩm:</b> 2 tòa tháp cao 45 và 50 tầng, 1032 căn hộ</li>
-                  <li><b>Diện tích căn hộ:</b> 62m² – 73m² – 82m² – 89m² – 99m² – 111m²</li>
-                  <li><b>Pháp lý:</b> Quyết định của UBND TP số 4132-QĐ/UBND ngày 06/07/2017.</li>
+                <ul className="project-details-list"> 
+                  <li><b>Dự án:</b> {project.name}</li>
+                  <li><b>Vị trí:</b> {project.address}</li>
+                  <li><b>Chủ đầu tư:</b> {project.company}</li>
+                  <li><b>Tổng diện tích:</b> {project.totalArea || 'Đang cập nhật'}</li>
+                  <li><b>Diện tích xây dựng:</b> {project.builtArea || 'Đang cập nhật'}</li>
+                  <li><b>Mật độ xây dựng:</b> {project.buildingDensity || 'Đang cập nhật'}</li>
+                  <li><b>Loại hình:</b> {project.type}</li>
+                  <li><b>Số lượng sản phẩm:</b> {project.numberOfProducts || 'Đang cập nhật'}</li>
+                  <li><b>Diện tích căn hộ:</b> {project.areaTypes || 'Đang cập nhật'}</li>
+                  <li><b>Pháp lý:</b> {project.legalStatus || 'Đang cập nhật'}</li>
                 </ul>
                 <div className="project-details-collapse">
                   <span onClick={toggleCollapse}>{isCollapsed ? 'Mở rộng ▼' : 'Thu gọn ▲'}</span>
