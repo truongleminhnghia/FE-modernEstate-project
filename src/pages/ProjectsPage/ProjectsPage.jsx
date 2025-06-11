@@ -40,6 +40,63 @@ function ProjectsPage() {
     fetchProjects();
   }, []);
 
+  if (loading) {
+    return (
+      <div className="projects-bg">
+        <div className="projects-breadcrumb">
+          <Link to="/">Trang chủ</Link> / <span>Dự án</span>
+        </div>
+        <div className="projects-banner">
+          <img src="https://unsplash.com/fr/photos/une-ville-la-nuit-avec-beaucoup-de-grands-immeubles-vLOA_KJ_pj0" alt="banner" />
+        </div>
+        <div className="projects-grid-wrapper">
+          <div className="projects-grid">
+            <div className="loading-text">Đang tải dữ liệu...</div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="projects-bg">
+        <div className="projects-breadcrumb">
+          <Link to="/">Trang chủ</Link> / <span>Dự án</span>
+        </div>
+        <div className="projects-banner">
+          <img src="https://unsplash.com/fr/photos/une-ville-la-nuit-avec-beaucoup-de-grands-immeubles-vLOA_KJ_pj0" alt="banner" />
+        </div>
+        <div className="projects-grid-wrapper">
+          <div className="projects-grid">
+            <div className="loading-text error-text">{error}</div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!projects || projects.length === 0) {
+    return (
+      <div className="projects-bg">
+        <div className="projects-breadcrumb">
+          <Link to="/">Trang chủ</Link> / <span>Dự án</span>
+        </div>
+        <div className="projects-banner">
+          <img src="https://unsplash.com/fr/photos/une-ville-la-nuit-avec-beaucoup-de-grands-immeubles-vLOA_KJ_pj0" alt="banner" />
+        </div>
+        <div className="projects-grid-wrapper">
+          <div className="projects-grid">
+            <div className="loading-text">Không có dự án nào</div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  const featured = projects.find((p) => p.featured);
+  const normalProjects = projects.filter((p) => !p.featured);
+
   return (
     <div className="projects-bg">
       <div className="projects-breadcrumb">
@@ -83,9 +140,11 @@ function ProjectsPage() {
           </div>
         )}
       </div>
+
       <button className="message-button">
         <MessageOutlined />
       </button>    
+
     </div>
   );
 }

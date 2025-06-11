@@ -41,6 +41,7 @@ const StaffHeader = ({ collapsed, onCollapse }) => {
       </Menu.Item>
     </Menu>
   );
+  const user = localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user")) : null;
 
   return (
     <Header
@@ -71,9 +72,11 @@ const StaffHeader = ({ collapsed, onCollapse }) => {
           <Button type="text" shape="circle" icon={<BellOutlined style={{ fontSize: "18px" }} />} />
         </Tooltip>
         <Dropdown overlay={userMenuItems} placement="bottomRight">
-          <Space style={{ cursor: "pointer" }}>
+          <Space style={{ cursor: "pointer", paddingRight: "20px" }}>
             <Avatar style={{ backgroundColor: "#1890ff" }} icon={<UserOutlined />} />
-            <Text strong>Staff User</Text>
+            <span style={{ fontWeight: 500 }}>
+                {user.firstName + " " + user.lastName}
+              </span>
           </Space>
         </Dropdown>
       </Space>

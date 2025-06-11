@@ -71,12 +71,12 @@ const UserManagement = () => {
           email: account.email,
           phone: account.phone || "N/A",
           status: account.enumAccountStatus,
-          roleName: account.role?.roleName || "N/A",
+          roleName: account.role?.roleName || "N/A", // API might return role object
           firstName: account.firstName,
           lastName: account.lastName,
           address: account.address,
           avatar: account.avatar,
-          gender: account.gender,
+          gender: account.gender, // Ensure this is correctly passed, e.g., "MALE", "FEMALE"
         }));
         setDataSource(allAccounts);
       } else {
@@ -108,10 +108,17 @@ const UserManagement = () => {
     if (isFormModalVisible) {
       if (editingCustomer) {
         form.setFieldsValue({
-          ...editingCustomer, // This will set email, name, phone, address, avatar, gender if available
+          firstName: editingCustomer.firstName || '',
+          lastName: editingCustomer.lastName || '',
+          email: editingCustomer.email, 
+          phone: editingCustomer.phone || '',
+          address: editingCustomer.address || '',
+          avatar: editingCustomer.avatar || '',
+          gender: editingCustomer.gender || undefined, 
+          status: editingCustomer.status || undefined, 
         });
       } else {
-        form.resetFields();
+        form.resetFields(); 
       }
     }
   }, [editingCustomer, form, isFormModalVisible]);
@@ -133,7 +140,7 @@ const UserManagement = () => {
             message.error("Không tìm thấy thông tin tài khoản để cập nhật.");
             return;
           }
-          // API PUT might require all fields, refer to your API docs for PUT /accounts/{id}
+
           const updatePayload = {
             email: accountToUpdate.email,
             firstName: accountToUpdate.firstName,
@@ -141,10 +148,9 @@ const UserManagement = () => {
             phone: accountToUpdate.phone,
             address: accountToUpdate.address,
             avatar: accountToUpdate.avatar,
-            roleName: accountToUpdate.roleName,
-            gender: accountToUpdate.gender, // Send gender if your API expects it for PUT
+            role: accountToUpdate.roleName, 
+            gender: accountToUpdate.gender,
             enumAccountStatus: nextStatus,
-            // password field is usually not sent in status updates unless specifically required
           };
 
           await axios.put(
@@ -177,45 +183,33 @@ const UserManagement = () => {
 
   const showAddModal = () => {
     setEditingCustomer(null);
-    // form.resetFields(); // destroyOnClose on Modal handles this
     setIsFormModalVisible(true);
   };
 
   const showEditModal = (account) => {
     setEditingCustomer(account);
-    // useEffect handles form.setFieldsValue
     setIsFormModalVisible(true);
   };
 
   const handleFormCancel = () => {
     setIsFormModalVisible(false);
-    // form.resetFields(); // destroyOnClose on Modal handles this
-    setEditingCustomer(null); // Clear editing state
+    setEditingCustomer(null);
   };
 
   const handleFormSubmit = async (values) => {
     setLoading(true);
     try {
-      const nameParts = values.name?.split(" ") || [""];
-      const lastName = nameParts.pop() || "";
-      const firstName = nameParts.join(" ");
-
-      // Common payload fields from the form
-      const basePayload = {
-        email: values.email, // Will come from form values, even if disabled
-        firstName: firstName,
-        lastName: lastName,
-        phone: values.phone,
-        address: values.address || "",
-        avatar: values.avatar || "",
-        gender: values.gender, // 'gender' field from form
-      };
-
       if (editingCustomer) {
         const updatePayload = {
-          ...basePayload,
-          roleName: editingCustomer.roleName, // Role is usually not editable in this form or is handled by admin
-          enumAccountStatus: editingCustomer.status === "ACTIVE" ? "ACTIVE" : "WAIT_CONFIRM",
+          email: values.email, 
+          firstName: values.firstName,
+          lastName: values.lastName,
+          phone: values.phone,
+          address: values.address || "",
+          avatar: values.avatar || "",
+          gender: values.gender,
+          role: editingCustomer.roleName,
+          enumAccountStatus: values.status, 
         };
 
         await axios.put(
@@ -229,11 +223,18 @@ const UserManagement = () => {
         );
         message.success("Cập nhật thông tin tài khoản thành công!");
       } else {
+        // Create new account (POST)
         const createPayload = {
-          ...basePayload,
-          password: values.password,
-          roleName: values.role, 
-          enumAccountStatus: "ACTIVE", 
+          email: values.email,
+          firstName: values.firstName,
+          lastName: values.lastName,
+          password: values.password, // Password from the new field
+          phone: values.phone,
+          address: values.address || "",
+          avatar: values.avatar || "",
+          roleName: values.role, // Role from the form, key is 'roleName' for POST
+          gender: values.gender,
+          enumAccountStatus: values.status || "WAIT_CONFIRM", // Status from form, or default to WAIT_CONFIRM as per POST API example
         };
 
         await axios.post(
@@ -248,8 +249,7 @@ const UserManagement = () => {
         message.success("Thêm tài khoản mới thành công!");
       }
       setIsFormModalVisible(false);
-      // form.resetFields(); // destroyOnClose on Modal handles this
-      setEditingCustomer(null); // Clear editing state
+      setEditingCustomer(null);
       fetchCustomers();
     } catch (error) {
       console.error("Lỗi khi gửi form:", error.response || error);
@@ -307,9 +307,9 @@ const UserManagement = () => {
           <Tooltip title="Chỉnh sửa"><Button type="text" icon={<EditOutlined style={{ color: "#faad14" }} />} onClick={() => showEditModal(record)} /></Tooltip>
           {record.status === "ACTIVE" ? (
             <Tooltip title="Chặn"><Button type="text" icon={<StopOutlined />} danger onClick={() => handleToggleBlockStatus(record.id, record.status)} /></Tooltip>
-          ) : (
-            <Tooltip title="Bỏ chặn"><Button type="text" icon={<CheckCircleOutlined style={{ color: "green" }} />} onClick={() => handleToggleBlockStatus(record.id, record.status)} /></Tooltip>
-          )}
+          ) : record.status === "WAIT_CONFIRM" || record.status === "IN_ACTIVE" ? ( // Also allow unblock for IN_ACTIVE
+            <Tooltip title="Bỏ chặn/Kích hoạt"><Button type="text" icon={<CheckCircleOutlined style={{ color: "green" }} />} onClick={() => handleToggleBlockStatus(record.id, record.status)} /></Tooltip>
+          ) : null}
         </Space>
       ),
     },
@@ -355,53 +355,39 @@ const UserManagement = () => {
         width={700}
         destroyOnClose // This will reset form state when modal is closed
       >
-        <Form form={form} layout="vertical" onFinish={handleFormSubmit} initialValues={{ address: "", avatar: "" /* Set default for non-required fields */}}>
+        <Form form={form} layout="vertical" onFinish={handleFormSubmit} initialValues={{ address: "", avatar: "" }}>
           <Row gutter={16}>
             <Col span={12}>
-              <Form.Item name="name" label="Tên" rules={[{ required: true, message: "Vui lòng nhập tên!" }]}>
-                <Input placeholder="Nhập họ và tên (Ví dụ: Nguyễn Văn A)" />
+              <Form.Item name="firstName" label="Họ" rules={[{ required: true, message: "Vui lòng nhập họ!" }]}>
+                <Input placeholder="Nhập họ (Ví dụ: Nguyễn)" />
               </Form.Item>
             </Col>
+            <Col span={12}>
+              <Form.Item name="lastName" label="Tên" rules={[{ required: true, message: "Vui lòng nhập tên!" }]}>
+                <Input placeholder="Nhập tên (Ví dụ: Văn A)" />
+              </Form.Item>
+            </Col>
+          </Row>
+          <Row gutter={16}>
             <Col span={12}>
               <Form.Item
                 name="email"
                 label="Email"
                 rules={[
-                  // Conditionally required: only for new users on the frontend.
-                  // Backend should always validate email.
-                  { required: !editingCustomer, message: "Vui lòng nhập email!" },
+                  { required: true, message: "Vui lòng nhập email!" }, // Email required for new, always for edit
                   { type: "email", message: "Email không hợp lệ!" },
                 ]}
               >
                 <Input placeholder="Nhập email" disabled={!!editingCustomer} />
               </Form.Item>
             </Col>
-          </Row>
-          <Row gutter={16}>
             <Col span={12}>
               <Form.Item name="phone" label="Số điện thoại" rules={[{ required: true, message: "Vui lòng nhập số điện thoại!" }, { pattern: /^[0-9]{10,11}$/, message: "Số điện thoại không hợp lệ!" }]}>
                 <Input placeholder="Nhập số điện thoại" />
               </Form.Item>
             </Col>
-            <Col span={12}>
-              {!editingCustomer && (
-                <Form.Item name="password" label="Mật khẩu" rules={[{ required: true, message: "Vui lòng nhập mật khẩu!" }]}>
-                  <Input.Password placeholder="Nhập mật khẩu" />
-                </Form.Item>
-              )}
-              {editingCustomer && (
-                <Form.Item label="Vai trò">
-                  <Input value={
-                      editingCustomer.roleName === "ROLE_CUSTOMER" ? "Khách hàng" :
-                      editingCustomer.roleName === "ROLE_STAFF" ? "Nhân viên" :
-                      editingCustomer.roleName === "ROLE_OWNER" ? "Chủ sở hữu" :
-                      editingCustomer.roleName === "ROLE_BROKER" ? "Môi giới" :
-                      editingCustomer.roleName === "ROLE_ADMIN" ? "Quản trị viên" : (editingCustomer.roleName || "Không rõ")
-                    } disabled />
-                </Form.Item>
-              )}
-            </Col>
           </Row>
+
           <Row gutter={16}>
             <Col span={12}>
               <Form.Item name="address" label="Địa chỉ">
@@ -414,50 +400,75 @@ const UserManagement = () => {
               </Form.Item>
             </Col>
           </Row>
-          
-          {/* Gender field - available for both add and edit if desired */}
-          {/* If gender is not editable, only show for !editingCustomer or prefill and disable for editingCustomer */}
           <Row gutter={16}>
             <Col span={12}>
-                <Form.Item
-                    name="gender"
-                    label="Giới tính"
-                    rules={[{ required: true, message: "Vui lòng chọn giới tính!" }]}
-                >
-                    <Select placeholder="Chọn giới tính">
-                        <Option value="MALE">Nam</Option>
-                        <Option value="FEMALE">Nữ</Option>
-                        <Option value="OTHER">Khác</Option>
-                    </Select>
-                </Form.Item>
+              <Form.Item
+                name="gender"
+                label="Giới tính"
+                rules={[{ required: true, message: "Vui lòng chọn giới tính!" }]}
+              >
+                <Select placeholder="Chọn giới tính">
+                  <Option value="MALE">Nam</Option>
+                  <Option value="FEMALE">Nữ</Option>
+                  <Option value="OTHER">Khác</Option>
+                </Select>
+              </Form.Item>
             </Col>
             {!editingCustomer && (
-                 <Col span={12}>
-                    <Form.Item name="role" label="Vai trò tài khoản" rules={[{ required: true, message: "Vui lòng chọn vai trò!" }]}>
-                        <Select placeholder="Chọn vai trò cho tài khoản mới">
-                        <Option value="ROLE_CUSTOMER">Khách hàng</Option>
-                        <Option value="ROLE_STAFF">Nhân viên</Option>
-                        {/* <Option value="ROLE_OWNER">Chủ sở hữu</Option>
-                        <Option value="ROLE_BROKER">Môi giới</Option> */}
-                        <Option value="ROLE_ADMIN">Quản trị viên</Option>
-                        </Select>
-                    </Form.Item>
-                </Col>
+              <Col span={12}>
+                <Form.Item name="role" label="Vai trò tài khoản" rules={[{ required: true, message: "Vui lòng chọn vai trò!" }]}>
+                  <Select placeholder="Chọn vai trò cho tài khoản mới">
+                    <Option value="ROLE_CUSTOMER">Khách hàng</Option>
+                    <Option value="ROLE_STAFF">Nhân viên</Option>
+                    {/* <Option value="ROLE_OWNER">Chủ sở hữu</Option>
+                    <Option value="ROLE_BROKER">Môi giới</Option> */}
+                    <Option value="ROLE_ADMIN">Quản trị viên</Option>
+                  </Select>
+                </Form.Item>
+              </Col>
+            )}
+            {editingCustomer && (
+              <Col span={12}>
+                <Form.Item label="Vai trò">
+                  <Input value={
+                    editingCustomer.roleName === "ROLE_CUSTOMER" ? "Khách hàng" :
+                      editingCustomer.roleName === "ROLE_STAFF" ? "Nhân viên" :
+                        editingCustomer.roleName === "ROLE_OWNER" ? "Chủ sở hữu" :
+                          editingCustomer.roleName === "ROLE_BROKER" ? "Môi giới" :
+                            editingCustomer.roleName === "ROLE_ADMIN" ? "Quản trị viên" : (editingCustomer.roleName || "Không rõ")
+                  } disabled />
+                </Form.Item>
+              </Col>
             )}
           </Row>
           <Row gutter={16}>
             <Col span={12}>
-              <Form.Item name="status" label="Trạng thái">
+              <Form.Item name="status" label="Trạng thái" rules={[{ required: true, message: "Vui lòng chọn trạng thái!" }]}>
                 <Select placeholder="Chọn trạng thái">
                   <Option value="ACTIVE">Đang hoạt động</Option>
                   <Option value="WAIT_CONFIRM">Chờ kích hoạt</Option>
                   <Option value="IN_ACTIVE">Bị chặn</Option>
                 </Select>
               </Form.Item>
+            </Col>
+            {!editingCustomer && (
+            
+              <Col span={12}>
+                <Form.Item
+                  name="password"
+                  label="Mật khẩu"
+                  rules={[
+                    { required: true, message: "Vui lòng nhập mật khẩu!" },
+                    { min: 6, message: "Mật khẩu phải có ít nhất 6 ký tự!" },
+                  ]}
+                  hasFeedback
+                >
+                  <Input.Password placeholder="Nhập mật khẩu" />
+                </Form.Item>
               </Col>
+          )}
+
           </Row>
-
-
           <Row justify="end" style={{ marginTop: 20 }}>
             <Space>
               <Button icon={<CloseCircleOutlined />} onClick={handleFormCancel}>Hủy</Button>

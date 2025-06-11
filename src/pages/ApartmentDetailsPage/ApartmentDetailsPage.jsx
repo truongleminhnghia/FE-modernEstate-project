@@ -1,14 +1,8 @@
-import React, { useState, useRef } from "react";
+import React, { useState } from "react";
 import "./ApartmentDetailsPage.css";
-import { Breadcrumb, Tabs, Carousel } from "antd";
+import { Breadcrumb, Tabs } from "antd";
 import { RightOutlined, ShareAltOutlined, HeartOutlined, LeftOutlined, HomeOutlined, BorderOutlined, BoxPlotOutlined, PhoneFilled, CalendarOutlined, MessageOutlined } from '@ant-design/icons';
 import { Link } from "react-router-dom";
-import MessagePopup from '../../components/popup/MessagePopup';
-import ChatPopup from '../../components/popup/ChatPopup';
-
-export function MajesticonsShare(props) {
-	return (<svg xmlns="http://www.w3.org/2000/svg" width={24} height={24} viewBox="0 0 24 24" {...props}><path fill="currentColor" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="m20 12l-6.4-7v3.5C10.4 8.5 4 10.6 4 19c0-1.167 1.92-3.5 9.6-3.5V19z"></path></svg>);
-}
 
 const images = [
   "/src/assets/images/ap1.jpg",
@@ -43,8 +37,7 @@ const details = {
   ]
 };
 
-// Duplicate related items to have more cards for the carousel
-const baseRelated = Array.from({ length: 4 }).map((_, i) => ({
+const related = Array.from({ length: 4 }).map((_, i) => ({
   id: i + 1,
   image: images[i % images.length],
   title: "BÁN GẤP CĂN HỘ CAO CẤP CHUNG CƯ MASTERI AN PHÚ, TP...",
@@ -55,16 +48,9 @@ const baseRelated = Array.from({ length: 4 }).map((_, i) => ({
   location: "Q7, TP Hồ Chí Minh"
 }));
 
-const related = [...baseRelated, ...baseRelated, ...baseRelated]; // Duplicate the items
-
 const ApartmentDetailsPage = () => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [activeTab, setActiveTab] = useState('details');
-  const [showPopup, setShowPopup] = useState(false);
-  const [currentPopupView, setCurrentPopupView] = useState('message');
-
-  const carouselRef1 = useRef(null); // Ref for the first carousel
-  const carouselRef2 = useRef(null); // Ref for the second carousel
 
   const handlePrevClick = () => {
     setCurrentImageIndex((prevIndex) =>
@@ -82,31 +68,12 @@ const ApartmentDetailsPage = () => {
     setActiveTab(tab);
   };
 
-  const togglePopup = () => {
-    setShowPopup(!showPopup);
-    if (!showPopup) { // When opening the popup, reset to the message view
-      setCurrentPopupView('message');
-    }
-  };
-
-  // Function to switch to the chat form view
-  const switchToChatView = () => {
-    setCurrentPopupView('chat');
-  };
-
-  // Function to switch back to the message view (for the back button in ChatPopup)
-  const switchToMessageView = () => {
-    setCurrentPopupView('message');
-  };
-
   return (
     <div className="apartment-detail-bg">
-      {/* Breadcrumb */}
       <div className="apartment-detail-breadcrumb">
-        <Link to="/">Trang chủ</Link> / <Link to="/mua-ban-can-ho">Căn hộ</Link> / <span>Chi tiết căn hộ</span>
+        <Link to="/">Trang chủ</Link> / <Link to="/can-ho">Căn hộ</Link> / <span>Chi tiết căn hộ</span>
       </div>
 
-      {/* Top section: Image + Info */}
       <div className="apartment-detail-top">
         <div className="apartment-detail-images">
           <img className="main-img" src={images[currentImageIndex]} alt="main" onClick={handleNextClick} />
@@ -162,7 +129,7 @@ const ApartmentDetailsPage = () => {
         {/* New button container */}
         <div className="apartment-detail-top-buttons">
           <button className="top-button"><HeartOutlined /></button>
-          <button className="top-button"><MajesticonsShare /></button>
+          <button className="top-button"><RightOutlined /></button>
           <button className="top-button"><ShareAltOutlined /></button>
         </div>
       </div>
@@ -268,15 +235,13 @@ const ApartmentDetailsPage = () => {
         <div className="apartment-detail-related-section">
           <div className="apartment-detail-related-title">Bất động sản ABC 
             <div className="related-title-nav">
-              {/* Use refs to control the first carousel */}
-              <button className="lr" onClick={() => carouselRef1.current.prev()}><LeftOutlined></LeftOutlined></button>
-              <button className="lr" onClick={() => carouselRef1.current.next()}><RightOutlined></RightOutlined></button>
+              <button className="lr"><LeftOutlined></LeftOutlined></button>
+              <button className="lr"><RightOutlined></RightOutlined></button>
             </div>
           </div>
-          {/* Wrap the list with Carousel and assign ref */}
-          <Carousel ref={carouselRef1} dots={false} infinite={false} slidesToShow={4} slidesToScroll={1}> {/* Hide dots, disable infinite loop */}
-            {related.map((apt, index) => (
-              <div key={index} className="apartment-detail-related-card"> {/* Keep the card div */}
+          <div className="apartment-detail-related-list">
+            {related.map((apt) => (
+              <div className="apartment-detail-related-card" key={apt.id}>
                 <img src={apt.image} alt={apt.title} />
                 <div className="apartment-detail-related-info">
                   <div className="apartment-detail-related-title2">{apt.title}</div>
@@ -286,7 +251,7 @@ const ApartmentDetailsPage = () => {
                 </div>
               </div>
             ))}
-          </Carousel>
+          </div>
         </div>
       </div>      
 
@@ -295,15 +260,13 @@ const ApartmentDetailsPage = () => {
         <div className="apartment-detail-related-section">
           <div className="apartment-detail-related-title">Bất động sản liên quan 
             <div className="related-title-nav">
-              {/* Use refs to control the second carousel */}
-              <button className="lr" onClick={() => carouselRef2.current.prev()}><LeftOutlined></LeftOutlined></button>
-              <button className="lr" onClick={() => carouselRef2.current.next()}><RightOutlined></RightOutlined></button>
+              <button className="lr"><LeftOutlined></LeftOutlined></button>
+              <button className="lr"><RightOutlined></RightOutlined></button>
             </div>
           </div>
-          {/* Wrap the list with Carousel and assign ref */}
-          <Carousel ref={carouselRef2} dots={false} infinite={false} slidesToShow={4} slidesToScroll={1}> {/* Hide dots, disable infinite loop */}
-            {related.map((apt, index) => (
-             <div key={index} className="apartment-detail-related-card"> {/* Keep the card div */}
+          <div className="apartment-detail-related-list">
+            {related.map((apt) => (
+              <div className="apartment-detail-related-card" key={apt.id}>
                 <img src={apt.image} alt={apt.title} />
                 <div className="apartment-detail-related-info">
                   <div className="apartment-detail-related-title2">{apt.title}</div>
@@ -313,23 +276,14 @@ const ApartmentDetailsPage = () => {
                 </div>
               </div>
             ))}
-          </Carousel>
+          </div>
         </div>
       </div>
 
       {/* Message Button */}
-      <button className="message-button" onClick={togglePopup}>
+      <button className="message-button">
         <MessageOutlined />
       </button>
-
-      {/* Conditionally render MessagePopup or ChatPopup */}
-      {showPopup && currentPopupView === 'message' && (
-        <MessagePopup showPopup={showPopup} togglePopup={togglePopup} onSwitchToChat={switchToChatView} />
-      )}
-
-      {showPopup && currentPopupView === 'chat' && (
-        <ChatPopup showPopup={showPopup} togglePopup={togglePopup} onSwitchToMessage={switchToMessageView} />
-      )}
     </div>
   );
 };

@@ -1,4 +1,3 @@
-/* ServicesPage.css */
 .services-page-container {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Hoặc font bạn đang dùng */
   }
@@ -12,19 +11,15 @@
     box-shadow: 0 12px 25px rgba(0,0,0,0.12) !important;
   }
   
-  /* Thêm style cho màu sắc icon nếu muốn, ví dụ: */
   .seller-service-card .anticon {
-    /* color: #4a90e2; */ /* Màu cho icon dịch vụ người bán */
   }
   
   .buyer-service-card .anticon {
-    /* color: #52c41a; */ /* Màu cho icon dịch vụ người mua */
   }
   
   .why-us-icon {
-    font-size: 32px; /* Kích thước cho icon trong phần "Why Choose Us" */
+    font-size: 32px; 
   }
   
   .hero-section Title, .service-category Title, .why-choose-us Title, .cta-section Title {
-      /* Có thể thêm các font-family, letter-spacing tại đây nếu cần */
   }

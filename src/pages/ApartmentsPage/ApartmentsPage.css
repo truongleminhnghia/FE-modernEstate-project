@@ -313,26 +313,22 @@
   position: fixed;
   bottom: 20px;
   right: 20px;
-  width: 56px;
-  height: 56px;
+  width: 60px;
+  height: 60px;
+  background-color: #4a90e2; /* Blue background */
+  color: #fff; /* White icon */
+  border: none;
   border-radius: 50%;
-  background-color: #4a90e2;
-  color: white;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   display: flex;
   justify-content: center;
   align-items: center;
-  cursor: pointer;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  z-index: 999;
-  border: none;
   font-size: 24px;
-  transition: background-color 0.2s ease;
+  cursor: pointer;
+  z-index: 1000; /* Ensure it's above other content */
+  transition: background-color 0.3s ease;
 }
 
 .message-button:hover {
-  background-color: #357ABD;
-}
-
-.message-button svg {
-  display: block;
+  background-color: #357ABD; /* Darker blue on hover */
 }

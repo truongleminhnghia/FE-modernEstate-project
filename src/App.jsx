@@ -31,10 +31,16 @@ import ProjectsPage from "./pages/ProjectsPage/ProjectsPage";
 import ProjectDetailsPage from "./pages/ProjectDetailsPage/ProjectDetailsPage";
 import CheckEmailNotice from './pages/auth/CheckEmailNotice';
 import NotFound from './pages/auth/NotFound';
-import UserManagement from "./pages/admins/users/UserManagement";
 import ServicePage from "./pages/services/ServicePage";
+<<<<<<< Tai
 import ProjectManagement from "./pages/staff/listings/ProjectManagement";
 import NewsManagement from "./pages/staff/listings/NewsManagement";
+=======
+import UserManagement from "./pages/admins/users/UserManagement"; 
+import { ROLES } from './constants/roles';
+import ForgotPassword from "./pages/auth/ForgotPassword";
+import MarketAnalysis from "./pages/User/marketAnalysis/MarketAnalysis";
+>>>>>>> main
 
 const router = createBrowserRouter([
   {
@@ -66,32 +72,66 @@ const router = createBrowserRouter([
         element: <Introduction />,
       },
       {
-        path: "/news",
-        element: <News />,
+        path: "/market-analysis",
+        element: <MarketAnalysis />,
       },
       {
+        path: "/news",
+        element: <News />,
+      }, // Stray brace removed from here
+      {
         path: "/user-profile",
-        element: <MyProfile />,
+        element: (
+          <ProtectedRoute
+            element={<MyProfile />}
+            allowedRoles={[ROLES.USER]}
+          />
+        ),
       },
       {
         path: "/user-transactions",
-        element: <TransactionHistory />,
+        element: (
+          <ProtectedRoute
+            element={<TransactionHistory />}
+            allowedRoles={[ROLES.USER]}
+          />
+        ),
       },
       {
         path: "/user-favorite",
-        element: <FavoriteList />,
+        element: (
+          <ProtectedRoute
+            element={<FavoriteList />}
+            allowedRoles={[ROLES.USER]}
+          />
+        ),
       },
       {
         path: "/broker-profile",
-        element: <BrokerProfile />,
+        element: (
+          <ProtectedRoute
+            element={<BrokerProfile />}
+            allowedRoles={[ROLES.BROKER]}
+          />
+        ),
       },
       {
         path: "/broker-transaction",
-        element: <BrokerTransactionHistory />,
+        element: (
+          <ProtectedRoute
+            element={<BrokerTransactionHistory />}
+            allowedRoles={[ROLES.BROKER]}
+          />
+        ),
       },
       {
         path: "/broker-favorite",
-        element: <BrokerWatchedApartments />,
+        element: (
+          <ProtectedRoute
+            element={<BrokerWatchedApartments />}
+            allowedRoles={[ROLES.BROKER]}
+          />
+        ),
       },
       {
         path: "/news-detail",
@@ -99,15 +139,30 @@ const router = createBrowserRouter([
       },
       {
         path: "/owner-transactions",
-        element: <OwnerTransactions />,
+        element: (
+          <ProtectedRoute
+            element={<OwnerTransactions />}
+            allowedRoles={[ROLES.OWNER]}
+          />
+        ),
       },
       {
         path: "/owner-favorites",
-        element: <OwnerFavorites />,
+        element: (
+          <ProtectedRoute
+            element={<OwnerFavorites />}
+            allowedRoles={[ROLES.OWNER]}
+          />
+        ),
       },
       {
         path: "/owner-profile",
-        element: <OwnerInfo />,
+        element: (
+          <ProtectedRoute
+            element={<OwnerInfo />}
+            allowedRoles={[ROLES.OWNER]}
+          />
+        ),
       },
       {
         path: "/du-an",
@@ -130,6 +185,10 @@ const router = createBrowserRouter([
         element: <ServicePage />,
       },
       {
+        path: "/forgot-password",
+        element: <ForgotPassword />,
+      },
+      {
         path: "*",
         element: <NotFound />,
       },
@@ -140,12 +199,12 @@ const router = createBrowserRouter([
     element: (
       <ProtectedRoute
         element={<AdminLayout/>}
-        // allowedRoles={["ROLE_ADMIN"]}       
+        allowedRoles={[ROLES.ADMIN]}
       />
     ),
     children: [
       {
-        index: true, 
+        index: true,
         element: <Navigate to="dashboard" replace />,
       },
       {
@@ -168,11 +227,16 @@ const router = createBrowserRouter([
   },
   {
     path: "/staff",
-    element: <StaffLayout />,
+    element: (
+      <ProtectedRoute
+        element={<StaffLayout />}
+        allowedRoles={[ROLES.STAFF]}
+      />
+    ),
     children: [
       {
         index: true,
-        element: <Navigate to="dashboard" replace />,
+        element: <Navigate to="listings" replace />, 
       },
       {
         path: "listings",
