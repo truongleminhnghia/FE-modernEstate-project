@@ -41,6 +41,32 @@ const StaffSidebar = ({ collapsed, onCollapse }) => {
       label: "Quản lý dịch vụ",
       path: "/staff/services",
     },
+<<<<<<< Tai
+    {
+      key: "projects",
+      icon: <FileTextOutlined />,
+      label: "Quản lý dự án",
+      path: "/staff/projects",
+    },
+    {
+      key: "news",
+      icon: <FileTextOutlined />,
+      label: "Quản lý tin tức",
+      path: "/staff/news",
+    },
+    {
+      key: "notifications",
+      icon: <BellOutlined />,
+      label: "Thông báo",
+      path: "/staff/notifications",
+    },
+    {
+      key: "settings",
+      icon: <SettingOutlined />,
+      label: "Cài đặt",
+      path: "/staff/settings",
+    },
+=======
     // {
     //   key: "notifications",
     //   icon: <BellOutlined />,
@@ -53,6 +79,7 @@ const StaffSidebar = ({ collapsed, onCollapse }) => {
     //   label: "Cài đặt",
     //   path: "/staff/settings",
     // },
+>>>>>>> main
   ];
 
   const handleMenuClick = ({ key }) => {
