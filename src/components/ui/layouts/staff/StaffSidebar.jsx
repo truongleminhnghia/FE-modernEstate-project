@@ -41,7 +41,6 @@ const StaffSidebar = ({ collapsed, onCollapse }) => {
       label: "Quản lý dịch vụ",
       path: "/staff/services",
     },
-<<<<<<< Tai
     {
       key: "projects",
       icon: <FileTextOutlined />,
@@ -66,20 +65,6 @@ const StaffSidebar = ({ collapsed, onCollapse }) => {
       label: "Cài đặt",
       path: "/staff/settings",
     },
-=======
-    // {
-    //   key: "notifications",
-    //   icon: <BellOutlined />,
-    //   label: "Thông báo",
-    //   path: "/staff/notifications",
-    // },
-    // {
-    //   key: "settings",
-    //   icon: <SettingOutlined />,
-    //   label: "Cài đặt",
-    //   path: "/staff/settings",
-    // },
->>>>>>> main
   ];
 
   const handleMenuClick = ({ key }) => {

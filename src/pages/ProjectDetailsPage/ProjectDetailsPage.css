@@ -34,7 +34,8 @@
   margin-top: 24px;
   margin-bottom: 36px;
   background-color: rgba(237, 244, 250, 1);
-  padding: 32px 0px 32px 60px;
+  padding: 32px 0px 32px 0px;
+  place-items: center;
 }
 
 .project-details-header-content {
@@ -160,7 +161,7 @@
   flex-direction: column;
   gap: 24px;
   max-width: 1100px;
-  margin: 32px 0 0 58px;
+  margin: 32px 0 0 0;
   align-items: flex-start;
   position: relative;
 }
@@ -1006,7 +1007,7 @@
 /* Section: Dự án lân cận */
 .nearby-projects-section {
   width: 1100px;
-  margin: 32px auto 32px 58px;
+  margin: 32px auto 32px auto;
   padding: 20px;
   border: 1.5px solid #e0e7ef;
   box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
@@ -1180,6 +1181,9 @@
   background-color: #357ABD; /* Darker blue on hover */
 }
 
-
+.project-details-container {
+  display: grid;
+  place-items: center;
+}
 
 
