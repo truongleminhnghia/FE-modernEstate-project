@@ -3,12 +3,16 @@ import axios from "axios";
 import "./ProjectsPage.css";
 import { useNavigate, Link } from "react-router-dom";
 import { MessageOutlined } from '@ant-design/icons';
+import MessagePopup from '../../components/popup/MessagePopup';
+import ChatPopup from '../../components/popup/ChatPopup';
 
 function ProjectsPage() {
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const navigate = useNavigate();
+  const [showPopup, setShowPopup] = useState(false);
+  const [currentPopupView, setCurrentPopupView] = useState('message');
 
   useEffect(() => {
     const fetchProjects = async () => {
@@ -96,6 +100,20 @@ function ProjectsPage() {
 
   const featured = projects.find((p) => p.featured);
   const normalProjects = projects.filter((p) => !p.featured);
+  const togglePopup = () => {
+    setShowPopup(!showPopup);
+    if (!showPopup) {
+      setCurrentPopupView('message');
+    }
+  };
+
+  const switchToChatView = () => {
+    setCurrentPopupView('chat');
+  };
+
+  const switchToMessageView = () => {
+    setCurrentPopupView('message');
+  };
 
   return (
     <div className="projects-bg">
@@ -141,9 +159,17 @@ function ProjectsPage() {
         )}
       </div>
 
-      <button className="message-button">
+      <button className="message-button" onClick={togglePopup}>
         <MessageOutlined />
       </button>    
+
+      {showPopup && currentPopupView === 'message' && (
+        <MessagePopup showPopup={showPopup} togglePopup={togglePopup} onSwitchToChat={switchToChatView} />
+      )}
+
+      {showPopup && currentPopupView === 'chat' && (
+        <ChatPopup showPopup={showPopup} togglePopup={togglePopup} onSwitchToMessage={switchToMessageView} />
+      )}
 
     </div>
   );
