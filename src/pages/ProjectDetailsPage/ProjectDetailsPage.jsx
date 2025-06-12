@@ -175,7 +175,7 @@ const ProjectDetailsPage = () => {
     const fetchProjectDetails = async () => {
       try {
         setLoading(true);
-        const response = await axios.get(`https://222.255.117.195:8443/api/v1/projects/${id}`);
+        const response = await axios.get(`${import.meta.env.VITE_API_URL}projects/${id}`);
         const projectData = response.data?.data;
 
         if (projectData) {

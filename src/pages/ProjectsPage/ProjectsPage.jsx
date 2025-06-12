@@ -17,7 +17,7 @@ function ProjectsPage() {
   useEffect(() => {
     const fetchProjects = async () => {
       try {
-        const res = await axios.get("https://222.255.117.195:8443/api/v1/projects");
+        const res = await axios.get(`${import.meta.env.VITE_API_URL}projects`);
         const raw = res.data?.data?.rowDatas || [];
 
         const mapped = raw.map((item, index) => ({

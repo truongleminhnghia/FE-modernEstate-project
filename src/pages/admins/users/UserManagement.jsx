@@ -56,7 +56,7 @@ const UserManagement = () => {
     setLoading(true);
     try {
       const response = await axios.get(
-        "https://be-modernestate.onrender.com/api/v1/accounts",
+        `${import.meta.env.VITE_API_URL}accounts`,
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -154,7 +154,7 @@ const UserManagement = () => {
           };
 
           await axios.put(
-            `https://be-modernestate.onrender.com/api/v1/accounts/${accountId}`,
+            `${import.meta.env.VITE_API_URL}accounts/${accountId}`,
             updatePayload,
             {
               headers: {
@@ -213,7 +213,7 @@ const UserManagement = () => {
         };
 
         await axios.put(
-          `https://be-modernestate.onrender.com/api/v1/accounts/${editingCustomer.id}`,
+          `${import.meta.env.VITE_API_URL}accounts/${editingCustomer.id}`,
           updatePayload,
           {
             headers: {
@@ -238,7 +238,7 @@ const UserManagement = () => {
         };
 
         await axios.post(
-          "https://be-modernestate.onrender.com/api/v1/accounts",
+          `${import.meta.env.VITE_API_URL}accounts`,
           createPayload,
           {
             headers: {

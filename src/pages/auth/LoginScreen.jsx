@@ -22,7 +22,7 @@ const LoginScreen = () => {
 
   const handleLogin = async (values) => {
     try {
-      const response = await axios.post("https://be-modernestate.onrender.com/api/v1/auths/login", {
+      const response = await axios.post(`${import.meta.env.VITE_API_URL}auths/login`, {
         email: values.email,
         password: values.password,
       });

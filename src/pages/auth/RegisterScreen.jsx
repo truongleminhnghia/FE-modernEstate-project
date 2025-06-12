@@ -25,7 +25,7 @@ const RegisterScreen = () => {
   const onFinish = async (values) => {
     try {
       const response = await axios.post(
-        "https://be-modernestate.onrender.com/api/v1/auths/register",
+        `${import.meta.env.VITE_API_URL}auths/register`,
         {
           email: values.email,
           firstName: values.firstName,
