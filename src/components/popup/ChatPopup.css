@@ -1,0 +1,125 @@
+.chat-popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.6); /* Darker overlay */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+.chat-popup {
+  position: relative;
+  width: 400px; /* Adjusted width to match image closer */
+  max-width: 95%;
+  background-color: #fff;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+  display: flex;
+  flex-direction: column;
+}
+
+.chat-popup-header {
+  background-color: #f0f0f0; /* Light grey background */
+  padding: 15px 20px; /* Padding */
+  display: flex;
+  align-items: center;
+  justify-content: space-between; /* Space out items */
+  border-bottom: 1px solid #e0e0e0; /* Separator line */
+}
+
+.chat-popup-header .back-button, 
+.chat-popup-header .close-button {
+  background: none;
+  border: none;
+  font-size: 22px; /* Slightly larger icon size */
+  color: #333; /* Dark grey color */
+  cursor: pointer;
+  padding: 0;
+}
+
+.chat-popup-header h3 {
+  margin: 0;
+  font-size: 15px; /* Adjusted header title font size */
+  font-weight: 600;
+  color: #222;
+}
+
+.chat-popup-content {
+  padding: 25px; /* Adjusted padding */
+  display: flex;
+  flex-direction: column;
+  gap: 15px; /* Adjusted gap between sections */
+}
+
+.chat-intro-text {
+  font-size: 14px;
+  color: #444;
+  line-height: 1.5;
+  text-align: left;
+  margin-bottom: 10px; /* Adjusted space below intro text */
+}
+
+.contact-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px; /* Adjusted gap between form groups */
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.form-group label {
+  font-size: 13px; /* Adjusted label font size */
+  font-weight: 500;
+  color: #555; /* Adjusted label color */
+  margin-bottom: 2px; /* Space between label and input */
+}
+
+.form-group input[type="text"],
+.form-group input[type="email"],
+.form-group input[type="tel"],
+.form-group textarea {
+  padding: 10px 12px; /* Adjusted padding inside inputs */
+  border: 1px solid #ddd; /* Lighter border */
+  border-radius: 4px;
+  font-size: 14px;
+  color: #333;
+  background-color: #f8f8f8; /* Light background for inputs */
+  box-sizing: border-box;
+  width: 100%;
+}
+
+.form-group textarea {
+  resize: vertical;
+}
+
+.submit-button {
+  padding: 12px 25px; /* Adjusted padding */
+  background-color: #4a90e2;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 500;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  transition: background-color 0.2s ease;
+  width: 100%; /* Full width button */
+  margin-top: 15px; /* Adjusted top margin */
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+
+.submit-button:hover {
+  background-color: #357ABD;
+} 
