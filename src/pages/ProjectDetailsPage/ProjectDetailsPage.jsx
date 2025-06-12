@@ -192,22 +192,22 @@ const ProjectDetailsPage = () => {
           });
 
           // Geocode the address
-          if (projectData.address?.addressDetail) {
-            const geocodeUrl = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(
-              projectData.address.addressDetail
-            )}&key=AIzaSyDH65U1tsUHeWw-XMgtSyaVU9Sh4QO4J1o`;
+          // if (projectData.address?.addressDetail) {
+          //   const geocodeUrl = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(
+          //     projectData.address.addressDetail
+          //   )}&key=AIzaSyDH65U1tsUHeWw-XMgtSyaVU9Sh4QO4J1o`;
 
-            try {
-              const response = await fetch(geocodeUrl);
-              const data = await response.json();
-              if (data.results && data.results.length > 0) {
-                const { lat, lng } = data.results[0].geometry.location;
-                setLocation({ lat, lng });
-              }
-            } catch (error) {
-              console.error("Lỗi khi tìm địa chỉ:", error);
-            }
-          }
+          //   try {
+          //     const response = await fetch(geocodeUrl);
+          //     const data = await response.json();
+          //     if (data.results && data.results.length > 0) {
+          //       const { lat, lng } = data.results[0].geometry.location;
+          //       setLocation({ lat, lng });
+          //     }
+          //   } catch (error) {
+          //     console.error("Lỗi khi tìm địa chỉ:", error);
+          //   }
+          // }
         }
         setLoading(false);
       } catch (err) {
@@ -219,6 +219,24 @@ const ProjectDetailsPage = () => {
 
     fetchProjectDetails();
   }, [id]);
+
+  const addres = "115/21, Đường Hồ Văn Tư, Phường Trường Thọ, Thành phố Thủ Đức, Thành phố Hồ Chí Minh, Việt Nam";
+
+  useEffect(() => {
+    if (isLoaded && addres) {
+      const geocoder = new window.google.maps.Geocoder();
+      geocoder.geocode({ address: addres }, (results, status) => {
+        if (status === 'OK' && results[0]) {
+          const loc = results[0].geometry.location;
+          const coords = { lat: loc.lat(), lng: loc.lng() };
+          console.log("=> setLocation:", coords);
+          setLocation({ lat: loc.lat(), lng: loc.lng() });
+        } else {
+          console.error("Geocode thất bại:", status);
+        }
+      });
+    }
+  }, [isLoaded, project?.address]);
 
   if (loading) {
     return (
@@ -396,7 +414,8 @@ const ProjectDetailsPage = () => {
                       center={location || defaultCenter}
                       zoom={15}
                     >
-                      <Marker position={location || defaultCenter} />
+                      {/* <Marker position={location || defaultCenter} /> */}
+                      {location && <Marker position={location} />}
                     </GoogleMap>
                   ) : (
                     <div>Loading map...</div>
