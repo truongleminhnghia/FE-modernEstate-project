@@ -4,7 +4,6 @@ import HomeScreen from "./pages/User/home/HomeScreen";
 import LoginScreen from "./pages/auth/LoginScreen";
 import RegisterScreen from "./pages/auth/RegisterScreen";
 import VerifySuccess from './pages/auth/VerifySuccess';
-// import CustomerProfile from "./pages/User/profile/CustomerProfile";
 import TransactionHistory from "./pages/User/transactions/TransactionHistory";
 import FavoriteList from "./pages/User/favorites/FavoritesList";
 import BrokerProfile from "./pages/Broker/profile/BrokerProfile";
@@ -75,7 +74,7 @@ const router = createBrowserRouter([
       {
         path: "/news",
         element: <News />,
-      }, // Stray brace removed from here
+      }, 
       {
         path: "/user-profile",
         element: (
