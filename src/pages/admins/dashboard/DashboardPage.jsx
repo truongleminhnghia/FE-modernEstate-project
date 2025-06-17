@@ -9,6 +9,7 @@ import ListingsTrendChart from './ListingsTrendChart';
 import UserRolesPieChart from './UserRolesPieChart';
 import RecentListingsTable from './RecentListingsTable';
 import RecentUsersTable from './RecentUsersTable';
+import { account } from '../../../services/dashboard.service';
 
 const { Title } = Typography;
 const primaryColor = '#4a90e2';
@@ -24,12 +25,34 @@ const initialSummaryStats = {
 const DashboardPage = () => {
   const [loadingStats, setLoadingStats] = useState(true);
   const [summaryStats, setSummaryStats] = useState({});
+  const [accountData, setAccountData] = useState({ totalAccounts: 0 });
+
+
+  useEffect(() => {
+    const loadAccount = async () => {
+      setLoadingStats(true);
+      try {
+        const res = await account();
+        console.log("res", res)
+
+        if (res) {
+          setAccountData(res.data);
+        }
+      } catch (error) {
+        console.error('Error loading account data:', error);
+        message.error('Không thể tải dữ liệu tài khoản.');
+      } finally {
+        setLoadingStats(false);
+      }
+    };
+    loadAccount();
+  }, []);
 
   useEffect(() => {
     const timer = setTimeout(() => {
       setSummaryStats(initialSummaryStats);
       setLoadingStats(false);
-    }, 500); 
+    }, 500);
     return () => clearTimeout(timer);
   }, []);
 
@@ -41,7 +64,7 @@ const DashboardPage = () => {
 
       <Row gutter={[24, 24]} style={{ marginBottom: 24 }}>
         <Col xs={24} sm={12} md={12} lg={6}>
-          <StatCard title="Tổng Người dùng" value={summaryStats.totalUsers} icon={<UserOutlined />} color={primaryColor} loading={loadingStats} />
+          <StatCard title="Tổng Người dùng" value={accountData.totalAccounts} icon={<UserOutlined />} color={primaryColor} loading={loadingStats} />
         </Col>
         <Col xs={24} sm={12} md={12} lg={6}>
           <StatCard title="Tổng Tin đăng" value={summaryStats.totalListings} icon={<ContainerOutlined />} color="#FAAD14" loading={loadingStats} />
@@ -61,7 +84,7 @@ const DashboardPage = () => {
 
       <Row gutter={[24, 24]}>
         <Col xs={24} lg={12}><RecentListingsTable /></Col>
-        <Col xs={24} lg={12}><RecentUsersTable /></Col>
+        <Col xs={24} lg={12}><RecentUsersTable listUser={accountData.accounts} /></Col>
       </Row>
     </div>
   );
