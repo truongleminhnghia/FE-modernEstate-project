@@ -25,7 +25,7 @@ import AdminProfile from "./pages/admins/profile/AdminProfile";
 import StaffLayout from "./components/ui/layouts/staff/StaffLayout";
 import ServiceManagementPage from "./pages/staff/listings/services/ServiceManagement";
 import ApartmentsPage from "./pages/ApartmentsPage/ApartmentsPage";
-import ApartmentDetailsPage from "./pages/ApartmentDetailsPage/ApartmentDetailsPage";
+import ApartmentDetail from "./pages/ApartmentsPage/ApartmentDetail";
 import ProjectsPage from "./pages/ProjectsPage/ProjectsPage";
 import ProjectDetailsPage from "./pages/ProjectDetailsPage/ProjectDetailsPage";
 import CheckEmailNotice from './pages/auth/CheckEmailNotice';
@@ -37,6 +37,7 @@ import UserManagement from "./pages/admins/users/UserManagement";
 import { ROLES } from './constants/roles';
 import ForgotPassword from "./pages/auth/ForgotPassword";
 import MarketAnalysis from "./pages/User/marketAnalysis/MarketAnalysis";
+import Packages from "./pages/package/Packages";
 
 const router = createBrowserRouter([
   {
@@ -56,8 +57,8 @@ const router = createBrowserRouter([
         element: <ApartmentsPage />,
       },
       {
-        path: "/can-ho/:id",
-        element: <ApartmentDetailsPage />,
+        path: "/can-ho/detail",
+        element: <ApartmentDetail />,
       },
       {
         path: "/register",
@@ -70,6 +71,10 @@ const router = createBrowserRouter([
       {
         path: "/market-analysis",
         element: <MarketAnalysis />,
+      },
+      {
+        path: "/packages",
+        element: <Packages />,
       },
       {
         path: "/news",
