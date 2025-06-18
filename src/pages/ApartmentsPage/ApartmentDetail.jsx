@@ -123,10 +123,8 @@ const ApartmentDetail = () => {
   const [thumbsSwiper, setThumbsSwiper] = useState(null);
   const [apartment, setApartment] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [mapLatLng, setMapLatLng] = useState({
-    lat: defaultLat,
-    lng: defaultLng,
-  });
+
+  const [mapLatLng, setMapLatLng] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
