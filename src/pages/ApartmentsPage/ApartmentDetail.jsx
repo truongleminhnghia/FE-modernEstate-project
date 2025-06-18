@@ -110,33 +110,30 @@ const sliderSettings = {
   ],
 };
 
-const mapContainerStyle = {
-  width: "100%",
-  height: "300px",
-};
-const center = {
-  lat: 10.729851, // Giá trị mặc định, bạn có thể lấy từ property.address nếu có tọa độ
-  lng: 106.721817,
-};
-
-const mapLat = 10.772006;
-const mapLng = 106.70488;
+const defaultLat = 10.762622;
+const defaultLng = 106.660172;
 
 const ApartmentDetail = () => {
   const { isLoaded } = useLoadScript({
     googleMapsApiKey: "AIzaSyDH65U1tsUHeWw-XMgtSyaVU9Sh4QO4J1o",
+    libraries: ["places"],
   });
 
   const [isFavorite, setIsFavorite] = useState(false);
   const [thumbsSwiper, setThumbsSwiper] = useState(null);
   const [apartment, setApartment] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [mapLatLng, setMapLatLng] = useState({
+    lat: defaultLat,
+    lng: defaultLng,
+  });
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await axios.get(
-          "https://bemodernestate.site/api/v1/posts/08ddacf3-c767-4f05-85c6-cbe4349c51d5");
+          "https://bemodernestate.site/api/v1/posts/08ddacf3-c767-4f05-85c6-cbe4349c51d5"
+        );
         setApartment(response.data.data);
       } catch (error) {
         message.error("Không thể tải dữ liệu căn hộ");
@@ -148,6 +145,37 @@ const ApartmentDetail = () => {
     fetchData();
   }, []);
 
+  useEffect(() => {
+    if (
+      isLoaded &&
+      apartment &&
+      apartment.property &&
+      apartment.property.address
+    ) {
+      const addressObj = apartment.property.address;
+      const addressString = [
+        addressObj.houseNumber,
+        addressObj.street,
+        addressObj.ward,
+        addressObj.district,
+        addressObj.city,
+        addressObj.country,
+      ]
+        .filter(Boolean)
+        .join(", ");
+
+      const geocoder = new window.google.maps.Geocoder();
+      geocoder.geocode({ address: addressString }, (results, status) => {
+        if (status === "OK" && results[0]) {
+          const loc = results[0].geometry.location;
+          setMapLatLng({ lat: loc.lat(), lng: loc.lng() });
+        } else {
+          setMapLatLng({ lat: defaultLat, lng: defaultLng });
+        }
+      });
+    }
+  }, [isLoaded, apartment]);
+
   if (loading) return <Spin style={{ marginTop: 100 }} />;
   if (!apartment) return null;
 
@@ -158,11 +186,18 @@ const ApartmentDetail = () => {
       ? property.propertyImages.map((img) => img.url)
       : fallbackImages;
 
-  const center = {
-    lat: property.address?.lat || 10.729851,
-    lng: property.address?.lng || 106.721817,
-  };
-
+  const addressObj = property.address;
+  const addressString = [
+    addressObj.houseNumber,
+    addressObj.street,
+    addressObj.ward,
+    addressObj.district,
+    addressObj.city,
+    addressObj.country,
+  ]
+    .filter(Boolean)
+    .join(", ");
+  console.log(addressString);
   return (
     <Layout
       style={{
@@ -263,9 +298,7 @@ const ApartmentDetail = () => {
               <Title level={4}>{property.title}</Title>
               <Space>
                 <EnvironmentOutlined />
-                <Text>
-                  {property.address?.addressDetail || "Đang cập nhật"}
-                </Text>
+                <Text>{addressString}</Text>
               </Space>
               <Divider />
               <div
@@ -448,87 +481,104 @@ const ApartmentDetail = () => {
         {/* Section: Bản đồ khu vực */}
         <Row gutter={24}>
           <Col xs={24} md={16}>
-       
-        <div
-          style={{
-            width: "100%",
-            height: 450,
-            position: "relative",
-            margin: "40px 0 0 0",
-            borderRadius: 12,
-            overflow: "hidden",
-          }}
-        >
-          <Title style={{ fontSize: 24, fontWeight: 600, textAlign: "left", marginBottom: 10 }}>
-            Bản đồ khu vực
-          </Title>{" "}
-          {isLoaded ? (
-            <GoogleMap
-              mapContainerStyle={{ width: "100%", height: "400px" }}
-              center={{ lat: mapLat, lng: mapLng }}
-              zoom={15}
-            >
-              <Marker position={{ lat: mapLat, lng: mapLng }} />
-            </GoogleMap>
-          ) : (
             <div
               style={{
-                height: 350,
-                background: "#f0f0f0",
-                textAlign: "center",
-                lineHeight: "350px",
+                width: "100%",
+                height: 450,
+                position: "relative",
+                margin: "40px 0 0 0",
+                borderRadius: 12,
+                overflow: "hidden",
               }}
             >
-              Đang tải bản đồ...
+              <Title
+                style={{
+                  fontSize: 24,
+                  fontWeight: 600,
+                  textAlign: "left",
+                  marginBottom: 10,
+                }}
+              >
+                Bản đồ khu vực
+              </Title>
+              {console.log("Rendering map with coordinates:", mapLatLng)}
+              {console.log("Marker position:", mapLatLng)}
+              {isLoaded ? (
+                <GoogleMap
+                  mapContainerStyle={{ width: "100%", height: "400px" }}
+                  center={mapLatLng}
+                  zoom={15}
+                >
+                  {mapLatLng && <Marker position={mapLatLng} />}
+                </GoogleMap>
+              ) : (
+                <div
+                  style={{
+                    height: 350,
+                    background: "#f0f0f0",
+                    textAlign: "center",
+                    lineHeight: "350px",
+                  }}
+                >
+                  Đang tải bản đồ...
+                </div>
+              )}
             </div>
-          )}
-        </div>
-        </Col>
-        <Col xs={24} md={8}>
-        <Card style={{ width: "100%", height: "400px", marginTop: 20 }}>
-          <Title style={{ fontSize: 24, fontWeight: 600, textAlign: "left", marginBottom: 15 }}>Mục lục</Title>
-          <Text>
-            <ul style={{ padding: 0, margin: 0, textAlign: "left" }}>
-              <li>
-                <a href="/">Trang chủ</a>
-              </li>
-            </ul>
-          </Text>
-          <Divider />
-          <Text>
-            <ul style={{ padding: 0, margin: 0, textAlign: "left" }}>
-              <li>
-                <a href="/can-ho">Danh sách căn hộ</a>
-              </li>
-            </ul>
-          </Text>
-          <Divider />
-          <Text>
-            <ul style={{ padding: 0, margin: 0, textAlign: "left" }}>
-              <li>
-                <a href="/news">Tin tức căn hộ</a>
-              </li>
-            </ul>
-          </Text>
-          <Divider />
-          <Text>
-            <ul style={{ padding: 0, margin: 0, textAlign: "left" }}>
-              <li>
-                <a href="/market-analysis">Phân tích đánh giá</a>
-              </li>
-            </ul>
-          </Text>
-          <Divider />
-          <Text>
-            <ul style={{ padding: 0, margin: 0, textAlign: "left" }}>
-              <li>
-                <a href="/services">Dịch vụ</a>
-              </li>
-            </ul>
-          </Text>
-          <Divider />
-        </Card>
-        </Col>
+          </Col>
+          <Col xs={24} md={8}>
+            <Card style={{ width: "100%", height: "400px", marginTop: 20 }}>
+              <Title
+                style={{
+                  fontSize: 24,
+                  fontWeight: 600,
+                  textAlign: "left",
+                  marginBottom: 15,
+                }}
+              >
+                Mục lục
+              </Title>
+              <Text>
+                <ul style={{ padding: 0, margin: 0, textAlign: "left" }}>
+                  <li>
+                    <a href="/">Trang chủ</a>
+                  </li>
+                </ul>
+              </Text>
+              <Divider />
+              <Text>
+                <ul style={{ padding: 0, margin: 0, textAlign: "left" }}>
+                  <li>
+                    <a href="/can-ho">Danh sách căn hộ</a>
+                  </li>
+                </ul>
+              </Text>
+              <Divider />
+              <Text>
+                <ul style={{ padding: 0, margin: 0, textAlign: "left" }}>
+                  <li>
+                    <a href="/news">Tin tức căn hộ</a>
+                  </li>
+                </ul>
+              </Text>
+              <Divider />
+              <Text>
+                <ul style={{ padding: 0, margin: 0, textAlign: "left" }}>
+                  <li>
+                    <a href="/market-analysis">Phân tích đánh giá</a>
+                  </li>
+                </ul>
+              </Text>
+              <Divider />
+              <Text>
+                <ul style={{ padding: 0, margin: 0, textAlign: "left" }}>
+                  <li>
+                    <a href="/services">Dịch vụ</a>
+                  </li>
+                </ul>
+              </Text>
+              <Divider />
+            </Card>
+          </Col>
         </Row>
       </Content>
       {/* Section: Căn hộ tương tự */}
