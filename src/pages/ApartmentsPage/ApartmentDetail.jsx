@@ -39,6 +39,7 @@ import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { GoogleMap, useLoadScript, Marker } from "@react-google-maps/api";
+import { addToFavorites } from "../../apis/apiCustomer.api";
 
 const { Content } = Layout;
 const { Title, Text, Paragraph } = Typography;
@@ -125,6 +126,7 @@ const ApartmentDetail = () => {
   const [loading, setLoading] = useState(true);
 
   const [mapLatLng, setMapLatLng] = useState(null);
+  const streetViewRef = React.useRef(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -139,6 +141,7 @@ const ApartmentDetail = () => {
         setLoading(false);
       }
     };
+
 
     fetchData();
   }, []);
@@ -167,6 +170,14 @@ const ApartmentDetail = () => {
         if (status === "OK" && results[0]) {
           const loc = results[0].geometry.location;
           setMapLatLng({ lat: loc.lat(), lng: loc.lng() });
+          if (streetViewRef.current) {
+            new window.google.maps.StreetViewPanorama(streetViewRef.current, {
+              position: { lat: 10.841172783357809, lng: 106.83782579813013 },
+              pov: { heading: 34, pitch: 10 },
+              zoom: 1,
+            });
+          }
+
         } else {
           setMapLatLng({ lat: defaultLat, lng: defaultLng });
         }
@@ -289,7 +300,17 @@ const ApartmentDetail = () => {
                       <HeartOutlined />
                     )
                   }
-                  onClick={() => setIsFavorite(!isFavorite)}
+                  onClick={async () => {
+                    if (!isFavorite && apartment?.id) {
+                      try {
+                        await addToFavorites(apartment.id);
+                        setIsFavorite(true);
+                        message.success("Đã thêm vào danh sách yêu thích!");
+                      } catch (error) {
+                        message.error("Thêm vào yêu thích thất bại!");
+                      }
+                    }
+                  }}
                 />
                 <Button icon={<ShareAltOutlined />} />
               </Space>
@@ -578,6 +599,36 @@ const ApartmentDetail = () => {
             </Card>
           </Col>
         </Row>
+
+        <Row gutter={24} style={{ marginTop: 24 }}>
+          <Col xs={24} md={16}>
+            <div
+              style={{
+                width: "100%",
+                height: 450,
+                position: "relative",
+                borderRadius: 12,
+                overflow: "hidden",
+              }}
+            >
+              <Title
+                style={{
+                  fontSize: 24,
+                  fontWeight: 600,
+                  textAlign: "left",
+                  marginBottom: 10,
+                }}
+              >
+                Trải nghiệm 360° khu vực
+              </Title>
+              <div
+                ref={streetViewRef}
+                style={{ width: "100%", height: "100%", borderRadius: 12 }}
+              />
+            </div>
+          </Col>
+        </Row>
+
       </Content>
       {/* Section: Căn hộ tương tự */}
       <div style={{ marginTop: 40, marginBottom: 40 }}>

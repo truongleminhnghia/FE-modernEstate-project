@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import { getProjects, transformProjectsList } from "../../apis/projectApi";
 import "./ProjectsPage.css";
 import { useNavigate, Link } from "react-router-dom";
 import { MessageOutlined } from '@ant-design/icons';
@@ -17,18 +17,19 @@ function ProjectsPage() {
   useEffect(() => {
     const fetchProjects = async () => {
       try {
-        const res = await axios.get(`${import.meta.env.VITE_API_URL}projects`);
-        const raw = res.data?.data?.rowDatas || [];
+        const response = await getProjects();
+        const raw = response.data?.rowDatas || [];
 
         const mapped = raw.map((item, index) => ({
           id: item.id,
           name: item.title,
           status: item.status?.replace(/_/g, " "),
           area: `${item.projectArea?.toLocaleString()} ${item.unitArea || "m²"}`,
-          address: item.address?.addressDetail || "Địa chỉ không rõ",
-          company: item.invetor?.companyName || "Chủ đầu tư không rõ",
+          address: item.address?.addressDetail || 
+            `${item.address?.houseNumber || ''} ${item.address?.street || ''}, ${item.address?.ward || ''}, ${item.address?.district || ''}, ${item.address?.city || ''}`.trim() || "Địa chỉ không rõ",
+          company: item.invetor?.companyName || item.invetor?.name || "Chủ đầu tư không rõ",
           image: item.images?.[0]?.imageUrl || "https://via.placeholder.com/300x200.png?text=No+Image",
-          type: item.typeProject,
+          type: item.typeProject?.replace(/_/g, ' '),
           featured: index === 0, // Chọn project đầu tiên làm nổi bật
         }));
 
