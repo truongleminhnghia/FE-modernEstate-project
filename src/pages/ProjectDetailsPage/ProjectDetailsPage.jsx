@@ -5,7 +5,7 @@ import { MessageOutlined, LeftOutlined, RightOutlined } from '@ant-design/icons'
 import MessagePopup from '../../components/popup/MessagePopup';
 import ChatPopup from '../../components/popup/ChatPopup';
 import { Carousel } from 'antd';
-import axios from 'axios';
+import { getProjectById } from '../../apis/projectApi';
 import { GoogleMap, Marker, useLoadScript } from '@react-google-maps/api';
 
 export function MaterialSymbolsSchool(props) {
@@ -175,68 +175,51 @@ const ProjectDetailsPage = () => {
     const fetchProjectDetails = async () => {
       try {
         setLoading(true);
-        const response = await axios.get(`${import.meta.env.VITE_API_URL}projects/${id}`);
-        const projectData = response.data?.data;
-
+        const response = await getProjectById(id);
+        const projectData = response.data;
         if (projectData) {
           setProject({
-            id: projectData.id,
+            ...projectData,
             name: projectData.title,
-            status: projectData.status?.replace(/_/g, " "),
-            area: `${projectData.projectArea?.toLocaleString()} ${projectData.unitArea || "m²"}`,
-            address: projectData.address?.addressDetail || "Địa chỉ không rõ",
-            company: projectData.invetor?.companyName || "Chủ đầu tư không rõ",
+            company: projectData.invetor?.companyName || projectData.invetor?.name || '',
+            type: projectData.typeProject?.replace(/_/g, ' '),
+            price: projectData.priceMin && projectData.priceMax
+              ? `${projectData.priceMin.toLocaleString()} - ${projectData.priceMax.toLocaleString()} ${projectData.unitCurrency}`
+              : 'Đang cập nhật',
             image: projectData.images?.[0]?.imageUrl || "https://via.placeholder.com/300x200.png?text=No+Image",
-            type: projectData.typeProject,
-            description: projectData.description,
+            fullAddress: [
+              projectData.address?.houseNumber,
+              projectData.address?.street,
+              projectData.address?.ward,
+              projectData.address?.district,
+              projectData.address?.city,
+              projectData.address?.country
+            ].filter(Boolean).join(', ')
           });
-
-          // Geocode the address
-          // if (projectData.address?.addressDetail) {
-          //   const geocodeUrl = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(
-          //     projectData.address.addressDetail
-          //   )}&key=AIzaSyDH65U1tsUHeWw-XMgtSyaVU9Sh4QO4J1o`;
-
-          //   try {
-          //     const response = await fetch(geocodeUrl);
-          //     const data = await response.json();
-          //     if (data.results && data.results.length > 0) {
-          //       const { lat, lng } = data.results[0].geometry.location;
-          //       setLocation({ lat, lng });
-          //     }
-          //   } catch (error) {
-          //     console.error("Lỗi khi tìm địa chỉ:", error);
-          //   }
-          // }
         }
         setLoading(false);
       } catch (err) {
-        console.error("Error fetching project details:", err);
         setError("Không thể tải thông tin dự án");
         setLoading(false);
       }
     };
-
     fetchProjectDetails();
   }, [id]);
 
-  const addres = "115/21, Đường Hồ Văn Tư, Phường Trường Thọ, Thành phố Thủ Đức, Thành phố Hồ Chí Minh, Việt Nam";
-
+  // Khi project thay đổi và đã load Google Maps, geocode địa chỉ
   useEffect(() => {
-    if (isLoaded && addres) {
+    if (isLoaded && project?.fullAddress) {
       const geocoder = new window.google.maps.Geocoder();
-      geocoder.geocode({ address: addres }, (results, status) => {
+      geocoder.geocode({ address: project.fullAddress }, (results, status) => {
         if (status === 'OK' && results[0]) {
           const loc = results[0].geometry.location;
-          const coords = { lat: loc.lat(), lng: loc.lng() };
-          console.log("=> setLocation:", coords);
           setLocation({ lat: loc.lat(), lng: loc.lng() });
         } else {
-          console.error("Geocode thất bại:", status);
+          setLocation(defaultCenter);
         }
       });
     }
-  }, [isLoaded, project?.address]);
+  }, [isLoaded, project?.fullAddress]);
 
   if (loading) {
     return (
@@ -365,8 +348,8 @@ const ProjectDetailsPage = () => {
             </div>
           </div>
           <div className="project-details-header-info-box">
-            <div className="project-details-header-title">{project.name}</div>
-            <div className="project-details-header-address">{project.address}</div>
+            <div className="project-details-header-title">{project.name || project.title}</div>
+            <div className="project-details-header-address">{project.fullAddress || ''}</div>
             <hr className="project-details-header-hr" />
             <div className="project-details-header-info-list">
               <div><b>Giá từ:</b> <span>{project.price || 'Đang cập nhật'}</span></div>
@@ -414,7 +397,6 @@ const ProjectDetailsPage = () => {
                       center={location || defaultCenter}
                       zoom={15}
                     >
-                      {/* <Marker position={location || defaultCenter} /> */}
                       {location && <Marker position={location} />}
                     </GoogleMap>
                   ) : (
@@ -429,7 +411,7 @@ const ProjectDetailsPage = () => {
                 </div>
                 <ul className="project-details-list">
                   <li><b>Dự án:</b> {project.name}</li>
-                  <li><b>Vị trí:</b> {project.address}</li>
+                  <li><b>Vị trí:</b> {project.fullAddress || ''}</li>
                   <li><b>Chủ đầu tư:</b> {project.company}</li>
                   <li><b>Tổng diện tích:</b> {project.totalArea || 'Đang cập nhật'}</li>
                   <li><b>Diện tích xây dựng:</b> {project.builtArea || 'Đang cập nhật'}</li>
