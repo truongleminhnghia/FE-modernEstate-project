@@ -19,3 +19,27 @@ export const addToFavorites = async (postId) => {
     throw error;
   }
 };
+
+export const getFavorites = async ({ accountId, propertyId, page_current = 1, page_size = 10 } = {}) => {
+  try {
+    const token = localStorage.getItem("token");
+    const params = {};
+    if (accountId) params.accountId = accountId;
+    if (propertyId) params.propertyId = propertyId;
+    params.page_current = page_current;
+    params.page_size = page_size;
+
+    const response = await axios.get(
+      `${API_BASE_URL}/favorites`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        params,
+      }
+    );
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
