@@ -10,6 +10,7 @@ import {
   PictureOutlined, EyeOutlined, FileTextOutlined
 } from "@ant-design/icons";
 import moment from 'moment';
+import { getProjects, createProject, updateProject, deleteProject, transformProjectsList } from '../../../apis/projectApi';
 
 const { Title, Text } = Typography;
 const { confirm } = Modal;
@@ -18,88 +19,24 @@ const { TextArea } = Input;
 
 const primaryColor = '#4a90e2';
 
-const initialMockProjects = [
-  {
-    id: 'PRJ001',
-    name: 'Khu dân cư Sunrise',
-    location: 'Quận 1, TP. Hồ Chí Minh',
-    type: 'Nhà ở',
-    status: 'Đang thực hiện',
-    startDate: '2024-01-15',
-    expectedCompletion: '2025-06-30',
-    budget: 350000000000,
-    description: 'Khu phức hợp căn hộ cao cấp gồm 120 căn hộ hiện đại với đầy đủ tiện ích.',
-    projectManager: 'Nguyễn Thị Hoa',
-    contactEmail: 'hoa.nguyen@company.com',
-    contactPhone: '0901 234 567',
-    dateCreated: '2024-01-01',
-    dateUpdated: '2024-01-15',
-    images: [
-      {
-        uid: '1',
-        name: 'sunrise-1.jpg',
-        status: 'done',
-        url: 'https://images.unsplash.com/photo-1580587771525-78b9dba3b914',
-      },
-      {
-        uid: '2',
-        name: 'sunrise-2.jpg',
-        status: 'done',
-        url: 'https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd',
-      }
-    ]
-  },
-  {
-    id: 'PRJ002',
-    name: 'Tòa nhà Metro Business',
-    location: 'Quận 3, TP. Hồ Chí Minh',
-    type: 'Thương mại',
-    status: 'Lập kế hoạch',
-    startDate: '2024-03-01',
-    expectedCompletion: '2025-12-15',
-    budget: 650000000000,
-    description: 'Tòa nhà văn phòng 25 tầng với không gian thương mại và hội nghị.',
-    projectManager: 'Trần Văn Minh',
-    contactEmail: 'minh.tran@company.com',
-    contactPhone: '0987 654 321',
-    dateCreated: '2023-12-15',
-    dateUpdated: '2024-01-10'
-  },
-  {
-    id: 'PRJ003',
-    name: 'Khu nhà ở Green Valley',
-    location: 'Huyện Củ Chi, TP. Hồ Chí Minh',
-    type: 'Nhà ở',
-    status: 'Hoàn thành',
-    startDate: '2022-05-01',
-    expectedCompletion: '2023-11-30',
-    budget: 200000000000,
-    description: 'Khu nhà ở sinh thái với 45 biệt thự và khu vườn cộng đồng.',
-    projectManager: 'Lê Thị Mai',
-    contactEmail: 'mai.le@company.com',
-    contactPhone: '0912 345 678',
-    dateCreated: '2022-04-15',
-    dateUpdated: '2023-11-30'
-  }
-];
-
 const projectTypes = {
-  'Nhà ở': 'Nhà ở',
-  'Thương mại': 'Thương mại',
-  'Hỗn hợp': 'Hỗn hợp',
-  'Công nghiệp': 'Công nghiệp'
+  'Chung Cư': 'Chung Cư',
+  'Nhà Biệt Thự': 'Nhà Biệt Thự',
+  'Nhà Ở': 'Nhà Ở',
+  'Nhà Villa': 'Nhà Villa'
 };
 
 const projectStatuses = {
-  'Lập kế hoạch': 'Lập kế hoạch',
-  'Đang thực hiện': 'Đang thực hiện',
-  'Hoàn thành': 'Hoàn thành',
-  'Tạm dừng': 'Tạm dừng'
+  'Sắp Mở Bán': 'Sắp Mở Bán',
+  'Đang Mở Bán': 'Đang Mở Bán',
+  'Đang Xây Dựng': 'Đang Xây Dựng',
+  'Hoàn Thành': 'Hoàn Thành'
 };
 
 const ProjectManagement = () => {
   const [searchText, setSearchText] = useState("");
-  const [dataSource, setDataSource] = useState(initialMockProjects);
+  const [dataSource, setDataSource] = useState([]);
+  const [loading, setLoading] = useState(true);
   
   const [isFormModalVisible, setIsFormModalVisible] = useState(false);
   const [editingProject, setEditingProject] = useState(null);
@@ -115,12 +52,32 @@ const ProjectManagement = () => {
   const [selectedProject, setSelectedProject] = useState(null);
   const [isDetailModalVisible, setIsDetailModalVisible] = useState(false);
 
+  // Fetch projects from API
+  const fetchProjects = async () => {
+    try {
+      setLoading(true);
+      const response = await getProjects();
+      const projects = response.data?.rowDatas || [];
+      const transformedProjects = transformProjectsList(projects);
+      setDataSource(transformedProjects);
+    } catch (error) {
+      console.error('Error fetching projects:', error);
+      message.error('Không thể tải danh sách dự án');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchProjects();
+  }, []);
+
   const filteredDataSource = dataSource.filter(
     (project) =>
-      project.name.toLowerCase().includes(searchText.toLowerCase()) ||
-      project.id.toLowerCase().includes(searchText.toLowerCase()) ||
-      project.location.toLowerCase().includes(searchText.toLowerCase()) ||
-      project.projectManager.toLowerCase().includes(searchText.toLowerCase())
+      project.name?.toLowerCase().includes(searchText.toLowerCase()) ||
+      project.id?.toLowerCase().includes(searchText.toLowerCase()) ||
+      project.location?.toLowerCase().includes(searchText.toLowerCase()) ||
+      project.projectManager?.toLowerCase().includes(searchText.toLowerCase())
   );
 
   useEffect(() => {
@@ -134,8 +91,8 @@ const ProjectManagement = () => {
       } else {
         form.resetFields();
         form.setFieldsValue({ 
-          status: 'Lập kế hoạch',
-          type: 'Nhà ở',
+          status: 'Sắp Mở Bán',
+          type: 'Chung Cư',
           budget: 0,
         });
       }
@@ -184,41 +141,45 @@ const ProjectManagement = () => {
     setFileList(newFileList);
   };
 
-  const handleFormSubmit = (values) => {
-    const processedValues = {
-      ...values,
-      budget: parseFloat(values.budget) || 0,
-      startDate: values.startDate ? values.startDate.format('YYYY-MM-DD') : '',
-      expectedCompletion: values.expectedCompletion ? values.expectedCompletion.format('YYYY-MM-DD') : '',
-      dateUpdated: moment().format('YYYY-MM-DD'),
-      images: fileList.map(file => ({
-        uid: file.uid,
-        name: file.name,
-        status: file.status || 'done',
-        url: file.url || file.thumbUrl,
-      })),
-    };
-
-    if (editingProject) {
-      setDataSource(prevData => 
-        prevData.map(project => 
-          project.id === editingProject.id ? { ...project, ...processedValues } : project
-        )
-      );
-      message.success("Cập nhật dự án thành công!");
-    } else {
-      const newId = `PRJ${String(dataSource.length > 0 ? (parseInt(dataSource[dataSource.length-1].id.replace('PRJ','')) + 1) : 1).padStart(3,'0')}`;
-      const newProject = {
-        id: newId,
-        ...processedValues,
-        dateCreated: moment().format('YYYY-MM-DD'),
+  const handleFormSubmit = async (values) => {
+    try {
+      // Map dữ liệu sang format API
+      const apiData = {
+        title: values.name,
+        typeProject: values.type.replace(/ /g, '_'),
+        status: values.status.replace(/ /g, '_'),
+        projectArea: Number(values.budget) || 0, // Giả sử budget là diện tích dự án
+        unitArea: 'm2',
+        priceMin: 1000000000, // Có thể lấy từ form nếu có
+        priceMax: 2000000000, // Có thể lấy từ form nếu có
+        unitCurrency: 'VND',
+        description: values.description,
+        totalInvestment: Number(values.budget) || 0,
+        timeStart: values.startDate ? values.startDate.format('YYYY-MM-DD') : '',
+        addressId: 'cf414908-1594-41bd-8c17-5ebf8a498412', // TODO: lấy từ form hoặc chọn
+        invetorId: '08dda8dd-9bf4-4382-87dd-cd6c6a60b195', // TODO: lấy từ form hoặc chọn
+        images: fileList.map(file => ({ imageUrl: file.url || file.thumbUrl })),
       };
-      setDataSource(prevData => [...prevData, newProject]);
-      message.success("Thêm dự án mới thành công!");
+      if (editingProject) {
+        await updateProject(editingProject.id, apiData);
+        message.success("Cập nhật dự án thành công!");
+      } else {
+        await createProject(apiData);
+        message.success("Thêm dự án mới thành công!");
+      }
+      await fetchProjects();
+      setIsFormModalVisible(false);
+      setEditingProject(null);
+      setFileList([]);
+    } catch (error) {
+      // Hiển thị lỗi chi tiết từ API nếu có
+      if (error.response && error.response.data && error.response.data.message) {
+        message.error('API: ' + error.response.data.message);
+      } else {
+        message.error('Có lỗi xảy ra khi lưu dự án');
+      }
+      console.error('Error saving project:', error);
     }
-    setIsFormModalVisible(false);
-    setEditingProject(null);
-    setFileList([]);
   };
 
   const handleDeleteProject = (projectId, projectName) => {
@@ -229,29 +190,35 @@ const ProjectManagement = () => {
       okText: "Xóa",
       okType: "danger",
       cancelText: "Hủy",
-      onOk() {
-        setDataSource(prevData => prevData.filter(p => p.id !== projectId));
-        message.success(`Xóa dự án "${projectName}" thành công!`);
+      async onOk() {
+        try {
+          await deleteProject(projectId);
+          message.success(`Xóa dự án "${projectName}" thành công!`);
+          await fetchProjects(); // Refresh the list
+        } catch (error) {
+          console.error('Error deleting project:', error);
+          message.error('Có lỗi xảy ra khi xóa dự án');
+        }
       },
     });
   };
 
   const getStatusColor = (status) => {
     switch (status) {
-      case 'Lập kế hoạch': return 'orange';
-      case 'Đang thực hiện': return 'blue';
-      case 'Hoàn thành': return 'green';
-      case 'Tạm dừng': return 'red';
+      case 'Sắp Mở Bán': return 'orange';
+      case 'Đang Mở Bán': return 'blue';
+      case 'Đang Xây Dựng': return 'processing';
+      case 'Hoàn Thành': return 'green';
       default: return 'default';
     }
   };
 
   const getTypeColor = (type) => {
     switch (type) {
-      case 'Nhà ở': return 'cyan';
-      case 'Thương mại': return 'purple';
-      case 'Hỗn hợp': return 'geekblue';
-      case 'Công nghiệp': return 'volcano';
+      case 'Chung Cư': return 'cyan';
+      case 'Nhà Biệt Thự': return 'purple';
+      case 'Nhà Ở': return 'geekblue';
+      case 'Nhà Villa': return 'volcano';
       default: return 'default';
     }
   };
@@ -269,11 +236,11 @@ const ProjectManagement = () => {
   const columns = [
     { 
       title: "Mã Dự án", 
-      dataIndex: "id", 
-      key: "id", 
+      dataIndex: "code", 
+      key: "code", 
       width: 100, 
-      sorter: (a,b) => a.id.localeCompare(b.id), 
-      render: (id) => <Text strong style={{color: primaryColor}}>{id}</Text>, 
+      sorter: (a,b) => a.code?.localeCompare(b.code), 
+      render: (code) => <Text strong style={{color: primaryColor}}>{code}</Text>, 
       fixed: 'left',
     },
     { 
@@ -281,7 +248,7 @@ const ProjectManagement = () => {
       dataIndex: "name", 
       key: "name", 
       width: 250, 
-      sorter: (a,b) => a.name.localeCompare(b.name),
+      sorter: (a,b) => a.name?.localeCompare(b.name),
       fixed: 'left',
     },
     {
@@ -325,8 +292,8 @@ const ProjectManagement = () => {
       key: "startDate", 
       width: 120, 
       align: 'center',
-      render: date => moment(date).format('DD/MM/YYYY'),
-      sorter: (a,b) => moment(a.startDate).unix() - moment(b.startDate).unix(),
+      render: date => date ? moment(date).format('DD/MM/YYYY') : 'N/A',
+      sorter: (a,b) => moment(a.startDate || 0).unix() - moment(b.startDate || 0).unix(),
     },
     { 
       title: <Space><UserOutlined />Quản lý</Space>, 
@@ -341,7 +308,7 @@ const ProjectManagement = () => {
       key: "images",
       width: 100,
       render: (images) => {
-        const imageUrl = images && images.length > 0 ? (images[0].url || images[0].thumbUrl) : null;
+        const imageUrl = images && images.length > 0 ? (images[0].imageUrl || images[0].url || images[0].thumbUrl) : null;
         return (
           <Space>
            {imageUrl ? (
@@ -430,6 +397,7 @@ const ProjectManagement = () => {
         dataSource={filteredDataSource} 
         rowKey="id" 
         bordered 
+        loading={loading}
         pagination={{ pageSize: 10, responsive: true }} 
         style={{ boxShadow: "0 1px 4px rgba(0,0,0,0.1)" }} 
         scroll={{ x: 'max-content' }} 
@@ -670,10 +638,10 @@ const ProjectManagement = () => {
                 <strong><DollarCircleOutlined /> Ngân sách:</strong> {Number(selectedProject.budget).toLocaleString()} VND
               </Col>
               <Col xs={24} sm={12}>
-                <strong><CalendarOutlined /> Ngày bắt đầu:</strong> {moment(selectedProject.startDate).format('DD/MM/YYYY')}
+                <strong><CalendarOutlined /> Ngày bắt đầu:</strong> {selectedProject.startDate ? moment(selectedProject.startDate).format('DD/MM/YYYY') : 'N/A'}
               </Col>
               <Col xs={24} sm={12}>
-                <strong><CalendarOutlined /> Dự kiến hoàn thành:</strong> {moment(selectedProject.expectedCompletion).format('DD/MM/YYYY')}
+                <strong><CalendarOutlined /> Dự kiến hoàn thành:</strong> {selectedProject.expectedCompletion ? moment(selectedProject.expectedCompletion).format('DD/MM/YYYY') : 'N/A'}
               </Col>
               <Col xs={24} sm={12}>
                 <strong><UserOutlined /> Quản lý dự án:</strong> {selectedProject.projectManager}
@@ -695,7 +663,7 @@ const ProjectManagement = () => {
                   {selectedProject.images.map((image, index) => (
                     <Col xs={24} sm={8} key={index}>
                       <img 
-                        src={image.url} 
+                        src={image.imageUrl || image.url} 
                         alt={`Project image ${index + 1}`}
                         style={{ 
                           width: '100%', 
@@ -705,7 +673,7 @@ const ProjectManagement = () => {
                           cursor: 'pointer'
                         }}
                         onClick={() => {
-                          setPreviewImage(image.url);
+                          setPreviewImage(image.imageUrl || image.url);
                           setPreviewTitle(`Hình ảnh ${index + 1}`);
                           setPreviewVisible(true);
                         }}
@@ -718,10 +686,10 @@ const ProjectManagement = () => {
 
             <Row gutter={16} style={{marginTop: 16}}>
               <Col xs={24} sm={12}>
-                <strong>Ngày tạo:</strong> {moment(selectedProject.dateCreated).format('DD/MM/YYYY HH:mm')}
+                <strong>Ngày tạo:</strong> {selectedProject.dateCreated ? moment(selectedProject.dateCreated).format('DD/MM/YYYY HH:mm') : 'N/A'}
               </Col>
               <Col xs={24} sm={12}>
-                <strong>Ngày cập nhật:</strong> {moment(selectedProject.dateUpdated).format('DD/MM/YYYY HH:mm')}
+                <strong>Ngày cập nhật:</strong> {selectedProject.dateUpdated ? moment(selectedProject.dateUpdated).format('DD/MM/YYYY HH:mm') : 'N/A'}
               </Col>
             </Row>
           </div>

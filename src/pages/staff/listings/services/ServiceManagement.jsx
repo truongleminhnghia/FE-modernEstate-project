@@ -1,91 +1,131 @@
 import React, { useState, useEffect } from 'react';
 import {
   Table, Button, Input, Space, Tag, Typography, Modal, Tooltip, Row, Col, Form, message, Select,
-  InputNumber, Checkbox 
+  InputNumber, Checkbox, Upload, DatePicker
 } from "antd";
 import {
   PlusOutlined, SearchOutlined, EyeOutlined, EditOutlined, StopOutlined, CheckCircleOutlined, ExclamationCircleFilled,
   SaveOutlined, CloseCircleOutlined, AppstoreAddOutlined, TagsOutlined, DollarCircleOutlined, CalendarOutlined,
-  ToolOutlined 
+  ToolOutlined, UploadOutlined
 } from "@ant-design/icons";
-import moment from 'moment'; 
+import moment from 'moment';
+import axios from 'axios';
 
 const { Title, Text } = Typography;
 const { confirm } = Modal;
 const { Option } = Select;
 const { TextArea } = Input;
+const { RangePicker } = DatePicker;
 
 const primaryColor = '#4a90e2';
 
-const initialMockServices = [
-  {
-    id: 'SVC001',
-    name: 'Đăng tin VIP 7 ngày',
-    description: 'Tin đăng của bạn sẽ được hiển thị ở vị trí nổi bật trong 7 ngày, tăng khả năng tiếp cận khách hàng.',
-    price: 150000, 
-    durationDays: 7,
-    type: 'listing_boost', 
-    applicableTo: ['listings_all'], 
-    features: ['Hiển thị TOP đầu trang tìm kiếm', 'Gắn nhãn VIP nổi bật', 'Tiếp cận nhiều khách hàng hơn'],
-    status: 'active', 
-    dateCreated: '2025-01-10',
-    dateUpdated: '2025-03-15',
-  },
-  {
-    id: 'SVC002',
-    name: 'Gói Môi giới Chuyên nghiệp - 1 Tháng',
-    description: 'Nâng cấp tài khoản Môi giới để đăng nhiều tin hơn, nhận thông báo khách hàng tiềm năng và các công cụ hỗ trợ độc quyền.',
-    price: 500000,
-    durationDays: 30,
-    type: 'user_subscription',
-    applicableTo: ['users_broker'],
-    features: ['Đăng tối đa 50 tin', 'Huy hiệu "Môi giới Pro"', 'Ưu tiên hiển thị tin', 'Báo cáo hiệu quả tin đăng'],
-    status: 'active',
-    dateCreated: '2025-02-01',
-    dateUpdated: '2025-04-01',
-  },
-  {
-    id: 'SVC003',
-    name: 'Dịch vụ Chụp ảnh BĐS Chuyên nghiệp',
-    description: 'Đội ngũ nhiếp ảnh gia chuyên nghiệp sẽ đến tận nơi chụp ảnh căn hộ/nhà của bạn với chất lượng cao nhất.',
-    price: 1200000,
-    durationDays: null, 
-    type: 'one_time_service',
-    applicableTo: ['users_owner', 'users_broker'],
-    features: ['Bộ ảnh chất lượng cao (15-20 ảnh)', 'Chỉnh sửa hậu kỳ chuyên nghiệp', 'Flycam (tùy chọn gói)'],
-    status: 'inactive', 
-    dateCreated: '2025-03-20',
-    dateUpdated: '2025-05-01',
-  },
-];
+// API base URL
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://bemodernestate.site/api/v1/';
 
-const serviceTypes = {
-  listing_boost: "Nâng cấp tin đăng",
-  user_subscription: "Gói tài khoản người dùng",
-  one_time_service: "Dịch vụ một lần",
-};
-const applicableTargets = {
-  listings_all: "Tất cả tin đăng",
-  users_owner: "Chủ sở hữu",
-  users_broker: "Môi giới",
-  users_customer: "Khách hàng (Thuê/Mua)",
+// Property types mapping
+const propertyTypes = {
+  'Căn_hộ_Chung_cư': 'Căn hộ/Chung cư',
+  'Nhà_riêng': 'Nhà riêng',
+  'Biệt_thự': 'Biệt thự',
+  'Nhà_mặt_phố': 'Nhà mặt phố',
+  'Đất_nền': 'Đất nền',
+  'Văn_phòng': 'Văn phòng',
+  'Cửa_hàng': 'Cửa hàng',
+  'Kho_xưởng': 'Kho xưởng'
 };
 
+// Demand types
+const demandTypes = {
+  'MUA_BÁN': 'Mua bán',
+  'CHO_THUÊ': 'Cho thuê'
+};
+
+// House directions
+const houseDirections = {
+  'Đông': 'Đông',
+  'Tây': 'Tây',
+  'Nam': 'Nam',
+  'Bắc': 'Bắc',
+  'Đông_Bắc': 'Đông Bắc',
+  'Đông_Nam': 'Đông Nam',
+  'Tây_Bắc': 'Tây Bắc',
+  'Tây_Nam': 'Tây Nam'
+};
+
+// Interior types
+const interiorTypes = {
+  'CĂN_HỘ_TRỐNG': 'Căn hộ trống',
+  'CĂN_HỘ_CƠ_BẢN': 'Căn hộ cơ bản',
+  'CĂN_HỘ_CAO_CẤP': 'Căn hộ cao cấp',
+  'CĂN_HỘ_SANG_TRỌNG': 'Căn hộ sang trọng'
+};
 
 const ServiceManagement = () => {
   const [searchText, setSearchText] = useState("");
-  const [dataSource, setDataSource] = useState(initialMockServices);
+  const [dataSource, setDataSource] = useState([]);
+  const [loading, setLoading] = useState(false);
   
   const [isFormModalVisible, setIsFormModalVisible] = useState(false);
   const [editingService, setEditingService] = useState(null); 
+  const [fileList, setFileList] = useState([]);
 
   const [form] = Form.useForm();
 
+  // Fetch posts from API
+  const fetchPosts = async () => {
+    setLoading(true);
+    try {
+      const response = await axios.get(`${API_BASE_URL}posts`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+
+      if (response.data.success) {
+        const posts = response.data.data.rowDatas || [];
+        const mappedPosts = posts.map(post => ({
+          id: post.id,
+          title: post.newProperty?.title || 'N/A',
+          description: post.newProperty?.description || 'N/A',
+          demand: post.demand,
+          type: post.newProperty?.type,
+          area: post.newProperty?.area,
+          price: post.newProperty?.price,
+          priceUnit: post.newProperty?.priceUnit,
+          numberOfBedrooms: post.newProperty?.numberOfBedrooms,
+          numberOfBathrooms: post.newProperty?.numberOfBathrooms,
+          houseDirection: post.newProperty?.houseDirection,
+          interior: post.newProperty?.interior,
+          address: post.newProperty?.address,
+          contactName: post.contact?.contactName,
+          contactEmail: post.contact?.contactEmail,
+          contactPhone: post.contact?.contactPhone,
+          status: post.status || 'ACTIVE',
+          dateCreated: post.createdAt ? moment(post.createdAt).format('YYYY-MM-DD') : 'N/A',
+          dateUpdated: post.updatedAt ? moment(post.updatedAt).format('YYYY-MM-DD') : 'N/A',
+        }));
+        setDataSource(mappedPosts);
+      } else {
+        message.error("Lỗi khi tải dữ liệu bài đăng.");
+      }
+    } catch (error) {
+      console.error("Lỗi gọi API:", error);
+      message.error("Không thể kết nối đến máy chủ hoặc lỗi khi tải dữ liệu.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchPosts();
+  }, []);
+
   const filteredDataSource = dataSource.filter(
-    (service) =>
-      service.name.toLowerCase().includes(searchText.toLowerCase()) ||
-      service.id.toLowerCase().includes(searchText.toLowerCase()) ||
-      (service.type && (serviceTypes[service.type] || service.type).toLowerCase().includes(searchText.toLowerCase()))
+    (post) =>
+      post.title.toLowerCase().includes(searchText.toLowerCase()) ||
+      post.id.toLowerCase().includes(searchText.toLowerCase()) ||
+      (post.type && propertyTypes[post.type]?.toLowerCase().includes(searchText.toLowerCase())) ||
+      (post.demand && demandTypes[post.demand]?.toLowerCase().includes(searchText.toLowerCase()))
   );
 
   useEffect(() => {
@@ -93,15 +133,23 @@ const ServiceManagement = () => {
       if (editingService) {
         form.setFieldsValue({
           ...editingService,
-          features: editingService.features ? editingService.features.join('\n') : '',
+          address: editingService.address ? {
+            houseNumber: editingService.address.houseNumber,
+            street: editingService.address.street,
+            ward: editingService.address.ward,
+            district: editingService.address.district,
+            city: editingService.address.city,
+            country: editingService.address.country,
+            addressDetail: editingService.address.addressDetail,
+          } : {},
         });
       } else {
         form.resetFields();
         form.setFieldsValue({ 
-          status: 'active',
-          price: 0,
-          applicableTo: [],
-          features: '',
+          demand: 'MUA_BÁN',
+          priceUnit: 'VND',
+          areaUnit: 'm2',
+          country: 'Việt Nam',
         });
       }
     }
@@ -109,98 +157,169 @@ const ServiceManagement = () => {
   
   const showAddModal = () => {
     setEditingService(null);
+    setFileList([]);
     setIsFormModalVisible(true);
   };
 
-  const showEditModal = (service) => {
-    setEditingService(service);
+  const showEditModal = (post) => {
+    setEditingService(post);
+    setFileList([]);
     setIsFormModalVisible(true);
   };
 
   const handleFormCancel = () => {
     setIsFormModalVisible(false);
     setEditingService(null);
+    setFileList([]);
   };
 
-  const handleFormSubmit = (values) => {
-    const processedValues = {
-      ...values,
-      price: parseFloat(values.price) || 0,
-      durationDays: values.durationDays ? parseInt(values.durationDays, 10) : null,
-      features: values.features ? values.features.split('\n').map(f => f.trim()).filter(f => f) : [], 
-      dateUpdated: moment().format('YYYY-MM-DD'),
-    };
-
-    if (editingService) {
-      setDataSource(prevData => 
-        prevData.map(service => 
-          service.id === editingService.id ? { ...service, ...processedValues } : service
-        )
-      );
-      message.success("Cập nhật dịch vụ thành công!");
-    } else {
-      const newId = `SVC${String(dataSource.length > 0 ? (parseInt(dataSource[dataSource.length-1].id.replace('SVC','')) + 1) : 1).padStart(3,'0')}`;
-      const newService = {
-        id: newId,
-        ...processedValues,
-        dateCreated: moment().format('YYYY-MM-DD'),
+  const handleFormSubmit = async (values) => {
+    setLoading(true);
+    try {
+      const postData = {
+        postBy: localStorage.getItem("userId") || "string",
+        demand: values.demand,
+        newProperty: {
+          title: values.title,
+          description: values.description,
+          attribute: values.attribute || [],
+          type: values.type,
+          area: parseFloat(values.area) || 0,
+          areaUnit: values.areaUnit,
+          price: parseFloat(values.price) || 0,
+          priceUnit: values.priceUnit,
+          document: values.document || [],
+          interior: values.interior,
+          numberOfBedrooms: parseInt(values.numberOfBedrooms) || 0,
+          numberOfBathrooms: parseInt(values.numberOfBathrooms) || 0,
+          houseDirection: values.houseDirection,
+          videoUrl: values.videoUrl || [],
+          address: {
+            houseNumber: values.address?.houseNumber || "",
+            street: values.address?.street || "",
+            ward: values.address?.ward || "",
+            district: values.address?.district || "",
+            city: values.address?.city || "",
+            country: values.address?.country || "Việt Nam",
+            addressDetail: values.address?.addressDetail || "",
+          },
+          projectId: values.projectId || null,
+          images: fileList.map(file => ({
+            imageUrl: file.url || file.response?.url || file.thumbUrl
+          }))
+        },
+        contact: {
+          contactName: values.contactName,
+          contactEmail: values.contactEmail,
+          contactPhone: values.contactPhone,
+        },
+        postPackagesRequest: {
+          startDate: moment().format('YYYY-MM-DD'),
+          endDate: moment().add(30, 'days').format('YYYY-MM-DD'),
+          totalAmout: parseFloat(values.price) || 0,
+          currency: values.priceUnit || 'VND',
+          accountId: localStorage.getItem("userId") || "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+          packageId: "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+          id: "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+        }
       };
-      setDataSource(prevData => [...prevData, newService]);
-      message.success("Thêm dịch vụ mới thành công!");
+
+      if (editingService) {
+        await axios.put(
+          `${API_BASE_URL}posts/${editingService.id}`,
+          postData,
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
+        );
+        message.success("Cập nhật bài đăng thành công!");
+      } else {
+        await axios.post(
+          `${API_BASE_URL}posts`,
+          postData,
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
+        );
+        message.success("Thêm bài đăng mới thành công!");
+      }
+      setIsFormModalVisible(false);
+      setEditingService(null);
+      setFileList([]);
+      fetchPosts();
+    } catch (error) {
+      console.error("Lỗi khi gửi form:", error.response || error);
+      message.error(
+        `Đã có lỗi xảy ra: ${error.response?.data?.message || error.message}`
+      );
+    } finally {
+      setLoading(false);
     }
-    setIsFormModalVisible(false);
-    setEditingService(null);
   };
 
-  const handleToggleStatus = (serviceId, currentStatus) => {
-    const newStatus = currentStatus === 'active' ? 'inactive' : 'active';
-    const actionText = newStatus === 'active' ? 'Kích hoạt' : 'Ngưng kích hoạt';
+  const handleToggleStatus = (postId, currentStatus) => {
+    const newStatus = currentStatus === 'ACTIVE' ? 'INACTIVE' : 'ACTIVE';
+    const actionText = newStatus === 'ACTIVE' ? 'Kích hoạt' : 'Ngưng kích hoạt';
      confirm({
-      title: `Bạn có chắc muốn ${actionText.toLowerCase()} dịch vụ này?`,
+      title: `Bạn có chắc muốn ${actionText.toLowerCase()} bài đăng này?`,
       icon: <ExclamationCircleFilled />, okText: "Xác nhận", cancelText: "Hủy",
       onOk() {
-        setDataSource(prevData => prevData.map(s => s.id === serviceId ? { ...s, status: newStatus, dateUpdated: moment().format('YYYY-MM-DD') } : s));
-        message.success(`${actionText} dịch vụ thành công!`);
+        // In a real implementation, you would call the API to update status
+        setDataSource(prevData => prevData.map(p => p.id === postId ? { ...p, status: newStatus, dateUpdated: moment().format('YYYY-MM-DD') } : p));
+        message.success(`${actionText} bài đăng thành công!`);
       },
     });
   };
 
+  const handleFileChange = ({ fileList: newFileList }) => {
+    setFileList(newFileList);
+  };
 
   const columns = [
-    { title: "Mã DV", dataIndex: "id", key: "id", width: 100, sorter: (a,b) => a.id.localeCompare(b.id), render: (id) => <Text strong style={{color: primaryColor}}>{id}</Text> },
-    { title: "Tên Dịch vụ", dataIndex: "name", key: "name", width: 270, sorter: (a,b) => a.name.localeCompare(b.name)},
+    { title: "Mã bài đăng", dataIndex: "id", key: "id", width: 120, sorter: (a,b) => a.id.localeCompare(b.id), render: (id) => <Text strong style={{color: primaryColor}}>{id}</Text> },
+    { title: "Tiêu đề", dataIndex: "title", key: "title", width: 250, sorter: (a,b) => a.title.localeCompare(b.title)},
     { 
-      title: "Giá (VND)", 
-      dataIndex: "price", key: "price", width: 100, align: 'right',
-      render: price => Number(price).toLocaleString(),
-      sorter: (a,b) => a.price - b.price,
+      title: "Loại giao dịch", 
+      dataIndex: "demand", key: "demand", width: 120, align: 'center',
+      filters: Object.entries(demandTypes).map(([value, text]) => ({text, value})),
+      onFilter: (value, record) => record.demand === value,
+      render: demand => <Tag color="blue">{demandTypes[demand] || demand}</Tag>
     },
     { 
-      title: <Space><CalendarOutlined />Thời hạn</Space>, 
-      dataIndex: "durationDays", key: "durationDays", width: 120, align: 'center',
-      render: days => days ? `${days} ngày` : <Text type="secondary">N/A</Text>,
-      sorter: (a,b) => (a.durationDays || 0) - (b.durationDays || 0),
-    },
-    { 
-      title: <Space><TagsOutlined />Loại DV</Space>, 
-      dataIndex: "type", key: "type", width: 180,
-      filters: Object.entries(serviceTypes).map(([value, text]) => ({text, value})),
+      title: "Loại BĐS", 
+      dataIndex: "type", key: "type", width: 150,
+      filters: Object.entries(propertyTypes).map(([value, text]) => ({text, value})),
       onFilter: (value, record) => record.type === value,
-      render: type => <Tag color="cyan">{serviceTypes[type] || type}</Tag>
+      render: type => <Tag color="cyan">{propertyTypes[type] || type}</Tag>
+    },
+    { 
+      title: "Diện tích", 
+      dataIndex: "area", key: "area", width: 100, align: 'right',
+      render: (area, record) => area ? `${area} m²` : <Text type="secondary">N/A</Text>,
+      sorter: (a,b) => (a.area || 0) - (b.area || 0),
+    },
+    { 
+      title: "Giá", 
+      dataIndex: "price", key: "price", width: 120, align: 'right',
+      render: (price, record) => price ? `${Number(price).toLocaleString()} ${record.priceUnit || 'VND'}` : <Text type="secondary">N/A</Text>,
+      sorter: (a,b) => (a.price || 0) - (b.price || 0),
     },
     {
-      title: "Trạng thái", dataIndex: "status", key: "status", width: 150, align: 'center',
-      filters: [ {text: 'Đang hoạt động', value: 'active'}, {text: 'Ngưng hoạt động', value: 'inactive'} ],
+      title: "Trạng thái", dataIndex: "status", key: "status", width: 120, align: 'center',
+      filters: [ {text: 'Đang hoạt động', value: 'ACTIVE'}, {text: 'Ngưng hoạt động', value: 'INACTIVE'} ],
       onFilter: (value, record) => record.status === value,
-      render: status => <Tag color={status === 'active' ? 'green' : 'red'}>{status === 'active' ? 'Hoạt động' : 'Ngưng hoạt động'}</Tag>
+      render: status => <Tag color={status === 'ACTIVE' ? 'green' : 'red'}>{status === 'ACTIVE' ? 'Hoạt động' : 'Ngưng hoạt động'}</Tag>
     },
     {
       title: "Hành động", key: "action", align: "center", width: 120, 
-      // Bỏ fixed: 'right' nếu không dùng scroll.x
       render: (_, record) => (
         <Space size="small">
           <Tooltip title="Chỉnh sửa"><Button type="text" icon={<EditOutlined style={{ color: '#faad14' }}/>} onClick={() => showEditModal(record)}/></Tooltip>
-          {record.status === "active" ? (
+          {record.status === "ACTIVE" ? (
             <Tooltip title="Ngưng kích hoạt"><Button type="text" icon={<StopOutlined />} danger onClick={() => handleToggleStatus(record.id, record.status)}/></Tooltip>
           ) : (
             <Tooltip title="Kích hoạt"><Button type="text" icon={<CheckCircleOutlined style={{ color: 'green' }}/>} onClick={() => handleToggleStatus(record.id, record.status)}/></Tooltip>
@@ -215,12 +334,12 @@ const ServiceManagement = () => {
 
   return (
     <div style={{ background: "#fff", padding: "20px", borderRadius: "8px", boxShadow: "0 2px 8px rgba(0,0,0,0.05)" }}>
-      <Title level={3} style={{ marginBottom: "20px", color: primaryColor }}><ToolOutlined /> Quản lý Dịch vụ</Title>
+      <Title level={3} style={{ marginBottom: "20px", color: primaryColor }}><ToolOutlined /> Quản lý Bài đăng Bất động sản</Title>
       <Row justify="space-between" align="middle" style={{ marginBottom: "20px" }}>
         <Col xs={24} sm={12} md={10} lg={8} xl={6}>
-          <Input placeholder="Tìm Mã DV, Tên DV, Loại DV..." prefix={<SearchOutlined />} value={searchText} onChange={handleSearchInputChange} allowClear onClear={handleClearSearch} style={{ width: '100%' }}/>
+          <Input placeholder="Tìm Mã bài đăng, Tiêu đề, Loại BĐS..." prefix={<SearchOutlined />} value={searchText} onChange={handleSearchInputChange} allowClear onClear={handleClearSearch} style={{ width: '100%' }}/>
         </Col>
-        <Col><Button type="primary" icon={<PlusOutlined />} style={{ backgroundColor: primaryColor, borderColor: primaryColor }} onClick={showAddModal}>Thêm Dịch vụ</Button></Col>
+        <Col><Button type="primary" icon={<PlusOutlined />} style={{ backgroundColor: primaryColor, borderColor: primaryColor }} onClick={showAddModal}>Thêm Bài đăng</Button></Col>
       </Row>
 
       <Table 
@@ -228,72 +347,171 @@ const ServiceManagement = () => {
         dataSource={filteredDataSource} 
         rowKey="id" 
         bordered 
+        loading={loading}
         pagination={{ pageSize: 10, responsive: true }} 
-        // Bỏ scroll={{ x: 1200 }} 
         style={{ boxShadow: "0 1px 4px rgba(0,0,0,0.1)" }}
       />
       
       <Modal
-        title={<span style={{color: primaryColor, fontWeight: 'bold'}}>{editingService ? <><EditOutlined /> Chỉnh sửa Dịch vụ</> : <><PlusOutlined/> Thêm mới Dịch vụ</>}</span>}
+        title={<span style={{color: primaryColor, fontWeight: 'bold'}}>{editingService ? <><EditOutlined /> Chỉnh sửa Bài đăng</> : <><PlusOutlined/> Thêm mới Bài đăng</>}</span>}
         visible={isFormModalVisible}
         onCancel={handleFormCancel}
         footer={null}
-        width={700}
+        width={800}
         destroyOnClose
       >
         <Form form={form} layout="vertical" onFinish={handleFormSubmit} scrollToFirstError>
             <Row gutter={16}>
                 <Col span={16}>
-                    <Form.Item name="name" label="Tên Dịch vụ" rules={[{ required: true, message: 'Vui lòng nhập tên dịch vụ!' }]}>
-                        <Input placeholder="VD: Gói tin đăng VIP 1 tháng"/>
+                    <Form.Item name="title" label="Tiêu đề bài đăng" rules={[{ required: true, message: 'Vui lòng nhập tiêu đề!' }]}>
+                        <Input placeholder="VD: Căn hộ 2 phòng ngủ tại Quận 1"/>
                     </Form.Item>
                 </Col>
                 <Col span={8}>
-                    <Form.Item name="status" label="Trạng thái" rules={[{ required: true }]}>
+                    <Form.Item name="demand" label="Loại giao dịch" rules={[{ required: true }]}>
                         <Select>
-                            <Option value="active">Đang hoạt động</Option>
-                            <Option value="inactive">Ngưng hoạt động</Option>
+                            {Object.entries(demandTypes).map(([key, text]) => <Option key={key} value={key}>{text}</Option>)}
                         </Select>
                     </Form.Item>
                 </Col>
             </Row>
-             <Form.Item name="description" label="Mô tả chi tiết dịch vụ" rules={[{ required: true, message: 'Vui lòng nhập mô tả!' }]}>
-                <TextArea rows={3} placeholder="Mô tả lợi ích, cách thức hoạt động của dịch vụ..."/>
+             <Form.Item name="description" label="Mô tả chi tiết" rules={[{ required: true, message: 'Vui lòng nhập mô tả!' }]}>
+                <TextArea rows={3} placeholder="Mô tả chi tiết về bất động sản..."/>
             </Form.Item>
             <Row gutter={16}>
                 <Col xs={24} sm={12}>
-                    <Form.Item name="price" label="Giá (VND)" rules={[{ required: true, message: 'Vui lòng nhập giá dịch vụ!'}]}>
-                        <InputNumber style={{width: '100%'}} min={0} formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')} parser={value => value.replace(/\$\s?|(,*)/g, '')} placeholder="Nhập giá bằng số"/>
+                    <Form.Item name="type" label="Loại BĐS" rules={[{ required: true, message: 'Vui lòng chọn loại BĐS!'}]}>
+                        <Select placeholder="Chọn loại bất động sản">
+                            {Object.entries(propertyTypes).map(([key, text]) => <Option key={key} value={key}>{text}</Option>)}
+                        </Select>
                     </Form.Item>
                 </Col>
                 <Col xs={24} sm={12}>
-                    <Form.Item name="durationDays" label="Thời hạn (Số ngày, nếu có)">
-                        <InputNumber style={{width: '100%'}} min={0} placeholder="VD: 7, 30. Bỏ trống nếu không có thời hạn."/>
+                    <Form.Item name="interior" label="Tình trạng nội thất">
+                        <Select placeholder="Chọn tình trạng nội thất">
+                            {Object.entries(interiorTypes).map(([key, text]) => <Option key={key} value={key}>{text}</Option>)}
+                        </Select>
                     </Form.Item>
                 </Col>
             </Row>
             <Row gutter={16}>
-                <Col xs={24} sm={12}>
-                    <Form.Item name="type" label="Loại Dịch vụ" rules={[{ required: true, message: 'Vui lòng chọn loại dịch vụ!'}]}>
-                        <Select placeholder="Chọn loại dịch vụ">
-                            {Object.entries(serviceTypes).map(([key, text]) => <Option key={key} value={key}>{text}</Option>)}
-                        </Select>
+                <Col xs={24} sm={8}>
+                    <Form.Item name="area" label="Diện tích" rules={[{ required: true, message: 'Vui lòng nhập diện tích!'}]}>
+                        <InputNumber style={{width: '100%'}} min={0} placeholder="Nhập diện tích"/>
                     </Form.Item>
                 </Col>
-                <Col xs={24} sm={12}>
-                    <Form.Item name="applicableTo" label="Áp dụng cho">
-                        <Select mode="multiple" allowClear placeholder="Chọn đối tượng áp dụng">
-                            {Object.entries(applicableTargets).map(([key, text]) => <Option key={key} value={key}>{text}</Option>)}
+                <Col xs={24} sm={8}>
+                    <Form.Item name="price" label="Giá" rules={[{ required: true, message: 'Vui lòng nhập giá!'}]}>
+                        <InputNumber style={{width: '100%'}} min={0} formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')} parser={value => value.replace(/\$\s?|(,*)/g, '')} placeholder="Nhập giá"/>
+                    </Form.Item>
+                </Col>
+                <Col xs={24} sm={8}>
+                    <Form.Item name="priceUnit" label="Đơn vị giá">
+                        <Select>
+                            <Option value="VND">VND</Option>
+                            <Option value="USD">USD</Option>
                         </Select>
                     </Form.Item>
                 </Col>
             </Row>
-            <Form.Item name="features" label="Các tính năng của Dịch vụ (Mỗi tính năng một dòng)">
-                <TextArea rows={4} placeholder="VD: Hiển thị nổi bật&#10;Gửi email thông báo cho người theo dõi&#10;..."/>
+            <Row gutter={16}>
+                <Col xs={24} sm={8}>
+                    <Form.Item name="numberOfBedrooms" label="Số phòng ngủ">
+                        <InputNumber style={{width: '100%'}} min={0} placeholder="Số phòng ngủ"/>
+                    </Form.Item>
+                </Col>
+                <Col xs={24} sm={8}>
+                    <Form.Item name="numberOfBathrooms" label="Số phòng tắm">
+                        <InputNumber style={{width: '100%'}} min={0} placeholder="Số phòng tắm"/>
+                    </Form.Item>
+                </Col>
+                <Col xs={24} sm={8}>
+                    <Form.Item name="houseDirection" label="Hướng nhà">
+                        <Select placeholder="Chọn hướng">
+                            {Object.entries(houseDirections).map(([key, text]) => <Option key={key} value={key}>{text}</Option>)}
+                        </Select>
+                    </Form.Item>
+                </Col>
+            </Row>
+            
+            <Title level={4}>Thông tin địa chỉ</Title>
+            <Row gutter={16}>
+                <Col xs={24} sm={8}>
+                    <Form.Item name={['address', 'houseNumber']} label="Số nhà">
+                        <Input placeholder="Số nhà"/>
+                    </Form.Item>
+                </Col>
+                <Col xs={24} sm={8}>
+                    <Form.Item name={['address', 'street']} label="Đường">
+                        <Input placeholder="Tên đường"/>
+                    </Form.Item>
+                </Col>
+                <Col xs={24} sm={8}>
+                    <Form.Item name={['address', 'ward']} label="Phường/Xã">
+                        <Input placeholder="Phường/Xã"/>
+                    </Form.Item>
+                </Col>
+            </Row>
+            <Row gutter={16}>
+                <Col xs={24} sm={8}>
+                    <Form.Item name={['address', 'district']} label="Quận/Huyện">
+                        <Input placeholder="Quận/Huyện"/>
+                    </Form.Item>
+                </Col>
+                <Col xs={24} sm={8}>
+                    <Form.Item name={['address', 'city']} label="Tỉnh/Thành phố">
+                        <Input placeholder="Tỉnh/Thành phố"/>
+                    </Form.Item>
+                </Col>
+                <Col xs={24} sm={8}>
+                    <Form.Item name={['address', 'country']} label="Quốc gia">
+                        <Input placeholder="Quốc gia"/>
+                    </Form.Item>
+                </Col>
+            </Row>
+            <Form.Item name={['address', 'addressDetail']} label="Địa chỉ chi tiết">
+                <TextArea rows={2} placeholder="Địa chỉ chi tiết"/>
             </Form.Item>
+
+            <Title level={4}>Thông tin liên hệ</Title>
+            <Row gutter={16}>
+                <Col xs={24} sm={8}>
+                    <Form.Item name="contactName" label="Tên liên hệ" rules={[{ required: true, message: 'Vui lòng nhập tên liên hệ!' }]}>
+                        <Input placeholder="Tên người liên hệ"/>
+                    </Form.Item>
+                </Col>
+                <Col xs={24} sm={8}>
+                    <Form.Item name="contactEmail" label="Email liên hệ" rules={[{ required: true, message: 'Vui lòng nhập email!' }, { type: 'email', message: 'Email không hợp lệ!' }]}>
+                        <Input placeholder="Email liên hệ"/>
+                    </Form.Item>
+                </Col>
+                <Col xs={24} sm={8}>
+                    <Form.Item name="contactPhone" label="Số điện thoại" rules={[{ required: true, message: 'Vui lòng nhập số điện thoại!' }]}>
+                        <Input placeholder="Số điện thoại"/>
+                    </Form.Item>
+                </Col>
+            </Row>
+
+            <Form.Item name="images" label="Hình ảnh">
+                <Upload
+                    listType="picture-card"
+                    fileList={fileList}
+                    onChange={handleFileChange}
+                    beforeUpload={() => false}
+                    multiple
+                >
+                    {fileList.length >= 8 ? null : (
+                        <div>
+                            <UploadOutlined />
+                            <div style={{ marginTop: 8 }}>Tải ảnh</div>
+                        </div>
+                    )}
+                </Upload>
+            </Form.Item>
+
           <Row justify="end" style={{marginTop: 24}}><Space>
             <Button icon={<CloseCircleOutlined/>} onClick={handleFormCancel}>Hủy</Button>
-            <Button type="primary" htmlType="submit" icon={<SaveOutlined/>} style={{backgroundColor: primaryColor, borderColor: primaryColor}}>{editingService ? "Lưu thay đổi" : "Thêm mới"}</Button>
+            <Button type="primary" htmlType="submit" icon={<SaveOutlined/>} style={{backgroundColor: primaryColor, borderColor: primaryColor}} loading={loading}>{editingService ? "Lưu thay đổi" : "Thêm mới"}</Button>
           </Space></Row>
         </Form>
       </Modal>
