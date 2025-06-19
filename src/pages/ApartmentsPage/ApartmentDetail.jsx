@@ -38,7 +38,7 @@ import "swiper/css/thumbs";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import { GoogleMap, useLoadScript, Marker } from "@react-google-maps/api";
+import { GoogleMap, useLoadScript, Marker, Circle, DirectionsRenderer } from "@react-google-maps/api";
 import { addToFavorites } from "../../apis/apiCustomer.api";
 
 const { Content } = Layout;
@@ -126,7 +126,28 @@ const ApartmentDetail = () => {
   const [loading, setLoading] = useState(true);
 
   const [mapLatLng, setMapLatLng] = useState(null);
+  const [directions, setDirections] = useState(null);
+  const [currentLocation, setCurrentLocation] = useState(null);
   const streetViewRef = React.useRef(null);
+  useEffect(() => {
+    if (currentLocation && mapLatLng) {
+      const directionsService = new window.google.maps.DirectionsService();
+      directionsService.route(
+        {
+          origin: currentLocation,
+          destination: mapLatLng,
+          travelMode: window.google.maps.TravelMode.DRIVING,
+        },
+        (result, status) => {
+          if (status === "OK") {
+            setDirections(result);
+          } else {
+            console.error("Không thể tìm đường:", status);
+          }
+        }
+      );
+    }
+  }, [currentLocation, mapLatLng]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -145,6 +166,56 @@ const ApartmentDetail = () => {
 
     fetchData();
   }, []);
+
+  useEffect(() => {
+    if (!isLoaded) return;
+
+    const runGeo = () => {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            console.log("Lấy được vị trí hiện tại");
+            setCurrentLocation({
+              lat: position.coords.latitude,
+              lng: position.coords.longitude,
+            });
+          },
+          (error) => {
+            console.error("Lỗi định vị:", error);
+            switch (error.code) {
+            case error.PERMISSION_DENIED:
+              message.error("Bạn đã từ chối cấp quyền truy cập vị trí.");
+              break;
+            case error.POSITION_UNAVAILABLE:
+              message.error("Không thể xác định vị trí hiện tại.");
+              break;
+            case error.TIMEOUT:
+              message.error("Yêu cầu vị trí bị quá thời gian.");
+              break;
+            default:
+              message.error("Không thể lấy vị trí.");
+              break;
+            }
+          },
+          {
+            enableHighAccuracy: true,
+            timeout: 10000,
+            maximumAge: 0,
+          }
+        );
+      } else {
+        console.warn("Trình duyệt không hỗ trợ geolocation");
+      }
+    };
+
+    // Delay để đảm bảo Maps và Symbol đều ready
+    const delay = setTimeout(() => {
+      runGeo();
+    }, 300); // 👈 delay 300ms đảm bảo ổn định
+
+    return () => clearTimeout(delay);
+  }, [isLoaded]);
+
 
   useEffect(() => {
     if (
@@ -525,11 +596,42 @@ const ApartmentDetail = () => {
               {isLoaded ? (
                 <GoogleMap
                   mapContainerStyle={{ width: "100%", height: "400px" }}
-                  center={mapLatLng}
+                  center={mapLatLng || currentLocation}
                   zoom={15}
                 >
-                  {mapLatLng && <Marker position={mapLatLng} />}
+
+                  {directions && (
+                    <DirectionsRenderer
+                      directions={directions}
+                      options={{ suppressMarkers: true }}
+                    />
+                  )}
+
+                  {/* Marker: Căn hộ */}
+                  {mapLatLng && (
+                    <Marker
+                      position={mapLatLng}
+                    />
+                  )}
+
+                  {/* Marker vị trí hiện tại */}
+                  {currentLocation && window.google?.maps?.SymbolPath && (
+                    <Marker
+                      position={currentLocation}
+                      zIndex={999}
+                      icon={{
+                        path: window.google.maps.SymbolPath.CIRCLE,
+                        scale: 10,
+                        fillColor: "#4285F4",
+                        fillOpacity: 1,
+                        strokeColor: "white",
+                        strokeWeight: 3,
+                      }}
+                    />
+                  )}
+
                 </GoogleMap>
+
               ) : (
                 <div
                   style={{
@@ -543,6 +645,19 @@ const ApartmentDetail = () => {
                 </div>
               )}
             </div>
+            <Button
+              type="primary"
+              style={{ marginTop: 16 }}
+              onClick={() => {
+                if (currentLocation && mapLatLng) {
+                  const gmapUrl = `https://www.google.com/maps/dir/?api=1&origin=${currentLocation.lat},${currentLocation.lng}&destination=${mapLatLng.lat},${mapLatLng.lng}&travelmode=driving`;
+                  window.open(gmapUrl, "_blank");
+                }
+              }}
+            >
+              Chỉ đường từ vị trí của bạn
+            </Button>
+
           </Col>
           <Col xs={24} md={8}>
             <Card style={{ width: "100%", height: "400px", marginTop: 20 }}>
