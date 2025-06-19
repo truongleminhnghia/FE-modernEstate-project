@@ -29,7 +29,7 @@ import {
   ShoppingOutlined,
 } from "@ant-design/icons";
 import { GoogleMap, Marker, useLoadScript } from "@react-google-maps/api";
-import { storage } from "../../firebase/firebaseConfig"; 
+import { storage } from "../../firebase/firebaseConfig";
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import axios from "axios";
 import moment from "moment";
@@ -54,7 +54,7 @@ const PROPERTY_TYPES = [
   { value: "Khác", label: "Khác" },
 ];
 
-const Maps_API_KEY = "AIzaSyDH65U1tsUHeWw-XMgtSyaVU9Sh4QO4J1o"; 
+const Maps_API_KEY = "AIzaSyDH65U1tsUHeWw-XMgtSyaVU9Sh4QO4J1o";
 
 export default function CreatePost() {
   const [form] = Form.useForm();
@@ -103,7 +103,7 @@ export default function CreatePost() {
         country: "Việt Nam",
         addressDetail: "",
       },
-      projectId: "", 
+      projectId: "",
       images: [],
     },
     contact: {
@@ -166,10 +166,10 @@ export default function CreatePost() {
         newProperty: {
           ...values.newProperty,
 
-          images: (form.getFieldValue(['newProperty', 'images']) || []).map(file => ({ imageUrl: file.url || file.imageUrl })),          videoUrl: values.newProperty?.videoUrl ? [values.newProperty.videoUrl[0]].filter(Boolean) : [],
+          images: (form.getFieldValue(['newProperty', 'images']) || []).map(file => ({ imageUrl: file.url || file.imageUrl })), videoUrl: values.newProperty?.videoUrl ? [values.newProperty.videoUrl[0]].filter(Boolean) : [],
         },
         contact: values.contact,
-        postPackagesRequest: { 
+        postPackagesRequest: {
           startDate: values.postPackagesRequest?.startDate?.format("YYYY-MM-DD"),
           accountId: userId
         },
@@ -198,9 +198,9 @@ export default function CreatePost() {
         console.error("Lỗi từ server:", data);
         message.error(data.title || data.message || "Có lỗi xảy ra khi tạo bài đăng!");
         if (data.errors) {
-            Object.values(data.errors).forEach(errArray => {
-                errArray.forEach(errMsg => message.error(errMsg));
-            });
+          Object.values(data.errors).forEach(errArray => {
+            errArray.forEach(errMsg => message.error(errMsg));
+          });
         }
       }
     } catch (err) {
@@ -225,9 +225,9 @@ export default function CreatePost() {
       } else if (currentStep === 2) {
       } else if (currentStep === 3) {
         const currentImages = form.getFieldValue(["newProperty", "images"]);
-  if (!currentImages || currentImages.length === 0) {
-    message.error("Vui lòng tải lên ít nhất một hình ảnh cho bất động sản.");
-    return;
+        if (!currentImages || currentImages.length === 0) {
+          message.error("Vui lòng tải lên ít nhất một hình ảnh cho bất động sản.");
+          return;
         }
       } else if (currentStep === 4) {
         fieldsToValidate = [
@@ -241,8 +241,8 @@ export default function CreatePost() {
           ['postPackagesRequest', 'endDate'],
         ];
         if (!selectedPackage) {
-            message.error("Vui lòng chọn một gói đăng.");
-            return;
+          message.error("Vui lòng chọn một gói đăng.");
+          return;
         }
       }
 
@@ -354,8 +354,8 @@ export default function CreatePost() {
             uid: file.uid,
             name: file.name,
             status: 'done',
-            url: downloadURL,  
-            imageUrl: downloadURL 
+            url: downloadURL,
+            imageUrl: downloadURL
           };
           const newFileList = [...fileList, newFile];
           setFileList(newFileList);
@@ -375,7 +375,7 @@ export default function CreatePost() {
       onError(err);
     }
   };
-  
+
 
   const handleRemove = (file) => {
     const currentImagesInForm = form.getFieldValue(["newProperty", "images"]) || [];
@@ -388,7 +388,7 @@ export default function CreatePost() {
       },
     });
     setFileList((prev) => prev.filter(f => f.uid !== file.uid));
-    return true; 
+    return true;
   };
 
   useEffect(() => {
@@ -417,7 +417,7 @@ export default function CreatePost() {
               </Col>
               <Col span={12}>
                 <Form.Item label="Số điện thoại liên hệ"
-                    >
+                >
                   <Input value={userPhone} disabled />
                 </Form.Item>
               </Col>
@@ -657,64 +657,64 @@ export default function CreatePost() {
           </Card>
         );
 
-        case 3:
-          return (
-            <Card title="Hình ảnh & Video" className="mb-4">
-              <Row gutter={16}>
-                <Col span={24}>
-                  <Form.Item
-                    name={["newProperty", "images"]}
-                    label="Hình ảnh (tối đa 5 ảnh)"
-                    rules={[{ required: true, message: "Vui lòng tải lên ít nhất một hình ảnh cho bất động sản." }]}
+      case 3:
+        return (
+          <Card title="Hình ảnh & Video" className="mb-4">
+            <Row gutter={16}>
+              <Col span={24}>
+                <Form.Item
+                  name={["newProperty", "images"]}
+                  label="Hình ảnh (tối đa 5 ảnh)"
+                  rules={[{ required: true, message: "Vui lòng tải lên ít nhất một hình ảnh cho bất động sản." }]}
+                >
+                  <Upload
+                    listType="picture-card"
+                    customRequest={handleUploadFirebase}
+                    fileList={fileList}
+                    maxCount={5}
+                    accept="image/*"
+                    onRemove={file => {
+                      const newFileList = fileList.filter(f => f.uid !== file.uid);
+                      setFileList(newFileList);
+                      form.setFieldsValue({
+                        newProperty: {
+                          ...form.getFieldValue("newProperty"),
+                          images: newFileList,
+                        }
+                      });
+                      return true;
+                    }}
+                    onChange={({ fileList: newFileList }) => {
+                      setFileList(newFileList);
+                      form.setFieldsValue({
+                        newProperty: {
+                          ...form.getFieldValue("newProperty"),
+                          images: newFileList,
+                        }
+                      });
+                    }}
                   >
-                    <Upload
-                      listType="picture-card"
-                      customRequest={handleUploadFirebase}
-                      fileList={fileList}
-                      maxCount={5}
-                      accept="image/*"
-                      onRemove={file => {
-                        const newFileList = fileList.filter(f => f.uid !== file.uid);
-                        setFileList(newFileList);
-                        form.setFieldsValue({
-                          newProperty: {
-                            ...form.getFieldValue("newProperty"),
-                            images: newFileList,
-                          }
-                        });
-                        return true;
-                      }}
-                      onChange={({ fileList: newFileList }) => {
-                        setFileList(newFileList);
-                        form.setFieldsValue({
-                          newProperty: {
-                            ...form.getFieldValue("newProperty"),
-                            images: newFileList,
-                          }
-                        });
-                      }}
-                    >
-                      {fileList.length >= 5 ? null : "+ Upload"}
-                    </Upload>
-                  </Form.Item>
-                </Col>
-                <Col span={24}>
-                  <Form.Item
-                    name={["newProperty", "videoUrl", 0]}
-                    label="URL video"
-                  >
-                    <Input placeholder="Nhập URL video (YouTube, Vimeo, etc.)" />
-                  </Form.Item>
-                </Col>
-                <Col span={24}>
-                  <Text type="secondary">
-                    <PictureOutlined /> Bạn có thể thêm nhiều hình ảnh và video sau khi tạo bài đăng
-                  </Text>
-                </Col>
-              </Row>
-            </Card>
-          );
-        
+                    {fileList.length >= 5 ? null : "+ Upload"}
+                  </Upload>
+                </Form.Item>
+              </Col>
+              <Col span={24}>
+                <Form.Item
+                  name={["newProperty", "videoUrl", 0]}
+                  label="URL video"
+                >
+                  <Input placeholder="Nhập URL video (YouTube, Vimeo, etc.)" />
+                </Form.Item>
+              </Col>
+              <Col span={24}>
+                <Text type="secondary">
+                  <PictureOutlined /> Bạn có thể thêm nhiều hình ảnh và video sau khi tạo bài đăng
+                </Text>
+              </Col>
+            </Row>
+          </Card>
+        );
+
       case 4:
         return (
           <Card title="Thông tin liên hệ" className="mb-4">
@@ -779,12 +779,12 @@ export default function CreatePost() {
                         });
                       } else {
                         form.setFieldsValue({
-                            postPackagesRequest: {
-                                ...form.getFieldValue("postPackagesRequest"),
-                                packageId: "",
-                                totalAmout: 0,
-                                id: "",
-                            },
+                          postPackagesRequest: {
+                            ...form.getFieldValue("postPackagesRequest"),
+                            packageId: "",
+                            totalAmout: 0,
+                            id: "",
+                          },
                         });
                       }
                     }}
@@ -799,26 +799,34 @@ export default function CreatePost() {
               </Col>
               <Col span={12}>
                 <Form.Item
-                  name={["postPackagesRequest", "startDate"]}
+                  name={['postPackagesRequest', 'startDate']}
                   label="Ngày bắt đầu"
-                  rules={[{ required: true, message: "Vui lòng chọn ngày bắt đầu!" }]}
+                  rules={[
+                    { type: 'object', required: true, message: 'Vui lòng chọn ngày bắt đầu!' }
+                  ]}
                 >
                   <DatePicker
-                    style={{ width: "100%" }}
+                    style={{ width: '100%' }}
                     placeholder="Chọn ngày bắt đầu"
-                    disabledDate={(current) => current && current < moment().startOf('day')}
+                    // disable chọn trước hôm nay
+                    disabledDate={current => current && current < moment().startOf('day')}
                   />
                 </Form.Item>
               </Col>
+
+              {/* Ngày kết thúc */}
               <Col span={12}>
                 <Form.Item
-                  name={["postPackagesRequest", "endDate"]}
+                  name={['postPackagesRequest', 'endDate']}
                   label="Ngày kết thúc"
-                  rules={[{message: "Vui lòng chọn ngày kết thúc!" },
+                  dependencies={[['postPackagesRequest', 'startDate']]}
+                  rules={[
+                    { type: 'object', required: true, message: 'Vui lòng chọn ngày kết thúc!' },
                     ({ getFieldValue }) => ({
                       validator(_, value) {
                         const startDate = getFieldValue(['postPackagesRequest', 'startDate']);
-                        if (!value || !startDate || value.isSameOrAfter(startDate)) {
+                        // nếu chưa chọn startDate hoặc endDate, hoặc endDate > startDate thì OK
+                        if (!value || !startDate || value.isAfter(startDate)) {
                           return Promise.resolve();
                         }
                         return Promise.reject(new Error('Ngày kết thúc phải sau ngày bắt đầu!'));
@@ -827,12 +835,14 @@ export default function CreatePost() {
                   ]}
                 >
                   <DatePicker
-                    style={{ width: "100%" }}
+                    style={{ width: '100%' }}
                     placeholder="Chọn ngày kết thúc"
-                    disabledDate={(current) => {
+                    // disable chọn trước startDate
+                    disabledDate={current => {
                       const startDate = form.getFieldValue(['postPackagesRequest', 'startDate']);
-                      if (!startDate) return false;
-                      return current && current < startDate.endOf('day');
+                      return startDate
+                        ? current && current < startDate.endOf('day')
+                        : false;
                     }}
                   />
                 </Form.Item>

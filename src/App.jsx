@@ -37,7 +37,7 @@ import UserManagement from "./pages/admins/users/UserManagement";
 import { ROLES } from './constants/roles';
 import ForgotPassword from "./pages/auth/ForgotPassword";
 import MarketAnalysis from "./pages/User/marketAnalysis/MarketAnalysis";
-import Packages from "./pages/package/Packages";
+// import Packages from "./pages/package/Packages";
 import CreatePost from "./pages/post/CreatePost";
 
 const router = createBrowserRouter([
@@ -77,10 +77,10 @@ const router = createBrowserRouter([
         path: "/market-analysis",
         element: <MarketAnalysis />,
       },
-      {
-        path: "/packages",
-        element: <Packages />,
-      },
+      // {
+      //   path: "/packages",
+      //   element: <Packages />,
+      // },
       {
         path: "/news",
         element: <News />,
