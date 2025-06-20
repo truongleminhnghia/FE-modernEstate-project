@@ -143,36 +143,34 @@ const ProjectManagement = () => {
 
   const handleFormSubmit = async (values) => {
     try {
-      // Map dữ liệu sang format API
       const apiData = {
-        title: values.name,
-        typeProject: values.type.replace(/ /g, '_'),
-        status: values.status.replace(/ /g, '_'),
-        projectArea: Number(values.budget) || 0, // Giả sử budget là diện tích dự án
-        unitArea: 'm2',
-        priceMin: 1000000000, // Có thể lấy từ form nếu có
-        priceMax: 2000000000, // Có thể lấy từ form nếu có
-        unitCurrency: 'VND',
+        title: values.title,
+        typeProject: values.typeProject,
+        totalBlock: values.totalBlock || 0,
+        blockName: values.blockName || ["string"],
+        totalFloor: values.totalFloor || 0,
+        projectArea: values.projectArea || 0,
+        attribute: values.attribute || ["string"],
+        timeStart: values.timeStart ? values.timeStart.format('YYYY-MM-DDTHH:mm:ss.SSS[Z]') : new Date().toISOString(),
+        priceMin: values.priceMin || 0,
+        priceMax: values.priceMax || 0,
+        unitArea: values.unitArea || 'string',
+        unitCurrency: values.unitCurrency || 'VND',
         description: values.description,
-        totalInvestment: Number(values.budget) || 0,
-        timeStart: values.startDate ? values.startDate.format('YYYY-MM-DD') : '',
-        addressId: 'cf414908-1594-41bd-8c17-5ebf8a498412', // TODO: lấy từ form hoặc chọn
-        invetorId: '08dda8dd-9bf4-4382-87dd-cd6c6a60b195', // TODO: lấy từ form hoặc chọn
-        images: fileList.map(file => ({ imageUrl: file.url || file.thumbUrl })),
+        totalInvestment: values.totalInvestment || 0,
+        status: values.status,
+        addressRequest: values.addressRequest,
+        invetorRequest: values.invetorRequest,
+        imageRequests: fileList.length > 0 ? fileList.map(file => ({ imageUrl: file.url || file.thumbUrl || '' })) : [{ imageUrl: 'string' }]
       };
-      if (editingProject) {
-        await updateProject(editingProject.id, apiData);
-        message.success("Cập nhật dự án thành công!");
-      } else {
-        await createProject(apiData);
-        message.success("Thêm dự án mới thành công!");
-      }
+      console.log('DATA SEND TO API:', apiData);
+      await createProject(apiData);
+      message.success('Thêm dự án mới thành công!');
       await fetchProjects();
       setIsFormModalVisible(false);
       setEditingProject(null);
       setFileList([]);
     } catch (error) {
-      // Hiển thị lỗi chi tiết từ API nếu có
       if (error.response && error.response.data && error.response.data.message) {
         message.error('API: ' + error.response.data.message);
       } else {
@@ -420,8 +418,8 @@ const ProjectManagement = () => {
           <Row gutter={16}>
             <Col span={16}>
               <Form.Item 
-                name="name" 
-                label="Tên Dự án" 
+                name="title" 
+                label="Tên dự án" 
                 rules={[{ required: true, message: 'Vui lòng nhập tên dự án!' }]}
               >
                 <Input placeholder="VD: Khu dân cư Sunrise"/>
@@ -431,7 +429,7 @@ const ProjectManagement = () => {
               <Form.Item 
                 name="status" 
                 label="Trạng thái" 
-                rules={[{ required: true }]}
+                rules={[{ required: true, message: 'Vui lòng chọn trạng thái!' }]}
               >
                 <Select>
                   {Object.entries(projectStatuses).map(([key, text]) => 
@@ -443,26 +441,43 @@ const ProjectManagement = () => {
           </Row>
 
           <Row gutter={16}>
-            <Col span={16}>
-              <Form.Item 
-                name="location" 
-                label="Địa điểm" 
-                rules={[{ required: true, message: 'Vui lòng nhập địa điểm!' }]}
-              >
-                <Input placeholder="VD: Quận 1, TP. Hồ Chí Minh"/>
+            <Col span={8}>
+              <Form.Item name={['addressRequest', 'houseNumber']} label="Số nhà">
+                <Input placeholder="VD: 123" />
               </Form.Item>
             </Col>
             <Col span={8}>
-              <Form.Item 
-                name="type" 
-                label="Loại hình Dự án" 
-                rules={[{ required: true, message: 'Vui lòng chọn loại hình dự án!' }]}
-              >
-                <Select>
-                  {Object.entries(projectTypes).map(([key, text]) => 
-                    <Option key={key} value={key}>{text}</Option>
-                  )}
-                </Select>
+              <Form.Item name={['addressRequest', 'street']} label="Đường">
+                <Input placeholder="VD: Nguyễn Huệ" />
+              </Form.Item>
+            </Col>
+            <Col span={8}>
+              <Form.Item name={['addressRequest', 'ward']} label="Phường/Xã">
+                <Input placeholder="VD: Bến Nghé" />
+              </Form.Item>
+            </Col>
+          </Row>
+          <Row gutter={16}>
+            <Col span={8}>
+              <Form.Item name={['addressRequest', 'district']} label="Quận/Huyện">
+                <Input placeholder="VD: Quận 1" />
+              </Form.Item>
+            </Col>
+            <Col span={8}>
+              <Form.Item name={['addressRequest', 'city']} label="Thành phố">
+                <Input placeholder="VD: Hồ Chí Minh" />
+              </Form.Item>
+            </Col>
+            <Col span={8}>
+              <Form.Item name={['addressRequest', 'country']} label="Quốc gia">
+                <Input placeholder="VD: Việt Nam" />
+              </Form.Item>
+            </Col>
+          </Row>
+          <Row gutter={16}>
+            <Col span={24}>
+              <Form.Item name={['addressRequest', 'addressDetail']} label="Chi tiết địa chỉ">
+                <Input placeholder="VD: Căn hộ 12A, Tòa nhà Landmark 81" />
               </Form.Item>
             </Col>
           </Row>
