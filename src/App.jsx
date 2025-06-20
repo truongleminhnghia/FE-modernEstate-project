@@ -39,6 +39,7 @@ import ForgotPassword from "./pages/auth/ForgotPassword";
 import MarketAnalysis from "./pages/User/marketAnalysis/MarketAnalysis";
 // import Packages from "./pages/package/Packages";
 import CreatePost from "./pages/post/CreatePost";
+import NewPost from "./pages/post/new-post";
 
 const router = createBrowserRouter([
   {
@@ -63,7 +64,7 @@ const router = createBrowserRouter([
       },
       {
         path: "/post",
-        element: <CreatePost />,
+        element: <NewPost />,
       },
       {
         path: "/register",
