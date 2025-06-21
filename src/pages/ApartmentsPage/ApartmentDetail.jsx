@@ -40,7 +40,7 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { GoogleMap, useLoadScript, Marker, Circle, DirectionsRenderer } from "@react-google-maps/api";
 import { addToFavorites } from "../../apis/apiCustomer.api";
-
+import { useParams } from "react-router-dom";
 const { Content } = Layout;
 const { Title, Text, Paragraph } = Typography;
 const { TabPane } = Tabs;
@@ -119,7 +119,9 @@ const ApartmentDetail = () => {
     googleMapsApiKey: "AIzaSyDH65U1tsUHeWw-XMgtSyaVU9Sh4QO4J1o",
     libraries: ["places"],
   });
-
+  
+  const { id } = useParams();
+  console.log('Apartment ID:', id);
   const [isFavorite, setIsFavorite] = useState(false);
   const [thumbsSwiper, setThumbsSwiper] = useState(null);
   const [apartment, setApartment] = useState(null);
@@ -153,7 +155,7 @@ const ApartmentDetail = () => {
     const fetchData = async () => {
       try {
         const response = await axios.get(
-          "https://bemodernestate.site/api/v1/posts/08ddacf3-c767-4f05-85c6-cbe4349c51d5"
+          `https://bemodernestate.site/api/v1/posts/${id}`
         );
         setApartment(response.data.data);
       } catch (error) {
