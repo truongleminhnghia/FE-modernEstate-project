@@ -102,7 +102,6 @@
   background: #fff;
   display: flex;
   flex-direction: column;
-  min-height: 370px;
 }
 
 .apartment-card-img-wrap {
@@ -135,8 +134,6 @@
 .apartment-card-title {
   font-size: 15px;
   font-weight: 600;
-  min-height: 44px;
-  margin-bottom: 8px;
   color: #222;
 }
 .apartment-card-info {
@@ -331,4 +328,197 @@
 
 .message-button:hover {
   background-color: #357ABD; /* Darker blue on hover */
+}
+
+/* New layout with sidebar filter */
+.apartments-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  gap: 32px;
+  padding: 0 16px;
+}
+
+.apartments-sidebar {
+  width: 280px;
+  flex-shrink: 0;
+}
+
+.apartments-main {
+  flex: 1;
+  min-width: 0;
+}
+
+/* Sidebar filter styles */
+.apartments-filter-sidebar {
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+  padding: 24px;
+  position: sticky;
+  top: 24px;
+}
+
+.apartments-filter-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #222;
+  margin-bottom: 24px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.apartments-filter-section {
+  margin-bottom: 24px;
+}
+
+.apartments-filter-section-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 12px;
+}
+
+.apartments-filter-item {
+  margin-bottom: 16px;
+}
+
+.apartments-filter-item label {
+  font-size: 13px;
+  color: #666;
+  margin-bottom: 6px;
+  display: block;
+}
+
+.apartments-filter-item .ant-select {
+  width: 100%;
+}
+
+.apartments-filter-item .ant-input-number {
+  width: 100%;
+}
+
+.apartments-filter-item .ant-slider {
+  margin: 8px 0;
+}
+
+.apartments-filter-checkbox-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.apartments-filter-checkbox-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: #333;
+}
+
+.apartments-filter-actions {
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid #e0e0e0;
+}
+
+.apartments-filter-btn {
+  background-color: #4a90e2;
+  color: white;
+  border: none;
+  padding: 0 24px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  height: 36px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.apartments-filter-btn:hover {
+  background-color: #357abd;
+}
+
+.apartments-filter-clear {
+  background-color: transparent;
+  color: #666;
+  border: 1px solid #ddd;
+  padding: 0 24px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s;
+  height: 36px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 8px;
+}
+
+.apartments-filter-clear:hover {
+  background-color: #f5f5f5;
+  border-color: #ccc;
+}
+
+/* Price range display */
+.price-range-display {
+  font-size: 12px;
+  color: #666;
+  margin-top: 4px;
+  text-align: center;
+}
+
+/* Responsive styles */
+@media (max-width: 1024px) {
+  .apartments-container {
+    flex-direction: column;
+    gap: 24px;
+  }
+  
+  .apartments-sidebar {
+    width: 100%;
+  }
+  
+  .apartments-filter-sidebar {
+    position: static;
+  }
+  
+  .apartments-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .apartments-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+  
+  .apartments-filter-sidebar {
+    padding: 16px;
+  }
+  
+  .apartments-filter-section {
+    margin-bottom: 16px;
+  }
+}
+
+@media (max-width: 600px) {
+  .apartments-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .apartments-container {
+    padding: 0 12px;
+  }
+  
+  .apartments-breadcrumb {
+    padding: 16px 12px 24px 12px;
+  }
 }

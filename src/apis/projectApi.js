@@ -103,4 +103,60 @@ export const transformProjectData = (apiProject) => {
 // Transform multiple projects
 export const transformProjectsList = (apiProjects) => {
   return apiProjects.map(transformProjectData);
+};
+
+// Get all posts
+export const getPosts = async (page = 1, pageSize = 10) => {
+  try {
+    const response = await axios.get(`${API_BASE_URL}/posts`, {
+      params: {
+        page_current: page,
+        page_size: pageSize
+      }
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching posts:', error);
+    throw error;
+  }
+};
+
+// Transform post data to match frontend format
+export const transformPostData = (apiPost) => {
+  const property = apiPost.property;
+  const address = property?.address;
+  
+  return {
+    id: apiPost.id,
+    code: apiPost.code,
+    title: property?.title || 'Không có tiêu đề',
+    price: property?.price ? `${property.price} ${property.priceUnit || 'VND'}` : 'Liên hệ',
+    area: property?.area ? `${property.area} ${property.areaUnit || 'm²'}` : 'N/A',
+    bed: property?.numberOfBedrooms ? `${property.numberOfBedrooms} PN` : 'N/A',
+    bath: property?.numberOfBathrooms ? `${property.numberOfBathrooms} WC` : 'N/A',
+    location: address ? `${address.district || ''}, ${address.city || ''}`.trim() : 'N/A',
+    tag: apiPost.demand === 'MUA_BÁN' ? 'Mua' : 'Cho thuê',
+    image: property?.propertyImages?.[0] || "https://www.nitco.in/nitcoassets/blog/main/scale-down.jpg",
+    description: property?.description || '',
+    demand: apiPost.demand,
+    status: apiPost.status,
+    contact: apiPost.contact,
+    createAt: apiPost.createAt,
+    updateAt: apiPost.updateAt,
+    // Additional fields for filtering
+    interior: property?.interior || '',
+    document: property?.document || [],
+    areaValue: property?.area || 0,
+    priceValue: property?.price || 0,
+    numberOfBedrooms: property?.numberOfBedrooms || 0,
+    numberOfBathrooms: property?.numberOfBathrooms || 0,
+    district: address?.district || '',
+    city: address?.city || '',
+    attribute: property?.attribute || []
+  };
+};
+
+// Transform multiple posts
+export const transformPostsList = (apiPosts) => {
+  return apiPosts.map(transformPostData);
 }; 

@@ -40,6 +40,7 @@ import MarketAnalysis from "./pages/User/marketAnalysis/MarketAnalysis";
 // import Packages from "./pages/package/Packages";
 import CreatePost from "./pages/post/CreatePost";
 import NewPost from "./pages/post/new-post";
+import PropertyListings from "./pages/PropertyListings";
 
 const router = createBrowserRouter([
   {
@@ -56,10 +57,10 @@ const router = createBrowserRouter([
       },
       {
         path: "/can-ho",
-        element: <ApartmentsPage />,
+        element: <PropertyListings />,
       },
       {
-        path: "/can-ho/detail",
+        path: "/can-ho/:id",
         element: <ApartmentDetail />,
       },
       {
