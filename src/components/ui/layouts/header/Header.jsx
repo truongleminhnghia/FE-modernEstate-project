@@ -1,47 +1,47 @@
 import React, { useState } from "react";
-import "./Header.css"; 
-import { Link, useNavigate, useLocation } from "react-router-dom"; 
+import "./Header.css";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Dropdown, Menu, Button } from "antd";
 
 const Header = () => {
   const navigate = useNavigate();
-  const location = useLocation(); 
+  const location = useLocation();
   const [isLoginButtonHovered, setIsLoginButtonHovered] = useState(false);
 
   const menu = (
     <Menu
       onClick={(info) => {
-        if (info.key === 'logout') {
+        if (info.key === "logout") {
           localStorage.removeItem("token");
           localStorage.removeItem("user");
           navigate("/");
-        } else if (info.key === 'profile') {
+        } else if (info.key === "profile") {
           navigate("/user-profile");
-        } else if (info.key === 'transactions') {
+        } else if (info.key === "transactions") {
           navigate("/user-transactions");
-        } else if (info.key === 'favorite') {
+        } else if (info.key === "favorite") {
           navigate("/user-favorite");
         }
       }}
       items={[
         {
-          label: 'Tài khoản của tôi',
-          key: 'profile',
+          label: "Tài khoản của tôi",
+          key: "profile",
         },
         {
-          label: 'Lịch sử giao dịch',
-          key: 'transactions',
+          label: "Lịch sử giao dịch",
+          key: "transactions",
         },
         {
-          label: 'Danh sách yêu thích',
-          key: 'favorite',
+          label: "Danh sách yêu thích",
+          key: "favorite",
         },
         {
-          type: 'divider',
+          type: "divider",
         },
         {
-          label: 'Đăng xuất',
-          key: 'logout',
+          label: "Đăng xuất",
+          key: "logout",
           danger: true,
         },
       ]}
@@ -49,20 +49,23 @@ const Header = () => {
   );
 
   const loginButtonStyle = {
-    backgroundColor: '#4a90e2',
-    borderColor: '#4a90e2',
-    color: '#fff',
-    borderRadius: '4px',
-    transition: 'background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease',
+    backgroundColor: "#4a90e2",
+    borderColor: "#4a90e2",
+    color: "#fff",
+    borderRadius: "4px",
+    transition:
+      "background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease",
   };
 
   const loginButtonHoverStyle = {
-    backgroundColor: '#357abd',
-    borderColor: '#357abd',
-    color: '#fff',
+    backgroundColor: "#357abd",
+    borderColor: "#357abd",
+    color: "#fff",
   };
 
-  const user = localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user")) : null;
+  const user = localStorage.getItem("user")
+    ? JSON.parse(localStorage.getItem("user"))
+    : null;
 
   const getNavLinkClass = (path) => {
     return location.pathname === path ? "active" : "";
@@ -86,9 +89,12 @@ const Header = () => {
           <Link className={getNavLinkClass("/information")} to="/information">
             Thông tin
           </Link>
+          <Link className={getNavLinkClass("/post")} to="/post">
+            Đăng bài viết
+          </Link>
         </nav>
         {localStorage.getItem("token") && user ? (
-          <Dropdown overlay={menu} trigger={['click']}>
+          <Dropdown overlay={menu} trigger={["click"]}>
             <div
               className="user-dropdown"
               onClick={(e) => e.preventDefault()}
@@ -100,10 +106,14 @@ const Header = () => {
                 cursor: "pointer",
                 padding: "5px 10px",
                 borderRadius: "4px",
-                transition: "background-color 0.2s ease"
+                transition: "background-color 0.2s ease",
               }}
-              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f0f0f0'}
-              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+              onMouseEnter={(e) =>
+                (e.currentTarget.style.backgroundColor = "#f0f0f0")
+              }
+              onMouseLeave={(e) =>
+                (e.currentTarget.style.backgroundColor = "transparent")
+              }
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -127,14 +137,14 @@ const Header = () => {
           <Button
             style={{
               ...loginButtonStyle,
-              ...(isLoginButtonHovered ? loginButtonHoverStyle : {})
+              ...(isLoginButtonHovered ? loginButtonHoverStyle : {}),
             }}
             onMouseEnter={() => setIsLoginButtonHovered(true)}
             onMouseLeave={() => setIsLoginButtonHovered(false)}
             onClick={() => {
               localStorage.removeItem("token");
               localStorage.removeItem("user");
-              navigate('/login');
+              navigate("/login");
             }}
           >
             Đăng nhập
@@ -143,10 +153,21 @@ const Header = () => {
       </div>
       <div className="header-bottom">
         <nav className="sub-nav">
-          <Link className={getNavLinkClass("/can-ho")} to="/can-ho">CĂN HỘ</Link>
-          <Link className={getNavLinkClass("/du-an")} to="/du-an">DỰ ÁN</Link>
-          <Link className={getNavLinkClass("/market-analysis")} to="/market-analysis">PHÂN TÍCH ĐÁNH GIÁ</Link>
-          <Link className={getNavLinkClass("/news")} to="/news">TIN TỨC</Link>
+          <Link className={getNavLinkClass("/can-ho")} to="/can-ho">
+            CĂN HỘ
+          </Link>
+          <Link className={getNavLinkClass("/du-an")} to="/du-an">
+            DỰ ÁN
+          </Link>
+          <Link
+            className={getNavLinkClass("/market-analysis")}
+            to="/market-analysis"
+          >
+            PHÂN TÍCH ĐÁNH GIÁ
+          </Link>
+          <Link className={getNavLinkClass("/news")} to="/news">
+            TIN TỨC
+          </Link>
         </nav>
       </div>
     </header>

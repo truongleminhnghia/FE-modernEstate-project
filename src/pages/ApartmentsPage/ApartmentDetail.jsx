@@ -38,9 +38,9 @@ import "swiper/css/thumbs";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import { GoogleMap, useLoadScript, Marker } from "@react-google-maps/api";
+import { GoogleMap, useLoadScript, Marker, Circle, DirectionsRenderer } from "@react-google-maps/api";
 import { addToFavorites } from "../../apis/apiCustomer.api";
-
+import { useParams } from "react-router-dom";
 const { Content } = Layout;
 const { Title, Text, Paragraph } = Typography;
 const { TabPane } = Tabs;
@@ -119,19 +119,43 @@ const ApartmentDetail = () => {
     googleMapsApiKey: "AIzaSyDH65U1tsUHeWw-XMgtSyaVU9Sh4QO4J1o",
     libraries: ["places"],
   });
-
+  
+  const { id } = useParams();
+  console.log('Apartment ID:', id);
   const [isFavorite, setIsFavorite] = useState(false);
   const [thumbsSwiper, setThumbsSwiper] = useState(null);
   const [apartment, setApartment] = useState(null);
   const [loading, setLoading] = useState(true);
 
   const [mapLatLng, setMapLatLng] = useState(null);
+  const [directions, setDirections] = useState(null);
+  const [currentLocation, setCurrentLocation] = useState(null);
+  const streetViewRef = React.useRef(null);
+  useEffect(() => {
+    if (currentLocation && mapLatLng) {
+      const directionsService = new window.google.maps.DirectionsService();
+      directionsService.route(
+        {
+          origin: currentLocation,
+          destination: mapLatLng,
+          travelMode: window.google.maps.TravelMode.DRIVING,
+        },
+        (result, status) => {
+          if (status === "OK") {
+            setDirections(result);
+          } else {
+            console.error("Không thể tìm đường:", status);
+          }
+        }
+      );
+    }
+  }, [currentLocation, mapLatLng]);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await axios.get(
-          "https://bemodernestate.site/api/v1/posts/08ddacf3-c767-4f05-85c6-cbe4349c51d5"
+          `https://bemodernestate.site/api/v1/posts/${id}`
         );
         setApartment(response.data.data);
       } catch (error) {
@@ -141,8 +165,59 @@ const ApartmentDetail = () => {
       }
     };
 
+
     fetchData();
   }, []);
+
+  useEffect(() => {
+    if (!isLoaded) return;
+
+    const runGeo = () => {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            console.log("Lấy được vị trí hiện tại");
+            setCurrentLocation({
+              lat: position.coords.latitude,
+              lng: position.coords.longitude,
+            });
+          },
+          (error) => {
+            console.error("Lỗi định vị:", error);
+            switch (error.code) {
+            case error.PERMISSION_DENIED:
+              message.error("Bạn đã từ chối cấp quyền truy cập vị trí.");
+              break;
+            case error.POSITION_UNAVAILABLE:
+              message.error("Không thể xác định vị trí hiện tại.");
+              break;
+            case error.TIMEOUT:
+              message.error("Yêu cầu vị trí bị quá thời gian.");
+              break;
+            default:
+              message.error("Không thể lấy vị trí.");
+              break;
+            }
+          },
+          {
+            enableHighAccuracy: true,
+            timeout: 10000,
+            maximumAge: 0,
+          }
+        );
+      } else {
+        console.warn("Trình duyệt không hỗ trợ geolocation");
+      }
+    };
+
+    // Delay để đảm bảo Maps và Symbol đều ready
+    const delay = setTimeout(() => {
+      runGeo();
+    }, 300); // 👈 delay 300ms đảm bảo ổn định
+
+    return () => clearTimeout(delay);
+  }, [isLoaded]);
+
 
   useEffect(() => {
     if (
@@ -168,6 +243,14 @@ const ApartmentDetail = () => {
         if (status === "OK" && results[0]) {
           const loc = results[0].geometry.location;
           setMapLatLng({ lat: loc.lat(), lng: loc.lng() });
+          if (streetViewRef.current) {
+            new window.google.maps.StreetViewPanorama(streetViewRef.current, {
+              position: { lat: 10.841172783357809, lng: 106.83782579813013 },
+              pov: { heading: 34, pitch: 10 },
+              zoom: 1,
+            });
+          }
+
         } else {
           setMapLatLng({ lat: defaultLat, lng: defaultLng });
         }
@@ -515,11 +598,42 @@ const ApartmentDetail = () => {
               {isLoaded ? (
                 <GoogleMap
                   mapContainerStyle={{ width: "100%", height: "400px" }}
-                  center={mapLatLng}
+                  center={mapLatLng || currentLocation}
                   zoom={15}
                 >
-                  {mapLatLng && <Marker position={mapLatLng} />}
+
+                  {directions && (
+                    <DirectionsRenderer
+                      directions={directions}
+                      options={{ suppressMarkers: true }}
+                    />
+                  )}
+
+                  {/* Marker: Căn hộ */}
+                  {mapLatLng && (
+                    <Marker
+                      position={mapLatLng}
+                    />
+                  )}
+
+                  {/* Marker vị trí hiện tại */}
+                  {currentLocation && window.google?.maps?.SymbolPath && (
+                    <Marker
+                      position={currentLocation}
+                      zIndex={999}
+                      icon={{
+                        path: window.google.maps.SymbolPath.CIRCLE,
+                        scale: 10,
+                        fillColor: "#4285F4",
+                        fillOpacity: 1,
+                        strokeColor: "white",
+                        strokeWeight: 3,
+                      }}
+                    />
+                  )}
+
                 </GoogleMap>
+
               ) : (
                 <div
                   style={{
@@ -533,6 +647,19 @@ const ApartmentDetail = () => {
                 </div>
               )}
             </div>
+            <Button
+              type="primary"
+              style={{ marginTop: 16 }}
+              onClick={() => {
+                if (currentLocation && mapLatLng) {
+                  const gmapUrl = `https://www.google.com/maps/dir/?api=1&origin=${currentLocation.lat},${currentLocation.lng}&destination=${mapLatLng.lat},${mapLatLng.lng}&travelmode=driving`;
+                  window.open(gmapUrl, "_blank");
+                }
+              }}
+            >
+              Chỉ đường từ vị trí của bạn
+            </Button>
+
           </Col>
           <Col xs={24} md={8}>
             <Card style={{ width: "100%", height: "400px", marginTop: 20 }}>
@@ -589,6 +716,36 @@ const ApartmentDetail = () => {
             </Card>
           </Col>
         </Row>
+
+        <Row gutter={24} style={{ marginTop: 24 }}>
+          <Col xs={24} md={16}>
+            <div
+              style={{
+                width: "100%",
+                height: 450,
+                position: "relative",
+                borderRadius: 12,
+                overflow: "hidden",
+              }}
+            >
+              <Title
+                style={{
+                  fontSize: 24,
+                  fontWeight: 600,
+                  textAlign: "left",
+                  marginBottom: 10,
+                }}
+              >
+                Trải nghiệm 360° khu vực
+              </Title>
+              <div
+                ref={streetViewRef}
+                style={{ width: "100%", height: "100%", borderRadius: 12 }}
+              />
+            </div>
+          </Col>
+        </Row>
+
       </Content>
       {/* Section: Căn hộ tương tự */}
       <div style={{ marginTop: 40, marginBottom: 40 }}>
