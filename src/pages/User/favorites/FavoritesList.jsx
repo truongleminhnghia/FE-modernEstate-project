@@ -21,7 +21,7 @@ import {
   EyeOutlined,
 } from "@ant-design/icons";
 import "./FavoritesList.css";
-import { getFavorites } from '../../../apis/apiCustomer.api';
+import favoriteApi from '../../../apis/favoriteApi';
 
 const { Title, Text } = Typography;
 const { Option } = Select;
@@ -42,7 +42,7 @@ const FavoritesList = () => {
   const fetchFavorites = async () => {
     setLoading(true);
     try {
-      const res = await getFavorites({ page_current: page, page_size: pageSize });
+      const res = await favoriteApi.getFavorites();
       setFavorites(res.data || []);
       setTotal(res.total || 0);
     } catch (error) {
@@ -62,10 +62,14 @@ const FavoritesList = () => {
     console.log("Filter values:", values);
   };
 
-  const handleRemoveFavorite = (id) => {
-    // TODO: Gọi API xóa khỏi danh sách yêu thích
-    message.success("Đã xóa khỏi danh sách yêu thích");
-    // Sau khi xóa, gọi lại fetchFavorites();
+  const handleRemoveFavorite = async (propertyId) => {
+    try {
+      await favoriteApi.removeFavorite(propertyId);
+      message.success("Đã xóa khỏi danh sách yêu thích");
+      fetchFavorites();
+    } catch (error) {
+      message.error("Xóa khỏi danh sách yêu thích thất bại!");
+    }
   };
 
   const handleViewDetails = (id) => {
@@ -186,25 +190,17 @@ const FavoritesList = () => {
                 </Col>
               ))}
             </Row>
-            <div style={{ marginTop: 24, textAlign: 'center' }}>
-              <Pagination
-                current={page}
-                pageSize={pageSize}
-                total={total}
-                onChange={(p, ps) => {
-                  setPage(p);
-                  setPageSize(ps);
-                }}
-                showSizeChanger
-                pageSizeOptions={[5, 10, 20, 50]}
-              />
-            </div>
+            <Pagination
+              current={page}
+              pageSize={pageSize}
+              total={total}
+              onChange={setPage}
+              onShowSizeChange={(current, size) => setPageSize(size)}
+              style={{ marginTop: 24, textAlign: "right" }}
+            />
           </>
         ) : (
-          <Empty
-            image={Empty.PRESENTED_IMAGE_SIMPLE}
-            description="Chưa có bất động sản nào trong danh sách yêu thích"
-          />
+          <Empty description="Không có bất động sản nào trong danh sách yêu thích." />
         )}
       </Card>
     </div>

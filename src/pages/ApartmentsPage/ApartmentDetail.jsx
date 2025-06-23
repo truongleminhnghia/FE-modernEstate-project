@@ -39,7 +39,7 @@ import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { GoogleMap, useLoadScript, Marker, Circle, DirectionsRenderer } from "@react-google-maps/api";
-import { addToFavorites } from "../../apis/apiCustomer.api";
+import favoriteApi from "../../apis/favoriteApi";
 import { useParams } from "react-router-dom";
 const { Content } = Layout;
 const { Title, Text, Paragraph } = Typography;
@@ -376,7 +376,7 @@ const ApartmentDetail = () => {
                   onClick={async () => {
                     if (!isFavorite && apartment?.id) {
                       try {
-                        await addToFavorites(apartment.id);
+                        await favoriteApi.addFavorite(apartment.property.id);
                         setIsFavorite(true);
                         message.success("Đã thêm vào danh sách yêu thích!");
                       } catch (error) {

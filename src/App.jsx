@@ -110,7 +110,7 @@ const router = createBrowserRouter([
         element: (
           <ProtectedRoute
             element={<FavoriteList />}
-            allowedRoles={[ROLES.BROKER]}
+            allowedRoles={[ROLES.USER]}
           />
         ),
       },

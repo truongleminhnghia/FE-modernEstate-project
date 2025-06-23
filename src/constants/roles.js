@@ -1,7 +1,7 @@
 export const ROLES = {
     ADMIN: 'ROLE_ADMIN',
     STAFF: 'ROLE_STAFF',
-    USER: 'ROLE_USER',
+    USER: 'ROLE_CUSTOMER',
     BROKER: 'ROLE_BROKER',
     OWNER: 'ROLE_OWNER'
 };
