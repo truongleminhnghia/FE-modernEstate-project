@@ -6,7 +6,10 @@ import MessagePopup from '../../components/popup/MessagePopup';
 import ChatPopup from '../../components/popup/ChatPopup';
 import { Carousel } from 'antd';
 import { getProjectById } from '../../apis/projectApi';
-import { GoogleMap, Marker, useLoadScript } from '@react-google-maps/api';
+import { GoogleMap, Marker, useLoadScript, DirectionsRenderer } from '@react-google-maps/api';
+import Slider from "react-slick";
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
 
 export function MaterialSymbolsSchool(props) {
   return (<svg xmlns="http://www.w3.org/2000/svg" width={24} height={24} viewBox="0 0 24 24" {...props}><path fill="currentColor" d="M21 17v-6.9L12 15L1 9l11-6l11 6v8zm-9 4l-7-3.8v-5l7 3.8l7-3.8v5z"></path></svg>);
@@ -165,11 +168,58 @@ const ProjectDetailsPage = () => {
   const [showPopup, setShowPopup] = useState(false);
   const [currentPopupView, setCurrentPopupView] = useState('message');
   const [location, setLocation] = useState(null);
+  const [currentLocation, setCurrentLocation] = useState(null);
+  const [directions, setDirections] = useState(null);
   const carouselRef = useRef(null);
 
   const { isLoaded } = useLoadScript({
     googleMapsApiKey: "AIzaSyDH65U1tsUHeWw-XMgtSyaVU9Sh4QO4J1o",
   });
+
+  // Lấy vị trí hiện tại của user khi map đã load
+  useEffect(() => {
+    if (isLoaded) {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            setCurrentLocation({
+              lat: position.coords.latitude,
+              lng: position.coords.longitude,
+            });
+          },
+          (error) => {
+            // Có thể show message lỗi nếu muốn
+          },
+          {
+            enableHighAccuracy: true,
+            timeout: 10000,
+            maximumAge: 0,
+          }
+        );
+      }
+    }
+  }, [isLoaded]);
+
+  // Khi đã có vị trí hiện tại và vị trí dự án, gọi DirectionsService
+  useEffect(() => {
+    if (isLoaded && currentLocation && location) {
+      const directionsService = new window.google.maps.DirectionsService();
+      directionsService.route(
+        {
+          origin: currentLocation,
+          destination: location,
+          travelMode: window.google.maps.TravelMode.DRIVING,
+        },
+        (result, status) => {
+          if (status === "OK") {
+            setDirections(result);
+          } else {
+            setDirections(null);
+          }
+        }
+      );
+    }
+  }, [isLoaded, currentLocation, location]);
 
   useEffect(() => {
     const fetchProjectDetails = async () => {
@@ -325,6 +375,21 @@ const ProjectDetailsPage = () => {
     setCurrentPopupView('message');
   };
 
+  const sliderSettings = {
+    dots: false,
+    infinite: false,
+    speed: 500,
+    slidesToShow: 4,
+    slidesToScroll: 1,
+    arrows: false,
+    swipeToSlide: true,
+    responsive: [
+      { breakpoint: 1200, settings: { slidesToShow: 3 } },
+      { breakpoint: 768, settings: { slidesToShow: 2 } },
+      { breakpoint: 480, settings: { slidesToShow: 1 } },
+    ],
+  };
+
   return (
     <div className="project-details-bg">
 
@@ -334,18 +399,33 @@ const ProjectDetailsPage = () => {
         </div>
         <div className="project-details-header-content">
           <div className="project-details-header-images-group">
-            <div className="project-details-header-main-img-wrap">
-              <img src={project.image} alt="main" className="project-details-header-main-img" />
-            </div>
-            <div className="project-details-header-thumbs">
-              <img src={project.image} alt="img1" className="project-details-header-thumb" />
-              <img src={project.image} alt="img2" className="project-details-header-thumb" />
-              <img src={project.image} alt="img3" className="project-details-header-thumb" />
-              <div className="project-details-header-thumb project-details-header-thumb-last">
-                <img src={project.image} alt="img4" className="project-details-header-thumb-img" />
-                <span className="project-details-header-thumb-more">Xem 8 ảnh</span>
-              </div>
-            </div>
+            {project.images && project.images.length > 0 ? (
+              <>
+                <div className="project-details-header-main-img-wrap">
+                  <img src={project.images[0].imageUrl} alt="main" className="project-details-header-main-img" />
+                </div>
+                <div className="project-details-header-thumbs">
+                  {project.images.slice(1).map((img, idx) => (
+                    <img key={img.id || idx} src={img.imageUrl} alt={`img${idx+2}`} className="project-details-header-thumb" />
+                  ))}
+                </div>
+              </>
+            ) : (
+              <>
+                <div className="project-details-header-main-img-wrap">
+                  <img src="https://via.placeholder.com/300x200.png?text=No+Image" alt="main" className="project-details-header-main-img" />
+                </div>
+                <div className="project-details-header-thumbs">
+                  <img src="https://via.placeholder.com/300x200.png?text=No+Image" alt="img1" className="project-details-header-thumb" />
+                  <img src="https://via.placeholder.com/300x200.png?text=No+Image" alt="img2" className="project-details-header-thumb" />
+                  <img src="https://via.placeholder.com/300x200.png?text=No+Image" alt="img3" className="project-details-header-thumb" />
+                  <div className="project-details-header-thumb project-details-header-thumb-last">
+                    <img src="https://via.placeholder.com/300x200.png?text=No+Image" alt="img4" className="project-details-header-thumb-img" />
+                    <span className="project-details-header-thumb-more">Xem 8 ảnh</span>
+                  </div>
+                </div>
+              </>
+            )}
           </div>
           <div className="project-details-header-info-box">
             <div className="project-details-header-title">{project.name || project.title}</div>
@@ -374,16 +454,16 @@ const ProjectDetailsPage = () => {
                     <div className="project-details-summary-row">
                       <div><b>Giá từ:</b> {project.price || 'Đang cập nhật'}</div>
                       <div><b>Chủ đầu tư:</b> {project.company}</div>
-                      <div><b>Thời gian khởi công:</b> {project.startDate || 'Đang cập nhật'}</div>
-                      <div><b>Số tòa nhà:</b> {project.numberOfBuildings || 'Đang cập nhật'}</div>
+                      <div><b>Thời gian khởi công:</b> {project.timeStart || 'Đang cập nhật'}</div>
+                      <div><b>Số tòa nhà:</b> {project.totalBlock || 'Đang cập nhật'}</div>
                       <div><b>Các loại diện tích:</b> {project.areaTypes || 'Đang cập nhật'}</div>
                     </div>
                     <div className="project-details-summary-row">
-                      <div><b>Diện tích khu đất:</b> {project.totalArea || 'Đang cập nhật'}</div>
-                      <div><b>Diện tích xây dựng:</b> {project.builtArea || 'Đang cập nhật'}</div>
+                      <div><b>Diện tích khu đất:</b> {project.Area || 'Đang cập nhật'}</div>
+                      <div><b>Diện tích xây dựng:</b> {project.projectArea ? `${project.projectArea} ${project.unitArea || ''}` : 'Đang cập nhật'}</div>
                       <div><b>Thời gian hoàn thành:</b> {project.completionDate || 'Đang cập nhật'}</div>
                       <div><b>Số sản phẩm:</b> {project.numberOfProducts || 'Đang cập nhật'}</div>
-                      <div><b>Trạng thái:</b> {project.status || 'Đang cập nhật'}</div>
+                      <div><b>Trạng thái:</b> {project.status ? project.status.replace(/_/g, ' ') : 'Đang cập nhật'}</div>
                     </div>
                   </div>
                 </div>
@@ -397,10 +477,49 @@ const ProjectDetailsPage = () => {
                       center={location || defaultCenter}
                       zoom={15}
                     >
-                      {location && <Marker position={location} />}
+                      {location && (
+                        <Marker
+                          position={location}
+                          icon={{
+                            url: "http://maps.google.com/mapfiles/ms/icons/red-dot.png",
+                            scaledSize: new window.google.maps.Size(40, 40),
+                          }}
+                        />
+                      )}
+                      {currentLocation && (
+                        <Marker
+                          position={currentLocation}
+                          icon={{
+                            path: window.google.maps.SymbolPath.CIRCLE,
+                            scale: 10,
+                            fillColor: "#fff",
+                            fillOpacity: 1,
+                            strokeColor: "#4285F4",
+                            strokeWeight: 4,
+                          }}
+                        />
+                      )}
+                      {directions && (
+                        <DirectionsRenderer
+                          directions={directions}
+                          options={{ suppressMarkers: true }}
+                        />
+                      )}
                     </GoogleMap>
                   ) : (
                     <div>Loading map...</div>
+                  )}
+                  {currentLocation && location && (
+                    <button
+                      className="project-direction-btn"
+                      style={{ marginTop: 16 }}
+                      onClick={() => {
+                        const gmapUrl = `https://www.google.com/maps/dir/?api=1&origin=${currentLocation.lat},${currentLocation.lng}&destination=${location.lat},${location.lng}&travelmode=driving`;
+                        window.open(gmapUrl, "_blank");
+                      }}
+                    >
+                      Chỉ đường từ vị trí của bạn
+                    </button>
                   )}
                 </div>
                 <div className="project-details-img-caption">
@@ -413,8 +532,9 @@ const ProjectDetailsPage = () => {
                   <li><b>Dự án:</b> {project.name}</li>
                   <li><b>Vị trí:</b> {project.fullAddress || ''}</li>
                   <li><b>Chủ đầu tư:</b> {project.company}</li>
+                  <li><b>Tổng vốn đầu tư:</b> {project.totalInvestment ? `${Number(project.totalInvestment).toLocaleString('vi-VN')} ${project.unitCurrency || ''}` : 'Đang cập nhật'}</li>
                   <li><b>Tổng diện tích:</b> {project.totalArea || 'Đang cập nhật'}</li>
-                  <li><b>Diện tích xây dựng:</b> {project.builtArea || 'Đang cập nhật'}</li>
+                  <li><b>Diện tích xây dựng:</b> {project.projectArea ? `${project.projectArea} ${project.unitArea || ''}` : 'Đang cập nhật'}</li>
                   <li><b>Mật độ xây dựng:</b> {project.buildingDensity || 'Đang cập nhật'}</li>
                   <li><b>Loại hình:</b> {project.type}</li>
                   <li><b>Số lượng sản phẩm:</b> {project.numberOfProducts || 'Đang cập nhật'}</li>
@@ -436,7 +556,7 @@ const ProjectDetailsPage = () => {
 
             {/* Section: Vị trí dự án */}
             <div className="project-location-section">
-              <div className="project-location-section-title">Vị trí dự án Ariyana Lakeside Văn Quán (Hesco Văn Quán)</div>
+              <div className="project-location-section-title">Vị trí dự án <b>{project.name}</b></div>
               <div className="project-location-box">
                 <div className="project-location-tabs">
                   <button
@@ -610,7 +730,7 @@ const ProjectDetailsPage = () => {
               </div>
               <div className="project-location-desc-box">
                 <div className="project-location-desc">
-                  Dự án do Gamuda Land phát triển tọa lạc trên mặt đường đôi Nguyễn Khuyến, cách mặt đường Nguyễn Trãi – Trần Phú khoảng 50m chưa đầy 50 giây xe máy, đây là vị trí được giới chuyên gia bất động sản Modern Estate đánh giá là vị trí vàng khi hạ tầng – Thủy quận tại và đồng thời là "mảnh đất cuối cùng" ở quận Hà Đông.
+                  Dự án do <b>{project.invetor.name}</b> phát triển tọa lạc trên mặt đường đôi Nguyễn Khuyến, cách mặt đường Nguyễn Trãi – Trần Phú khoảng 50m chưa đầy 50 giây xe máy, đây là vị trí được giới chuyên gia bất động sản Modern Estate đánh giá là vị trí vàng khi hạ tầng – Thủy quận tại và đồng thời là "mảnh đất cuối cùng" ở quận Hà Đông.
                 </div>
                 <div className="project-location-sodo-box">
                   <img src="/src/assets/images/ap2.jpg" />
@@ -628,7 +748,7 @@ const ProjectDetailsPage = () => {
             </div>
             {/* Section: Mặt bằng */}
             <div className="project-matbang-section">
-              <div className="project-matbang-title">Mặt bằng Ariyana Lakeside Văn Quán (Hesco Văn Quán)</div>
+              <div className="project-matbang-title">Mặt bằng <b>{project.name}</b></div>
               <div className="project-matbang-box">
                 <div className="project-matbang-subtitle">Mặt bằng tổng thể</div>
                 <img src="https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=800&auto=format&fit=crop&q=60" alt="Mặt bằng tổng thể" className="project-matbang-img" />
@@ -637,18 +757,18 @@ const ProjectDetailsPage = () => {
             {/* Section: Mặt bằng chi tiết */}
             <div className="project-matbang-details-section">
               <div className="project-matbang-details-desc">
-                Ariyana Lakeside Văn Quán (Hesco Văn Quán) có thiết kế cực kỳ đặc biệt mang phong cách Châu Âu với diện tích xây dựng là 3199.88m2. Các căn hộ được bố trí hài hòa, không gian mở mang lại cảm giác thông thoáng, tràn ngập ánh sáng tự nhiên cho từng căn hộ.
+              <b>{project.name}</b> có thiết kế cực kỳ đặc biệt mang phong cách Châu Âu với diện tích xây dựng là 3199.88m2. Các căn hộ được bố trí hài hòa, không gian mở mang lại cảm giác thông thoáng, tràn ngập ánh sáng tự nhiên cho từng căn hộ.
               </div>
               <div className="project-matbang-details-image-box">
                 <img src="/src/assets/images/ap2.jpg" alt="" />
-                <div className="project-matbang-details-caption">Mặt bằng của dự án Ariyana Lakeside Văn Quán (Hesco Văn Quán)</div>
+                <div className="project-matbang-details-caption">Mặt bằng của dự án <b>{project.name}</b></div>
               </div>
               <div className="project-matbang-details-desc">
                 Với diện tích mỗi căn hộ giao động từ 87-134 m2 và được thiết kế kế từ 2-3 phòng ngủ có gần 1.024 căn hộ chung cư cao cấp đáp ứng số lượng lớn khách hàng có nhu cầu trong tương lai. Dự án được liên doanh bởi hai công ty là công ty cổ phần thiết bị Thủy Lợi (HESCO) & Tập đoàn phát triển nhà và đô thị Thăng Long cùng nhau hợp tác xây dựng dựa trên Quyết định của UBND TP số 4132-QĐ/UBND ngày 06/07/2017 với vốn đầu tư hơn 1000 tỷ đồng, mật độ xây dựng 55,6%.
               </div>
               <div className="project-matbang-details-image-box">
                 <img src="/src/assets/images/ap3.jpg" />
-                <div className="project-matbang-details-caption">Các căn hộ được thiết kế tối ưu, tiết kiệm diện tích nhưng không mang lại cảm giác gò bó mà làm cho người dùng cảm nhận được không gian thoải mái sinh hoạt cho gia đình. Đặc biệt, hành lang rộng, thông thoáng, khả năng thông gió và chống cháy tốt cũng là một ưu điểm mà Ariyana Lakeside Văn Quán (Hesco Văn Quán) đưa đến giúp cho cư dân tương lai ở đây càng thêm yêu thích.</div>
+                <div className="project-matbang-details-caption">Mặt bằng dự án <b>{project.name}</b></div>
               </div>
               <div className="project-matbang-details-desc">
                 Các căn hộ được thiết kế tối ưu, tiết kiệm diện tích nhưng không mang lại cảm giác gò bó mà làm cho người dùng cảm nhận được không gian thoải mái sinh hoạt cho gia đình. Đặc biệt, hành lang rộng, thông thoáng, khả năng thông gió và chống cháy tốt cũng là một ưu điểm mà Ariyana Lakeside Văn Quán (Hesco Văn Quán) đưa đến giúp cho cư dân tương lai ở đây càng thêm yêu thích.
@@ -657,7 +777,7 @@ const ProjectDetailsPage = () => {
 
             {/* Section: Tiện ích dự án */}
             <div className="project-tienich-box">
-              <div className="project-tienich-title">Tiện ích dự án Ariyana Lakeside Văn Quán (Hesco Văn Quán)</div>
+              <div className="project-tienich-title">Tiện ích dự án <b>{project.name}</b></div>
               <div className="project-tienich-section">
                 <div className="project-tienich-grid">
                   <div className="project-tienich-category-box">
@@ -721,11 +841,11 @@ const ProjectDetailsPage = () => {
                   </div>
                 </div>
                 <div className="project-tienich-desc">
-                  Dự án Ariyana Lakeside Văn Quán (Hesco Văn Quán) là dự án tiện ích 5 sao hướng rất nhiều hệ thống tiện ích đẳng cấp có sẵn như: Nhà hàng, khu vui chơi, spa, khu thể dục... kiến tạo cuộc sống của cư dân tại đây trở nên viên mãn hơn. Hứa hẹn trong thời gian tới, Ariyana Lakeside Văn Quán (Hesco Văn Quán) sẽ là điểm nhấn Trung tâm du lịch, dịch vụ, vui chơi, giải trí, hoạt động kinh doanh, thương mại,... phía tây Hà Nội.
+                  Dự án <b>{project.name}</b> là dự án tiện ích 5 sao hướng rất nhiều hệ thống tiện ích đẳng cấp có sẵn như: Nhà hàng, khu vui chơi, spa, khu thể dục... kiến tạo cuộc sống của cư dân tại đây trở nên viên mãn hơn. Hứa hẹn trong thời gian tới, Ariyana Lakeside Văn Quán (Hesco Văn Quán) sẽ là điểm nhấn Trung tâm du lịch, dịch vụ, vui chơi, giải trí, hoạt động kinh doanh, thương mại,... phía tây Hà Nội.
                 </div>
                 <div className="project-tienich-image-box">
                   <img src="/src/assets/images/ap4.jpg" />
-                  <div className="project-tienich-caption">Tiện ích Ariyana Lakeside Văn Quán (Hesco Văn Quán)</div>
+                  <div className="project-tienich-caption">Tiện ích <b>{project.name}</b></div>
                 </div>
                 <div className="project-tienich-list">
                   <ul>
@@ -743,21 +863,21 @@ const ProjectDetailsPage = () => {
                 </div>
                 <div className="project-tienich-image-box">
                   <img src="/src/assets/images/ap1.jpg" />
-                  <div className="project-tienich-caption">Tiện ích Ariyana Lakeside Văn Quán (Hesco Văn Quán)</div>
+                  <div className="project-tienich-caption">Tiện ích <b>{project.name}</b></div>
                 </div>
               </div>
             </div>
             {/* Section: Tiến độ dự án */}
             <div className="project-progress-box">
-              <div className="project-progress-title">Tiến độ dự án Ariyana Lakeside Văn Quán</div>
+              <div className="project-progress-title">Tiến độ dự án <b>{project.name}</b></div>
               <div className="project-progress-section">
                 <div className="project-progress-image-box">
                   <img src="/src/assets/images/ap5.jpg" />
-                  <div className="project-progress-caption">Tiến độ dự án Ariyana Lakeside Văn Quán (Hesco Văn Quán)</div>
+                  <div className="project-progress-caption">Tiến độ dự án <b>{project.name}</b></div>
                 </div>
                 <div className="project-progress-image-box">
                   <img src="/src/assets/images/ap5.jpg" />
-                  <div className="project-progress-caption">Tiến độ dự án Ariyana Lakeside Văn Quán (Hesco Văn Quán)</div>
+                  <div className="project-progress-caption">Tiến độ dự án <b>{project.name}</b></div>
                 </div>
               </div>
             </div>
@@ -781,8 +901,9 @@ const ProjectDetailsPage = () => {
               <ul className="project-details-toc-list">
                 <li><a href="#tongquan">Tổng quan dự án</a></li>
                 <li><a href="#vitri">Vị trí</a></li>
+                <li><a href="#matbang">Mặt bằng</a></li>
                 <li><a href="#tienich">Tiện ích</a></li>
-                <li><a href="#tien_do">Tiến độ dự án <b>Ariyana Lakeside Văn Quán</b></a></li>
+                <li><a href="#tien_do">Tiến độ dự án <b>{project.name}</b></a></li>
               </ul>
             </div>
           </div>
@@ -792,12 +913,8 @@ const ProjectDetailsPage = () => {
         <div className="nearby-projects-section">
           <div className="nearby-projects-header">
             <div className="nearby-projects-title">Dự án lân cận</div>
-            <div className="related-title-nav">
-              <button className="lr" onClick={() => carouselRef.current.prev()}><LeftOutlined /></button>
-              <button className="lr" onClick={() => carouselRef.current.next()}><RightOutlined /></button>
-            </div>
           </div>
-          <Carousel ref={carouselRef} dots={false} infinite={false} slidesToShow={4} slidesToScroll={1}>
+          <Slider ref={carouselRef} {...sliderSettings}>
             {nearbyProjects.map((project) => (
               <div key={project.id} className="nearby-project-card">
                 <div className="nearby-project-card-img-wrap">
@@ -815,7 +932,7 @@ const ProjectDetailsPage = () => {
                 </div>
               </div>
             ))}
-          </Carousel>
+          </Slider>
         </div>
       </div>
 

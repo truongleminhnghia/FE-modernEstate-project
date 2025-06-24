@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Card,
   Row,
@@ -18,6 +18,7 @@ import {
   EyeOutlined,
   StarFilled,
 } from '@ant-design/icons';
+import favoriteApi from '../../apis/favoriteApi';
 
 const { Title, Text } = Typography;
 const { Option } = Select;
@@ -26,49 +27,23 @@ export default function OwnerFavorites() {
   const [loading, setLoading] = useState(false);
   const [searchText, setSearchText] = useState('');
   const [filterType, setFilterType] = useState('all');
+  const [favorites, setFavorites] = useState([]);
 
-  // Mock data - replace with actual API call
-  const favorites = [
-    {
-      id: '1',
-      title: 'CĂN HỘ CAO CẤP VINHOMES CENTRAL PARK, TẦNG CAO',
-      price: '30 triệu/tháng',
-      area: '70 m²',
-      bed: '3 PN',
-      bath: '2 WC',
-      location: 'Bình Thạnh, TP Hồ Chí Minh',
-      image: 'https://www.nitco.in/nitcoassets/blog/main/scale-down.jpg',
-      type: 'Cho thuê',
-      savedDate: '2024-03-15',
-      isHot: true,
-    },
-    {
-      id: '2',
-      title: 'BÁN GẤP CĂN HỘ CAO CẤP CHUNG CƯ MASTERI AN PHÚ',
-      price: '25 triệu/tháng',
-      area: '50 m²',
-      bed: '2 PN',
-      bath: '2 WC',
-      location: 'Q7, TP Hồ Chí Minh',
-      image: 'https://www.nitco.in/nitcoassets/blog/main/scale-down.jpg',
-      type: 'Bán',
-      savedDate: '2024-03-14',
-      isHot: false,
-    },
-    {
-      id: '3',
-      title: 'CĂN HỘ THE SUN AVENUE VIEW SÔNG, FULL NỘI THẤT',
-      price: '22 triệu/tháng',
-      area: '60 m²',
-      bed: '2 PN',
-      bath: '2 WC',
-      location: 'Q2, TP Hồ Chí Minh',
-      image: 'https://www.nitco.in/nitcoassets/blog/main/scale-down.jpg',
-      type: 'Cho thuê',
-      savedDate: '2024-03-13',
-      isHot: true,
-    },
-  ];
+  useEffect(() => {
+    fetchFavorites();
+  }, []);
+
+  const fetchFavorites = async () => {
+    setLoading(true);
+    try {
+      const res = await favoriteApi.getFavorites();
+      setFavorites(res.data || []);
+    } catch (error) {
+      message.error('Không thể tải danh sách yêu thích!');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleSearch = (value) => {
     setSearchText(value);
@@ -85,14 +60,19 @@ export default function OwnerFavorites() {
     message.info('Xem chi tiết căn hộ');
   };
 
-  const handleRemoveFavorite = (id) => {
-    // Implement remove favorite logic
-    message.success('Đã xóa khỏi danh sách yêu thích');
+  const handleRemoveFavorite = async (propertyId) => {
+    try {
+      await favoriteApi.removeFavorite(propertyId);
+      message.success('Đã xóa khỏi danh sách yêu thích');
+      fetchFavorites();
+    } catch (error) {
+      message.error('Xóa khỏi danh sách yêu thích thất bại!');
+    }
   };
 
   const filteredList = favorites.filter(item => {
-    const matchesSearch = item.title.toLowerCase().includes(searchText.toLowerCase()) ||
-                         item.location.toLowerCase().includes(searchText.toLowerCase());
+    const matchesSearch = item.title?.toLowerCase().includes(searchText.toLowerCase()) ||
+                         item.location?.toLowerCase().includes(searchText.toLowerCase());
     const matchesFilter = filterType === 'all' || item.type === filterType;
     return matchesSearch && matchesFilter;
   });
@@ -128,79 +108,73 @@ export default function OwnerFavorites() {
           </Row>
         </div>
       </div>
-
-      <Row gutter={[24, 24]}>
-        {filteredList.length === 0 ? (
-          <Col span={24}>
-            <Empty description="Không có căn hộ nào trong danh sách yêu thích." />
-          </Col>
-        ) : (
-          filteredList.map((item) => (
-            <Col xs={24} sm={12} lg={8} key={item.id}>
-              <Card
-                hoverable
-                cover={
-                  <img
-                    alt={item.title}
-                    src={item.image}
-                    style={{
-                      borderTopLeftRadius: 16,
-                      borderTopRightRadius: 16,
-                      height: 180,
-                      width: '100%',
-                      objectFit: 'cover',
-                    }}
-                  />
-                }
-                style={{
-                  borderRadius: 16,
-                  boxShadow: '0 2px 12px #e0e7ef33',
-                  marginBottom: 16,
-                }}
-                actions={[
-                  <Button
-                    type="text"
-                    icon={<EyeOutlined />}
-                    onClick={() => handleViewDetails(item.id)}
-                  >
-                    Xem chi tiết
-                  </Button>,
-                  <Button
-                    type="text"
-                    danger
-                    icon={<DeleteOutlined />}
-                    onClick={() => handleRemoveFavorite(item.id)}
-                  >
-                    Xóa
-                  </Button>,
-                ]}
-              >
-                <div style={{ fontWeight: 600, fontSize: 15, minHeight: 48 }}>
-                  {item.title}
-                </div>
-                <div
-                  style={{
-                    color: '#4a90e2',
-                    fontWeight: 500,
-                    margin: '8px 0 4px 0',
-                  }}
+      <Card loading={loading}>
+        {filteredList.length > 0 ? (
+          <Row gutter={[24, 24]} className="favorites-list">
+            {filteredList.map((item) => (
+              <Col xs={24} sm={12} lg={8} key={item.id}>
+                <Card
+                  hoverable
+                  className="favorite-card"
+                  cover={
+                    <div className="favorite-image-container">
+                      <img
+                        alt={item.title}
+                        src={item.image || ''}
+                        className="favorite-image"
+                      />
+                      <Tag color="blue" className="property-type">
+                        {item.type}
+                      </Tag>
+                    </div>
+                  }
+                  actions={[
+                    <Button
+                      type="text"
+                      icon={<EyeOutlined />}
+                      onClick={() => handleViewDetails(item.id || item.propertyId)}
+                    >
+                      Xem chi tiết
+                    </Button>,
+                    <Button
+                      type="text"
+                      danger
+                      icon={<DeleteOutlined />}
+                      onClick={() => handleRemoveFavorite(item.id || item.propertyId)}
+                    >
+                      Xóa
+                    </Button>,
+                  ]}
                 >
-                  {item.price}
-                </div>
-                <div style={{ color: '#888', fontSize: 14 }}>
-                  {item.area} &nbsp; • &nbsp; {item.bed} &nbsp; • &nbsp; {item.bath}
-                </div>
-                <div style={{ color: '#888', fontSize: 14 }}>
-                  {item.location}
-                </div>
-                <div style={{ color: '#999', fontSize: 12, marginTop: 8 }}>
-                  Đã lưu: {item.savedDate}
-                </div>
-              </Card>
-            </Col>
-          ))
+                  <div style={{ fontWeight: 600, fontSize: 15, minHeight: 48 }}>
+                    {item.title}
+                  </div>
+                  <div
+                    style={{
+                      color: '#4a90e2',
+                      fontWeight: 500,
+                      margin: '8px 0 4px 0',
+                    }}
+                  >
+                    {item.price}
+                  </div>
+                  <div style={{ color: '#888', fontSize: 14 }}>
+                    {item.area} &nbsp; • &nbsp; {item.bed} &nbsp; • &nbsp; {item.bath}
+                  </div>
+                  <div style={{ color: '#888', fontSize: 14 }}>
+                    {item.location}
+                  </div>
+                  <div style={{ color: '#999', fontSize: 12, marginTop: 8 }}>
+                    Đã lưu: {item.savedDate}
+                  </div>
+                </Card>
+              </Col>
+            ))}
+          </Row>
+        ) : (
+          <Empty description="Không có bất động sản nào trong danh sách yêu thích." />
         )}
-      </Row>
+      </Card>
     </div>
   );
 }
