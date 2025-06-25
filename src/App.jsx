@@ -42,6 +42,8 @@ import CreatePost from "./pages/post/CreatePost";
 import NewPost from "./pages/post/new-post";
 import PropertyListings from "./pages/PropertyListings";
 import ProjectListing from "./pages/ProjectListing";
+import Success from "./pages/post/new-post/Success";
+import Failure from "./pages/post/new-post/Failure";
 
 const router = createBrowserRouter([
   {
@@ -196,6 +198,14 @@ const router = createBrowserRouter([
       {
         path: "/forgot-password",
         element: <ForgotPassword />,
+      },
+      {
+        path: "/create-post-success",
+        element: <Success />,
+      },
+      {
+        path: "/create-post-failure",
+        element: <Failure />,
       },
       {
         path: "*",
