@@ -41,6 +41,7 @@ import MarketAnalysis from "./pages/User/marketAnalysis/MarketAnalysis";
 import CreatePost from "./pages/post/CreatePost";
 import NewPost from "./pages/post/new-post";
 import PropertyListings from "./pages/PropertyListings";
+import ProjectListing from "./pages/ProjectListing";
 
 const router = createBrowserRouter([
   {
@@ -174,7 +175,7 @@ const router = createBrowserRouter([
       },
       {
         path: "/du-an",
-        element: <ProjectsPage />,
+        element: <ProjectListing />,
       },
       {
         path: "/du-an/:id",
