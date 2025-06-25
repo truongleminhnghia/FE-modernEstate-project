@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import Lottie from 'lottie-react';
 import successAnimation from '../../auth/success.json';
 const Success = ({
-  title = 'Bạn đã đăng tin thành công!',
+  title = 'Thanh toán thành công!',
   description = 'Chúc bạn sớm kết nối được với khách hàng phù hợp.',
   buttonText = 'Xem danh sách tin đăng',
   onButtonClick
