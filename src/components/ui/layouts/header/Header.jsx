@@ -2,17 +2,11 @@ import React, { useState } from "react";
 import "./Header.css";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Dropdown, Menu, Button } from "antd";
-import { ROLES } from "../../../../constants/roles";
 
 const Header = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [isLoginButtonHovered, setIsLoginButtonHovered] = useState(false);
-
-  const user = localStorage.getItem("user")
-    ? JSON.parse(localStorage.getItem("user"))
-    : null;
-  const userRole = user?.role?.roleName;
 
   const menu = (
     <Menu
@@ -22,29 +16,11 @@ const Header = () => {
           localStorage.removeItem("user");
           navigate("/");
         } else if (info.key === "profile") {
-          if (userRole === ROLES.BROKER) {
-            navigate("/broker-profile");
-          } else if (userRole === ROLES.OWNER) {
-            navigate("/owner-profile");
-          } else {
-            navigate("/user-profile");
-          }
+          navigate("/user-profile");
         } else if (info.key === "transactions") {
-          if (userRole === ROLES.BROKER) {
-            navigate("/broker-transaction");
-          } else if (userRole === ROLES.OWNER) {
-            navigate("/owner-transactions");
-          } else {
-            navigate("/user-transactions");
-          }
+          navigate("/user-transactions");
         } else if (info.key === "favorite") {
-          if (userRole === ROLES.BROKER) {
-            navigate("/broker-favorite");
-          } else if (userRole === ROLES.OWNER) {
-            navigate("/owner-favorites");
-          } else {
-            navigate("/user-favorite");
-          }
+          navigate("/user-favorite");
         }
       }}
       items={[
@@ -86,6 +62,10 @@ const Header = () => {
     borderColor: "#357abd",
     color: "#fff",
   };
+
+  const user = localStorage.getItem("user")
+    ? JSON.parse(localStorage.getItem("user"))
+    : null;
 
   const getNavLinkClass = (path) => {
     return location.pathname === path ? "active" : "";
