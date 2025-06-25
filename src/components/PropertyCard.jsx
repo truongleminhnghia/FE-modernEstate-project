@@ -1,9 +1,10 @@
 import React from 'react';
-import { MapPin, Bed, Bath, Maximize, Phone, Mail, Star } from 'lucide-react';
+import { MapPin, Bed, Bath, Maximize, Phone, Mail, Star, Heart } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent } from '../components/ui/card.jsx';
 import { Badge } from '../components/ui/badge.jsx';
 import { Button } from '../components/ui/button.jsx';
+import { cn } from '../lib/utils.js';
 
 const PropertyCard = ({ post, onContactClick }) => {
   const navigate = useNavigate();
@@ -75,7 +76,7 @@ const PropertyCard = ({ post, onContactClick }) => {
           {/* Title & Location Section */}
           <div className="h-17">
             <h3 className="font-semibold text-lg text-gray-900 line-clamp-2 group-hover:text-blue-600 transition-colors">
-              {property.title}
+              {property.title.toUpperCase().length > 20 ? property.title.toUpperCase().slice(0, 20) + '...' : property.title.toUpperCase()}
             </h3>
             <div className="flex items-center text-gray-600 mt-1">
               <MapPin className="h-4 w-4 mr-1 flex-shrink-0" />
@@ -143,15 +144,19 @@ const PropertyCard = ({ post, onContactClick }) => {
             </div>
             <div className="flex gap-2">
               <Button
-                size="sm"
+                // className="flex items-center gap-1"
                 variant="outline"
-                onClick={handleContactAction}
-                className="flex items-center gap-1"
+                  size="sm"
+                  className={cn(
+                    'border-gray-300 transition-colors',
+                    'bg-black text-white hover:bg-gray-800'
+                  )}
+                  onClick={handleContactAction}
+                  style={{cursor: 'pointer', backgroundColor: '#000', color: '#fff'}}
               >
-                <Phone className="h-3 w-3" />
-                Gọi
+                <Heart className="h-3 w-3" />
               </Button>
-              <Button
+              {/* <Button
                 size="sm"
                 onClick={handleContactAction}
                 className="flex items-center gap-1"
@@ -159,7 +164,7 @@ const PropertyCard = ({ post, onContactClick }) => {
               >
                 <Mail className="h-3 w-3" />
                 Liên hệ
-              </Button>
+              </Button> */}
             </div>
           </div>
         </div>

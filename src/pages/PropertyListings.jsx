@@ -278,7 +278,7 @@ const PropertyListings = () => {
 
         {/* Properties grid/list */}
         {isLoading ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {[...Array(6)].map((_, index) => (
               <div key={index} className="bg-white rounded-lg shadow-sm animate-pulse">
                 <div className="h-48 bg-gray-200 rounded-t-lg"></div>
@@ -306,17 +306,20 @@ const PropertyListings = () => {
             </AntButton>
           </div>
         ) : (
-          <div className={
-            viewMode === 'grid' 
-              ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
-              : "flex flex-col gap-4"
-          }>
+          <div
+            className={
+              viewMode === 'grid'
+                ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
+                : "flex flex-col gap-4"
+            }
+          >
             {data?.rowDatas?.map((post) => (
-              <PropertyCard
-                key={post.id}
-                post={post}
-                onContactClick={handleContactClick}
-              />
+              <div className="h-full" key={post.id}>
+                <PropertyCard
+                  post={post}
+                  onContactClick={handleContactClick}
+                />
+              </div>
             ))}
           </div>
         )}
