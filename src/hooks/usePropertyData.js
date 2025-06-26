@@ -35,6 +35,10 @@ const usePropertyData = (filters, page = 1, pageSize = 10) => {
   const filteredData = allPosts.filter(post => {
     const property = post.property;
     
+    if (!property || property.statusSource !== "APPROVE") {
+      return false;
+    }
+    
     if (!property || !property.address) {
       return false;
     }

@@ -39,31 +39,31 @@ const juridicalStatuses = ["Sổ hồng", "Sổ đỏ", "Hợp đồng mua bán"
 const amenitiesList = ["Hồ bơi", "Gym", "An ninh 24/7", "Chỗ đậu xe ô tô", "Thang máy", "Gần trường học", "Gần bệnh viện", "Ban công/Logia", "Máy lạnh", "Máy nước nóng", "Internet/Wifi", "Truyền hình cáp", "Cho nuôi thú cưng", "Sân vườn", "Khu vui chơi trẻ em"];
 
 
-const initialMockListings = [
-  {
-    id: 1, title: "Cho thuê CHCC The Sun Avenue 2PN full NT giá tốt, view sông", listingType: "for_rent",
-    address: "28 Mai Chí Thọ", ward: "An Phú", district: "Quận 2", city: "TP. Hồ Chí Minh",
-    propertyType: "Chung cư", price: 15000000, priceUnit: "VND/tháng", area: 75, bedrooms: 2, bathrooms: 2,
-    description: "Căn hộ full nội thất cao cấp, view sông SG, tầng cao thoáng mát. Khu dân trí cao, an ninh. Tiện ích nội khu đầy đủ: hồ bơi tràn bờ, gym, BBQ, công viên.\nThuận tiện di chuyển vào trung tâm và các khu vực lân cận.",
-    images: ["https://via.placeholder.com/300x200/FFC107/000000?Text=SunAve_1.jpg", "https://via.placeholder.com/300x200/00BCD4/FFFFFF?Text=SunAve_2.jpg", "https://via.placeholder.com/300x200/9C27B0/FFFFFF?Text=SunAve_3.jpg"],
-    videos: ["https://www.youtube.com/embed/dQw4w9WgXcQ"],
-    amenities: ["Hồ bơi", "Gym", "An ninh 24/7", "Chỗ đậu xe ô tô", "Thang máy", "Máy lạnh"], ownerId: 1, brokerId: 1,
-    postedDate: "2025-05-01", expirationDate: "2025-08-01", status: "active", isFeatured: true, viewCount: 1023,
-    contactName: "Nguyễn Văn An", contactPhone: "0901234567", contactEmail: "vana@example.com",
-    furnitureStatus: "full", direction: "Đông Nam", juridicalStatus: "Sổ hồng", notesForAdmin: "Khách hàng tiềm năng, cần hỗ trợ nhanh."
-  },
-  {
-    id: 2, title: "Bán gấp nhà mặt tiền Quận 1, vị trí KD sầm uất, DT 80m2", listingType: "for_sale",
-    address: "112 Nguyễn Huệ", ward: "Bến Nghé", district: "Quận 1", city: "TP. Hồ Chí Minh",
-    propertyType: "Nhà riêng", price: 25000000000, priceUnit: "VND", area: 80, bedrooms: 4, bathrooms: 3,
-    description: "Nhà mặt tiền đường lớn Nguyễn Huệ, tiện kinh doanh đa ngành nghề. Kết cấu 1 trệt 3 lầu. Pháp lý rõ ràng, công chứng nhanh.",
-    images: ["https://via.placeholder.com/300x200/4CAF50/FFFFFF?Text=Q1House_1.jpg"], videos: [],
-    amenities: ["Gần trường học", "Gần bệnh viện"], ownerId: 2,
-    postedDate: "2025-04-15", expirationDate: null, status: "pending_approval", isFeatured: false, viewCount: 550,
-    contactName: "Trần Thị Bình", contactPhone: "0912345678", contactEmail: "thib@example.com",
-    furnitureStatus: "basic", direction: "Tây Bắc", juridicalStatus: "Sổ hồng", notesForAdmin: "Cần kiểm tra kỹ thông tin pháp lý."
-  },
-];
+// const initialMockListings = [
+//   {
+//     id: 1, title: "Cho thuê CHCC The Sun Avenue 2PN full NT giá tốt, view sông", listingType: "for_rent",
+//     address: "28 Mai Chí Thọ", ward: "An Phú", district: "Quận 2", city: "TP. Hồ Chí Minh",
+//     propertyType: "Chung cư", price: 15000000, priceUnit: "VND/tháng", area: 75, bedrooms: 2, bathrooms: 2,
+//     description: "Căn hộ full nội thất cao cấp, view sông SG, tầng cao thoáng mát. Khu dân trí cao, an ninh. Tiện ích nội khu đầy đủ: hồ bơi tràn bờ, gym, BBQ, công viên.\nThuận tiện di chuyển vào trung tâm và các khu vực lân cận.",
+//     images: ["https://via.placeholder.com/300x200/FFC107/000000?Text=SunAve_1.jpg", "https://via.placeholder.com/300x200/00BCD4/FFFFFF?Text=SunAve_2.jpg", "https://via.placeholder.com/300x200/9C27B0/FFFFFF?Text=SunAve_3.jpg"],
+//     videos: ["https://www.youtube.com/embed/dQw4w9WgXcQ"],
+//     amenities: ["Hồ bơi", "Gym", "An ninh 24/7", "Chỗ đậu xe ô tô", "Thang máy", "Máy lạnh"], ownerId: 1, brokerId: 1,
+//     postedDate: "2025-05-01", expirationDate: "2025-08-01", status: "active", isFeatured: true, viewCount: 1023,
+//     contactName: "Nguyễn Văn An", contactPhone: "0901234567", contactEmail: "vana@example.com",
+//     furnitureStatus: "full", direction: "Đông Nam", juridicalStatus: "Sổ hồng", notesForAdmin: "Khách hàng tiềm năng, cần hỗ trợ nhanh."
+//   },
+//   {
+//     id: 2, title: "Bán gấp nhà mặt tiền Quận 1, vị trí KD sầm uất, DT 80m2", listingType: "for_sale",
+//     address: "112 Nguyễn Huệ", ward: "Bến Nghé", district: "Quận 1", city: "TP. Hồ Chí Minh",
+//     propertyType: "Nhà riêng", price: 25000000000, priceUnit: "VND", area: 80, bedrooms: 4, bathrooms: 3,
+//     description: "Nhà mặt tiền đường lớn Nguyễn Huệ, tiện kinh doanh đa ngành nghề. Kết cấu 1 trệt 3 lầu. Pháp lý rõ ràng, công chứng nhanh.",
+//     images: ["https://via.placeholder.com/300x200/4CAF50/FFFFFF?Text=Q1House_1.jpg"], videos: [],
+//     amenities: ["Gần trường học", "Gần bệnh viện"], ownerId: 2,
+//     postedDate: "2025-04-15", expirationDate: null, status: "pending_approval", isFeatured: false, viewCount: 550,
+//     contactName: "Trần Thị Bình", contactPhone: "0912345678", contactEmail: "thib@example.com",
+//     furnitureStatus: "basic", direction: "Tây Bắc", juridicalStatus: "Sổ hồng", notesForAdmin: "Cần kiểm tra kỹ thông tin pháp lý."
+//   },
+// ];
 
 const primaryColor = '#4a90e2';
 const statusColors = {
@@ -92,7 +92,7 @@ const ListingManagement = () => {
   
   const [selectedListing, setSelectedListing] = useState(null);
   const [isDetailModalVisible, setIsDetailModalVisible] = useState(false);
-
+  const [loading, setLoading] = useState(false);
   const [isFormModalVisible, setIsFormModalVisible] = useState(false);
   const [editingListing, setEditingListing] = useState(null); 
 
@@ -103,7 +103,7 @@ const ListingManagement = () => {
     return (
       listing.title.toLowerCase().includes(search) ||
       listing.address.toLowerCase().includes(search) ||
-      (listing.id.toString().includes(search)) || // Tìm theo ID
+      (listing.id.toString().includes(search)) || 
       (listing.district && listing.district.toLowerCase().includes(search)) ||
       (listing.city && listing.city.toLowerCase().includes(search)) ||
       (listing.ownerId && mockOwnersForSelect.find(o => o.id === listing.ownerId)?.name.toLowerCase().includes(search)) ||
@@ -136,6 +136,62 @@ const ListingManagement = () => {
     }
   }, [editingListing, form, isFormModalVisible]);
 
+  const fetchListings = async () => {
+    try {
+      setLoading(true);
+      const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50SWQiOiIwOGRkYTQwMS1jYzI2LTQ3MTgtODEyYy0zMGJmYmNhM2YzM2QiLCJlbWFpbCI6InN0YWZmQGdtYWlsLmNvbSIsInJvbGUiOiJST0xFX1NUQUZGIiwibmJmIjoxNzUwOTEzNzA1LCJleHAiOjE3NTA5MTczMDUsImlhdCI6MTc1MDkxMzcwNSwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgwIiwiYXVkIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgwIn0.SUCcHEmFp4dIz14NfdAXeUqgX9llncQvYG38yuQhS-Y';
+      const res = await fetch('https://bemodernestate.site/api/v1/posts?page_current=1&page_size=10', {
+        headers: {
+          'accept': '*/*',
+          'Authorization': token
+        }
+      });
+      if (!res.ok) throw new Error('Lỗi server!');
+      const result = await res.json();
+      // Chuyển đổi dữ liệu API về dạng giống mockData nếu cần
+      const converted = result?.data?.rowDatas?.map(post => ({
+        id: post.id,
+        title: post.property?.title,
+        listingType: post.demand === "MUA_BÁN" ? "for_sale" : "for_rent",
+        address: post.property?.address?.houseNumber || "",
+        ward: post.property?.address?.ward || "",
+        district: post.property?.address?.district || "",
+        city: post.property?.address?.city || "",
+        propertyType: post.property?.type,
+        price: post.property?.price,
+        priceUnit: post.property?.priceUnit,
+        area: post.property?.area,
+        bedrooms: post.property?.numberOfBedrooms,
+        bathrooms: post.property?.numberOfBathrooms,
+        description: post.property?.description,
+        images: post.property?.propertyImages?.map(img => img.url) || [],
+        videos: post.property?.videoUrl || [],
+        amenities: post.property?.attribute || [],
+        ownerId: null, // bạn lấy theo API nếu có
+        brokerId: null,
+        postedDate: post.createAt,
+        expirationDate: post.postPackages?.[0]?.endDate,
+        status: post.status,
+        isFeatured: false,
+        viewCount: 0,
+        contactName: post.contact?.contactName,
+        contactPhone: post.contact?.contactPhone,
+        contactEmail: post.contact?.contactEmail,
+        furnitureStatus: post.property?.interior,
+        direction: post.property?.houseDirection,
+        juridicalStatus: post.property?.document?.join(', '),
+        notesForAdmin: post.rejectionReason
+      })) || [];
+      setDataSource(converted);
+    } catch (err) {
+      message.error(err.message || "Lỗi khi tải dữ liệu");
+    } finally {
+      setLoading(false);
+    }
+  }
+  useEffect(() => {
+    fetchListings();
+  }, []);
 
   const handleViewDetails = (listing) => {
     setSelectedListing(listing);
@@ -302,7 +358,7 @@ const ListingManagement = () => {
         <Col><Button type="primary" icon={<PlusOutlined />} style={{ backgroundColor: primaryColor, borderColor: primaryColor }} onClick={showAddModal}>Thêm Tin đăng</Button></Col>
       </Row>
 
-      <Table columns={columns} dataSource={filteredDataSource} rowKey="id" bordered pagination={{ pageSize: 10, showSizeChanger: true, pageSizeOptions: ['10', '20', '50'], responsive: true, showTotal: (total, range) => `${range[0]}-${range[1]} của ${total} tin` }} scroll={{ x: 1600 }} style={{ boxShadow: "0 1px 4px rgba(0,0,0,0.1)" }}/>
+      <Table columns={columns} dataSource={filteredDataSource} loading={loading} rowKey="id" bordered pagination={{ pageSize: 10, showSizeChanger: true, pageSizeOptions: ['10', '20', '50'], responsive: true, showTotal: (total, range) => `${range[0]}-${range[1]} của ${total} tin` }} scroll={{ x: 1600 }} style={{ boxShadow: "0 1px 4px rgba(0,0,0,0.1)" }}/>
 
       <Modal title={<span style={{color: primaryColor, fontWeight: 'bold'}}><FileTextOutlined /> Chi tiết Tin đăng</span>} visible={isDetailModalVisible} onCancel={() => setIsDetailModalVisible(false)} footer={[ <Button key="close" onClick={() => setIsDetailModalVisible(false)} style={{borderColor: primaryColor, color: primaryColor}}>Đóng</Button> ]} width={800}>
         {selectedListing && (
