@@ -54,7 +54,9 @@ function NewPost() {
                 price: propertyData.price,
                 priceUnit: "VND",
                 document: ["Số đỏ", "sổ hồng"],
-                interior: propertyData.interior,
+                interior: Array.isArray(propertyData.interior)
+                    ? propertyData.interior.join(", ")
+                    : String(propertyData.interior),
                 numberOfBedrooms: propertyData.numberOfBedrooms,
                 numberOfBathrooms: propertyData.numberOfBathrooms,
                 houseDirection: propertyData.houseDirection,
@@ -68,7 +70,9 @@ function NewPost() {
                     country: "Việt Nam",
                     addressDetail: addres.addressDetail
                 },
-                projectId: propertyData.projectId || "",
+                projectId: propertyData.projectId && propertyData.projectId.length > 0
+                    ? propertyData.projectId
+                    : null,
                 images: propertyData.images || ""
             },
             contact: {
@@ -76,18 +80,34 @@ function NewPost() {
                 contactEmail: baseData?.contactEmail,
                 contactPhone: baseData?.contactPhone,
             },
-            postPackagesRequest: packageData,
+            postPackagesRequest: {
+                startDate: packageData.startDate,
+                endDate: packageData.endDate,
+                totalAmout: packageData.totalAmout,
+                currency: packageData.currency,
+                accountId: userId,
+                packageId: packageData.packageId,
+            },
         };
         try {
-            const res = await fetch(`${import.meta.env.VITE_API_URL}posts`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${localStorage.getItem("token")}`,
-                },
-                body: JSON.stringify({ request: payload }),
-            });
-            if (res.ok) {
+            // const res = await fetch(`${import.meta.env.VITE_API_URL}posts`, {
+            //     method: "POST",
+            //     payload,
+            //     headers: {
+            //         "Content-Type": "application/json",
+            //         "Authorization": `Bearer ${localStorage.getItem("token")}`,
+            //     },
+            // });
+
+            const res = await axios.post(`${import.meta.env.VITE_API_URL}posts`,
+                payload,
+                {
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${localStorage.getItem("token")}`,
+                    }
+                })
+            if (res.data.data.code === 200) {
                 const data = await res.json();
                 console.log('Post created successfully, data:', data);
                 if (data && data.data && data.data.id) {
