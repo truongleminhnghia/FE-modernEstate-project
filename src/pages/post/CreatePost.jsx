@@ -158,56 +158,7 @@ export default function CreatePost() {
   ];
 
   const handleSubmit = async (values) => {
-    setLoading(true);
-    try {
-      const transformedData = {
-        postBy: userId,
-        demand: values.demand,
-        newProperty: {
-          ...values.newProperty,
-
-          images: (form.getFieldValue(['newProperty', 'images']) || []).map(file => ({ imageUrl: file.url || file.imageUrl })), videoUrl: values.newProperty?.videoUrl ? [values.newProperty.videoUrl[0]].filter(Boolean) : [],
-        },
-        contact: values.contact,
-        postPackagesRequest: {
-          startDate: values.postPackagesRequest?.startDate?.format("YYYY-MM-DD"),
-          accountId: userId
-        },
-      };
-
-      const payload = { request: transformedData };
-
-      console.log("Payload gửi đi:", JSON.stringify(payload, null, 2));
-
-      const res = await fetch(`${import.meta.env.VITE_API_URL}posts`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${localStorage.getItem("token")}`,
-        },
-        body: JSON.stringify(payload),
-      });
-
-      if (res.ok) {
-        message.success("Tạo bài đăng thành công!");
-        form.resetFields();
-        setFileList([]);
-        setCurrentStep(0);
-      } else {
-        const data = await res.json();
-        console.error("Lỗi từ server:", data);
-        message.error(data.title || data.message || "Có lỗi xảy ra khi tạo bài đăng!");
-        if (data.errors) {
-          Object.values(data.errors).forEach(errArray => {
-            errArray.forEach(errMsg => message.error(errMsg));
-          });
-        }
-      }
-    } catch (err) {
-      console.error("Lỗi khi gửi request:", err);
-      message.error("Có lỗi xảy ra khi gửi request!");
-    }
-    setLoading(false);
+    console.log('Form values on submit:', values);
   };
 
   const nextStep = async () => {

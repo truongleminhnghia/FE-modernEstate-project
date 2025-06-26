@@ -9,7 +9,7 @@ import { cn } from '../lib/utils.js';
 const PropertyCard = ({ post, onContactClick }) => {
   const navigate = useNavigate();
   const { property, contact } = post;
-
+  console.log(property);
   const handleCardClick = () => {
     navigate(`/can-ho/${post.id}`);
   };
@@ -52,8 +52,9 @@ const PropertyCard = ({ post, onContactClick }) => {
       <div className="relative">
         <div className="h-48 bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center">
           <div className="text-gray-500 text-center">
-            <Maximize className="h-12 w-12 mx-auto" />
-            <p className="text-sm mt-2">Hình ảnh sẽ hiển thị tại đây</p>
+            {/* <Maximize className="h-12 w-12 mx-auto" />
+            <p className="text-sm mt-2">Hình ảnh sẽ hiển thị tại đây</p> */}
+            <img src={property.propertyImages} alt="Property" className="w-full h-full object-cover" />
           </div>
         </div>
         <div className="absolute top-3 left-3 flex gap-2">

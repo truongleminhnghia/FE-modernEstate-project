@@ -12,7 +12,7 @@ const ForgotPassword = () => {
   const handleSendEmail = async (values) => {
     setLoading(true);
     try {
-      const res = await axios.post(`${import.meta.env.VITE_API_URL}/auths/forgot-password`, {
+      const res = await axios.post(`${import.meta.env.VITE_API_URL}auths/forgot-password`, {
         email: values.email,
       });
       if (res.data.success) {
@@ -32,7 +32,7 @@ const ForgotPassword = () => {
   const handleResetPassword = async (values) => {
     setLoading(true);
     try {
-      const res = await axios.post(`${import.meta.env.VITE_API_URL}/auths/reset-password`, {
+      const res = await axios.post(`${import.meta.env.VITE_API_URL}auths/reset-password`, {
         email,
         token: values.otp,
         newPassword: values.newPassword,

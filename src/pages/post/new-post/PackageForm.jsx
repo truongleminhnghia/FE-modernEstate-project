@@ -143,9 +143,6 @@ export default function PackageForm({ onFinish, initialValues }) {
                 </Col>
             </Row>
 
-            <Form.Item name="accountId" label="Account ID" rules={[{ required: true }]}>
-                <Input />
-            </Form.Item>
 
             <Form.Item name="packageId" hidden>
                 <Input />

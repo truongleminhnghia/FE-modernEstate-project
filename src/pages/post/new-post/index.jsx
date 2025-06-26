@@ -8,6 +8,7 @@ import { Steps } from "antd";
 import BreadcrumbComponent from "../../../components/ui/BreadcrumbComponent";
 import AddressForm from "./AddressForm";
 import CheckOut from "./CheckOut";
+import axios from "axios";
 
 function NewPost() {
     const [current, setCurrent] = useState(0);
@@ -77,9 +78,48 @@ function NewPost() {
             },
             postPackagesRequest: packageData,
         };
-        //call api
-        console.log("request: ", payload)
-        setCurrent(5);
+        try {
+            const res = await fetch(`${import.meta.env.VITE_API_URL}posts`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${localStorage.getItem("token")}`,
+                },
+                body: JSON.stringify({ request: payload }),
+            });
+            if (res.ok) {
+                const data = await res.json();
+                console.log('Post created successfully, data:', data);
+                if (data && data.data && data.data.id) {
+                    // Call payment link API
+                    const paymentRes = await fetch(`${import.meta.env.VITE_API_URL}checkout/create-payment-link/${data.data.id}`, {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "Authorization": `Bearer ${localStorage.getItem("token")}`,
+                        },
+                    });
+                    if (paymentRes.ok) {
+                        const paymentData = await paymentRes.json();
+                        if (paymentData && paymentData.data && paymentData.data.url) {
+                            window.location.href = paymentData.data.url;
+                            return;
+                        } else {
+                            alert("Tạo bài đăng thành công, nhưng không nhận được link thanh toán.");
+                        }
+                    } else {
+                        alert("Tạo bài đăng thành công, nhưng tạo link thanh toán thất bại.");
+                    }
+                } else {
+                    alert("Tạo bài đăng thành công!");
+                }
+            } else {
+                const data = await res.json();
+                alert(data.title || data.message || "Có lỗi xảy ra khi tạo bài đăng!");
+            }
+        } catch (err) {
+            alert("Có lỗi xảy ra khi gửi request!");
+        }
     }
 
     const items = [
