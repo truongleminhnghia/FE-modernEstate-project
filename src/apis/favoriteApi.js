@@ -1,21 +1,59 @@
 import axios from "axios";
 
-const API_BASE = "https://be-modernestate.onrender.com/api/v1/favorites";
+const API_BASE = "https://bemodernestate.site/api/v1/favorites";
 
 // ✅ Hàm trả về headers luôn cập nhật token mới nhất
-const getAuthHeaders = () => ({
-  Authorization: `Bearer ${localStorage.getItem("token")}`,
-});
+const getAuthHeaders = () => {
+  const token = localStorage.getItem("token");
+  console.log("Using token:", token ? "Token exists" : "No token");
+  return {
+    Authorization: `Bearer ${token}`,
+    "Content-Type": "application/json",
+  };
+};
 
 const favoriteApi = {
-  getFavorites: (accountId) =>
-    axios.get(`${API_BASE}?accountId=${accountId}`, { headers: getAuthHeaders() }),
+  getFavorites: async (accountId) => {
+    console.log("Getting favorites for account:", accountId);
+    try {
+      const response = await axios.get(`${API_BASE}?accountId=${accountId}`, { 
+        headers: getAuthHeaders() 
+      });
+      console.log("Get favorites success:", response.data);
+      return response;
+    } catch (error) {
+      console.error("Get favorites error:", error.response?.data || error.message);
+      throw error;
+    }
+  },
 
-  addFavorite: (propertyId) =>
-    axios.post(API_BASE, { propertyId }, { headers: getAuthHeaders() }),
+  addFavorite: async (propertyId) => {
+    console.log("Adding favorite for property:", propertyId);
+    try {
+      const response = await axios.post(API_BASE, { propertyId }, { 
+        headers: getAuthHeaders() 
+      });
+      console.log("Add favorite success:", response.data);
+      return response;
+    } catch (error) {
+      console.error("Add favorite error:", error.response?.data || error.message);
+      throw error;
+    }
+  },
 
-  removeFavorite: (favoriteId) =>
-    axios.delete(`${API_BASE}/${favoriteId}`, { headers: getAuthHeaders() }),
+  removeFavorite: async (favoriteId) => {
+    console.log("Removing favorite with ID:", favoriteId);
+    try {
+      const response = await axios.delete(`${API_BASE}/${favoriteId}`, { 
+        headers: getAuthHeaders() 
+      });
+      console.log("Remove favorite success:", response.data);
+      return response;
+    } catch (error) {
+      console.error("Remove favorite error:", error.response?.data || error.message);
+      throw error;
+    }
+  },
 };
 
 export default favoriteApi;

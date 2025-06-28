@@ -123,6 +123,7 @@ const ApartmentDetail = () => {
   const { id } = useParams();
   console.log('Apartment ID:', id);
   const [isFavorite, setIsFavorite] = useState(false);
+  const [favoriteId, setFavoriteId] = useState(null);
   const [thumbsSwiper, setThumbsSwiper] = useState(null);
   const [apartment, setApartment] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -258,6 +259,56 @@ const ApartmentDetail = () => {
     }
   }, [isLoaded, apartment]);
 
+  useEffect(() => {
+    const checkIsFavorite = async () => {
+      try {
+        const user = JSON.parse(localStorage.getItem("user"));
+        const accountId = user?.id;
+        const propertyId = apartment?.property?.id;
+
+        if (!accountId || !propertyId) return;
+
+        const res = await favoriteApi.getFavorites(accountId);
+        const match = res.data.data.find(fav => fav.propertyId === propertyId);
+
+        if (match) {
+          setIsFavorite(true);
+          setFavoriteId(match.id);
+        }
+      } catch (err) {
+        console.error("Không thể kiểm tra trạng thái yêu thích", err);
+      }
+    };
+
+    if (apartment) {
+      checkIsFavorite();
+    }
+  }, [apartment]);
+
+  const handleToggleFavorite = async () => {
+    const propertyId = apartment?.property?.id;
+    if (!propertyId) {
+      message.error("Không xác định được căn hộ.");
+      return;
+    }
+
+    try {
+      if (isFavorite) {
+        await favoriteApi.removeFavorite(favoriteId);
+        setIsFavorite(false);
+        setFavoriteId(null);
+        message.success("Đã xoá khỏi yêu thích");
+      } else {
+        const res = await favoriteApi.addFavorite(propertyId);
+        setIsFavorite(true);
+        setFavoriteId(res.data.data?.id);
+        message.success("Đã thêm vào danh sách yêu thích!");
+      }
+    } catch (err) {
+      message.error("Lỗi thao tác yêu thích");
+    }
+  };
+
   if (loading) return <Spin style={{ marginTop: 100 }} />;
   if (!apartment) return null;
 
@@ -373,17 +424,7 @@ const ApartmentDetail = () => {
                       <HeartOutlined />
                     )
                   }
-                  onClick={async () => {
-                    if (!isFavorite && apartment?.id) {
-                      try {
-                        await favoriteApi.addFavorite(apartment.property.id);
-                        setIsFavorite(true);
-                        message.success("Đã thêm vào danh sách yêu thích!");
-                      } catch (error) {
-                        message.error("Thêm vào yêu thích thất bại!");
-                      }
-                    }
-                  }}
+                  onClick={handleToggleFavorite}
                 />
                 <Button icon={<ShareAltOutlined />} />
               </Space>
