@@ -44,6 +44,7 @@ import PropertyListings from "./pages/PropertyListings";
 import ProjectListing from "./pages/ProjectListing";
 import Success from "./pages/post/new-post/Success";
 import Failure from "./pages/post/new-post/Failure";
+import PendingApproval from "./pages/staff/listings/PendingApproval";
 
 const router = createBrowserRouter([
   {
@@ -268,6 +269,10 @@ const router = createBrowserRouter([
       {
         path: "projects",
         element: <ProjectManagement />,
+      },
+      {
+        path: "listings/pending-approval",
+        element: <PendingApproval />,
       },
       {
         path: "news",
