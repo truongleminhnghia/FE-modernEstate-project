@@ -1,7 +1,6 @@
 import React from "react";
 import { Layout, Menu, Typography } from "antd";
 import {
-  DashboardOutlined,
   UserOutlined,
   FileTextOutlined,
   BellOutlined,
@@ -28,7 +27,28 @@ const StaffSidebar = ({ collapsed, onCollapse }) => {
       icon: <UserOutlined />,
       label: "Quản lý tin đăng",
       path: "/staff/listings",
+      children: [
+        {
+          key: "pending-approval",
+          icon: <FileTextOutlined />,
+          label: "Tin đăng chờ duyệt",
+          path: "/staff/pending-approval",
+          onClick: () => {
+            navigate("/staff/listings/pending-approval");
+          },
+        },
+        {
+          key: "listings",
+          icon: <FileTextOutlined />,
+          label: "Danh sách tin đăng",
+          path: "/staff/listings",
+          onClick: () => {
+            navigate("/staff/listings");
+          },
+        },
+      ],
     },
+
     // {
     //   key: "contracts",
     //   icon: <FileTextOutlined />,
@@ -82,7 +102,7 @@ const StaffSidebar = ({ collapsed, onCollapse }) => {
 
   return (
     <Sider
-      width={230}
+      width={240}
       collapsible
       collapsed={collapsed}
       onCollapse={onCollapse}
