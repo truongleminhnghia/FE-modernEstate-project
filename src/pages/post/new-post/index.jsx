@@ -40,110 +40,6 @@ function NewPost() {
         setCurrent(4);
     }
 
-    // const onConfirm = async () => {
-    //     const payload = {
-    //         postBy: userId,
-    //         demand: baseData.demand,
-    //         newProperty: {
-    //             title: propertyData.title,
-    //             description: propertyData.description,
-    //             attribute: propertyData.attribute,
-    //             type: propertyData.type,
-    //             area: propertyData.area,
-    //             areaUnit: propertyData.areaUnit,
-    //             price: propertyData.price,
-    //             priceUnit: "VND",
-    //             document: ["Số đỏ", "sổ hồng"],
-    //             interior: Array.isArray(propertyData.interior)
-    //                 ? propertyData.interior.join(", ")
-    //                 : String(propertyData.interior),
-    //             numberOfBedrooms: propertyData.numberOfBedrooms,
-    //             numberOfBathrooms: propertyData.numberOfBathrooms,
-    //             houseDirection: propertyData.houseDirection,
-    //             videoUrl: ["videoUrl"],
-    //             address: {
-    //                 houseNumber: addres.houseNumber,
-    //                 street: addres.street,
-    //                 ward: addres.ward,
-    //                 district: addres.district,
-    //                 city: addres.city,
-    //                 country: "Việt Nam",
-    //                 addressDetail: addres.addressDetail
-    //             },
-    //             projectId: propertyData.projectId && propertyData.projectId.length > 0
-    //                 ? propertyData.projectId
-    //                 : null,
-    //             images: propertyData.images || ""
-    //         },
-    //         contact: {
-    //             contactName: baseData?.contactName,
-    //             contactEmail: baseData?.contactEmail,
-    //             contactPhone: baseData?.contactPhone,
-    //         },
-    //         postPackagesRequest: {
-    //             startDate: packageData.startDate,
-    //             endDate: packageData.endDate,
-    //             totalAmout: packageData.totalAmout,
-    //             currency: packageData.currency,
-    //             accountId: userId,
-    //             packageId: packageData.packageId,
-    //         },
-    //     };
-    //     try {
-    //         // const res = await fetch(`${import.meta.env.VITE_API_URL}posts`, {
-    //         //     method: "POST",
-    //         //     payload,
-    //         //     headers: {
-    //         //         "Content-Type": "application/json",
-    //         //         "Authorization": `Bearer ${localStorage.getItem("token")}`,
-    //         //     },
-    //         // });
-
-    //         const res = await axios.post(`${import.meta.env.VITE_API_URL}posts`,
-    //             payload,
-    //             {
-    //                 headers: {
-    //                     "Content-Type": "application/json",
-    //                     "Authorization": `Bearer ${localStorage.getItem("token")}`,
-    //                 }
-    //             })
-    //         console.log(res);
-
-    //         if (res.status === 200) {
-    //             const data = await res.json();
-    //             console.log('Post created successfully, data:', data);
-    //             if (data && data.data && data.data.id) {
-    //                 // Call payment link API
-    //                 const paymentRes = await fetch(`${import.meta.env.VITE_API_URL}checkout/create-payment-link/${data.data.id}`, {
-    //                     method: "POST",
-    //                     headers: {
-    //                         "Content-Type": "application/json",
-    //                         "Authorization": `Bearer ${localStorage.getItem("token")}`,
-    //                     },
-    //                 });
-    //                 if (paymentRes.ok) {
-    //                     const paymentData = await paymentRes.json();
-    //                     if (paymentData && paymentData.data && paymentData.data.url) {
-    //                         window.location.href = paymentData.data.url;
-    //                         return;
-    //                     } else {
-    //                         alert("Tạo bài đăng thành công, nhưng không nhận được link thanh toán.");
-    //                     }
-    //                 } else {
-    //                     alert("Tạo bài đăng thành công, nhưng tạo link thanh toán thất bại.");
-    //                 }
-    //             } else {
-    //                 alert("Tạo bài đăng thành công!");
-    //             }
-    //         } else {
-    //             const data = await res.json();
-    //             alert(data.title || data.message || "Có lỗi xảy ra khi tạo bài đăng!");
-    //         }
-    //     } catch (err) {
-    //         alert("Có lỗi xảy ra khi gửi request!");
-    //     }
-    // }
-
     const onConfirm = async () => {
         const payload = {
             postBy: userId,
@@ -194,6 +90,9 @@ function NewPost() {
                 packageId: packageData.packageId
             }
         };
+
+        // Log dữ liệu gửi lên API
+        console.log("Payload gửi lên API:", payload);
 
         try {
             // 1) Tạo post
