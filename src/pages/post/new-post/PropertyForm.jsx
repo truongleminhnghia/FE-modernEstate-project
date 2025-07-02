@@ -1,6 +1,7 @@
 import { useState, } from "react";
 import { Col, Form, Input, InputNumber, Row, Select, Upload, Image, Button } from "antd";
 import ImgCrop from 'antd-img-crop';
+import { uploadImageToFirebase } from "../../../lib/utils";
 
 const getBase64 = file => new Promise((res, rej) => {
     const reader = new FileReader();
@@ -13,8 +14,41 @@ export default function PropertyForm({ onFinish, initialValues }) {
     const [attrs, setAttrs] = useState(initialValues?.attribute || []);
     const [interior, setInterior] = useState(initialValues?.attribute || []);
     const [files, setFiles] = useState(initialValues?.images || []);
+    const [uploading, setUploading] = useState(false);
 
-    const handleSubmit = vals => onFinish({ ...vals, attribute: attrs, images: files });
+    const handleCustomRequest = async ({ file, onSuccess, onError }) => {
+        try {
+            const url = await uploadImageToFirebase(file, "property-images");
+            // Gán url và status vào file để Ant Design lưu lại
+            file.url = url;
+            file.status = 'done';
+            onSuccess({ url });
+        } catch (err) {
+            file.status = 'error';
+            onError(err);
+        }
+    };
+
+    const handleSubmit = async vals => {
+        setUploading(true);
+        // Lấy url từ fileList (chỉ lấy file đã upload thành công)
+        const imageUrls = files
+            .filter(file => file.status === 'done' && file.url)
+            .map(file => ({ imageUrl: file.url }));
+
+        // Đảm bảo các trường đúng format
+        const data = {
+            ...vals,
+            attribute: attrs,
+            interior: Array.isArray(interior) ? interior.join(", ") : interior, // nếu interior là mảng thì join lại
+            images: imageUrls,
+            areaUnit: vals.areaUnit || "m2",
+            priceUnit: vals.priceUnit || "VND",
+            projectId: vals.projectId || null,
+        };
+        setUploading(false);
+        onFinish(data);
+    };
 
     const handlePreview = async file => {
         if (!file.url && !file.preview) file.preview = await getBase64(file.originFileObj);
@@ -141,7 +175,7 @@ export default function PropertyForm({ onFinish, initialValues }) {
                                 fileList={files}
                                 onChange={({ fileList: fl }) => setFiles(fl)}
                                 onPreview={handlePreview}
-                                action="https://mockapi.io/upload"
+                                customRequest={handleCustomRequest}
                             >{files.length < 5 && '+ Upload'}</Upload>
                         </ImgCrop>
                     </Form.Item>
@@ -149,7 +183,7 @@ export default function PropertyForm({ onFinish, initialValues }) {
             </Row>
 
             <Form.Item>
-                <Button type="primary" htmlType="submit">
+                <Button type="primary" htmlType="submit" loading={uploading}>
                     Tiếp tục
                 </Button>
             </Form.Item>
