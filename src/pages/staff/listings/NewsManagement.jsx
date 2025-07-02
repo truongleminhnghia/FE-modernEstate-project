@@ -420,7 +420,7 @@ const NewsManagement = () => {
   };
 
   useEffect(() => {
-    const token = localStorage.getItem('accessToken'); // Đổi tên key nếu bạn lưu token bằng tên khác
+    const token = localStorage.getItem('token'); // Đổi tên key nếu bạn lưu token bằng tên khác
     fetch('https://bemodernestate.site/api/v1/categories', {
       headers: {
         'Authorization': `Bearer ${token}`
