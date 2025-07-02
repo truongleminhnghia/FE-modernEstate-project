@@ -9,6 +9,7 @@ import {
   UserOutlined, TagsOutlined, UploadOutlined, PictureOutlined, EyeOutlined, FileTextOutlined, TagOutlined
 } from "@ant-design/icons";
 import moment from 'moment';
+import { getNewsList, addNews, updateNews, deleteNews } from '../../../apis/newsApi';
 
 const { Title, Text } = Typography;
 const { confirm } = Modal;
@@ -17,92 +18,22 @@ const { TextArea } = Input;
 
 const primaryColor = '#4a90e2';
 
-// Dữ liệu mẫu từ NewsDetail.jsx mở rộng
-const initialMockNews = [
-  {
-    id: 'NEWS001',
-    title: 'Thị trường căn hộ TP.HCM Quý 2/2025: Nguồn cung mới và xu hướng giá',
-    publicationDate: '2025-05-20',
-    author: 'Ban biên tập RealHome',
-    category: 'Phân tích thị trường',
-    status: 'Đã xuất bản',
-    imageUrl: 'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8YXBhcnRtZW50JTIwaW50ZXJpb3J8ZW58MHx8MHx8fDA%3D&auto=format&fit=crop&w=800&q=60',
-    content: `Quý 2 năm 2025 chứng kiến nhiều biến động đáng chú ý trên thị trường căn hộ TP.HCM. Theo báo cáo mới nhất từ Savills Việt Nam, nguồn cung căn hộ mới có sự cải thiện nhẹ so với quý trước, tập trung chủ yếu ở khu Đông và khu Nam thành phố.
-
-Các dự án mới ra mắt chủ yếu thuộc phân khúc trung và cao cấp, đáp ứng nhu cầu ở thực của một bộ phận lớn người dân cũng như giới đầu tư. Phân khúc căn hộ bình dân vẫn khan hiếm, tạo ra áp lực không nhỏ lên giá nhà ở các khu vực ven trung tâm.
-
-Ông Troy Griffiths, Phó Tổng Giám đốc Savills Việt Nam, nhận định: "Thị trường đang dần tìm thấy điểm cân bằng mới. Tuy nhiên, các yếu tố như chính sách tín dụng, lãi suất và tiến độ pháp lý dự án vẫn sẽ là những yếu tố then chốt ảnh hưởng đến sức mua trong các quý tới."`,
-    tags: ['căn hộ', 'TP.HCM', 'bất động sản', 'nguồn cung', 'xu hướng giá'],
-    views: 15420,
-    dateCreated: '2025-05-18',
-    dateUpdated: '2025-05-20',
-    images: [
-      {
-        uid: '1',
-        name: 'news-1.jpg',
-        status: 'done',
-        url: 'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8YXBhcnRtZW50JTIwaW50ZXJpb3J8ZW58MHx8MHx8fDA%3D&auto=format&fit=crop&w=800&q=60',
-      }
-    ]
-  },
-  {
-    id: 'NEWS002',
-    title: '5 Lưu ý vàng khi đầu tư bất động sản cho người mới bắt đầu',
-    publicationDate: '2025-05-15',
-    author: 'Chuyên gia John Doe',
-    category: 'Kinh nghiệm đầu tư',
-    status: 'Đã xuất bản',
-    imageUrl: 'https://images.unsplash.com/photo-1582407947304-fd86f028f716?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NXx8cmVhbCUyMGVzdGF0ZXxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=800&q=60',
-    content: `Đầu tư bất động sản là một trong những hình thức đầu tư phổ biến và hiệu quả nhất hiện nay. Tuy nhiên, với những người mới bắt đầu, việc tham gia thị trường này có thể gặp nhiều khó khăn và rủi ro nếu không có đủ kiến thức và kinh nghiệm.
-
-Dưới đây là 5 lưu ý quan trọng mà bất kỳ nhà đầu tư bất động sản mới nào cũng cần nắm vững:
-
-1. Nghiên cứu kỹ thị trường và vị trí
-2. Kiểm tra pháp lý cẩn thận
-3. Tính toán tài chính hợp lý
-4. Đánh giá tiềm năng phát triển
-5. Xây dựng mạng lưới quan hệ
-
-Việc đầu tư bất động sản không chỉ đơn thuần là mua bán mà còn là một nghệ thuật đòi hỏi sự kiên nhẫn, tính toán và chiến lược dài hạn.`,
-    tags: ['đầu tư', 'bất động sản', 'kinh nghiệm', 'người mới'],
-    views: 8750,
-    dateCreated: '2025-05-12',
-    dateUpdated: '2025-05-15'
-  },
-  {
-    id: 'NEWS003',
-    title: 'Xu hướng thiết kế nội thất căn hộ hiện đại 2025',
-    publicationDate: '2025-05-10',
-    author: 'KTS Nguyễn Văn A',
-    category: 'Thiết kế - Trang trí',
-    status: 'Bản nháp',
-    imageUrl: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=60',
-    content: `Năm 2025 đánh dấu sự trở lại mạnh mẽ của các xu hướng thiết kế nội thất tối giản nhưng không kém phần tinh tế. Các nhà thiết kế hàng đầu đang hướng tới việc tạo ra những không gian sống hài hòa, thân thiện với môi trường và tối ưu hóa công năng sử dụng.`,
-    tags: ['thiết kế', 'nội thất', 'xu hướng 2025', 'căn hộ'],
-    views: 6200,
-    dateCreated: '2025-05-08',
-    dateUpdated: '2025-05-10'
-  }
-];
-
 const newsCategories = {
-  'Phân tích thị trường': 'Phân tích thị trường',
-  'Kinh nghiệm đầu tư': 'Kinh nghiệm đầu tư',
-  'Thiết kế - Trang trí': 'Thiết kế - Trang trí',
-  'Pháp lý BĐS': 'Pháp lý BĐS',
-  'Tin tức dự án': 'Tin tức dự án'
+  'DỰ_ÁN': 'Dự án',
+  'LOẠI_DỰ_ÁN': 'Loại dự án',
+  'LOẠI_TÀI_SẢN': 'Loại tài sản',
+  'THỊ_TRƯỜNG': 'Thị trường',
 };
 
 const newsStatuses = {
-  'Bản nháp': 'Bản nháp',
-  'Đã xuất bản': 'Đã xuất bản',
-  'Tạm ẩn': 'Tạm ẩn',
-  'Chờ duyệt': 'Chờ duyệt'
+  'DRAFT': 'Bản nháp',
+  'PUBLISHED': 'Đã xuất bản',
+  'ARCHIVED': 'Lưu trữ',
 };
 
 const NewsManagement = () => {
   const [searchText, setSearchText] = useState("");
-  const [dataSource, setDataSource] = useState(initialMockNews);
+  const [dataSource, setDataSource] = useState([]);
   
   const [isFormModalVisible, setIsFormModalVisible] = useState(false);
   const [editingNews, setEditingNews] = useState(null);
@@ -118,6 +49,11 @@ const NewsManagement = () => {
   const [isDetailModalVisible, setIsDetailModalVisible] = useState(false);
   const [selectedNews, setSelectedNews] = useState(null);
 
+  const [imageUrlInput, setImageUrlInput] = useState('');
+  const [imageUploadList, setImageUploadList] = useState([]);
+
+  const [categories, setCategories] = useState([]);
+
   const filteredDataSource = dataSource.filter(
     (news) =>
       news.title.toLowerCase().includes(searchText.toLowerCase()) ||
@@ -128,21 +64,54 @@ const NewsManagement = () => {
   );
 
   useEffect(() => {
+    const fetchNews = async () => {
+      try {
+        const data = await getNewsList();
+        let list = [];
+        if (Array.isArray(data)) {
+          list = data;
+        } else if (Array.isArray(data?.data?.rowDatas)) {
+          list = data.data.rowDatas;
+        }
+        list = list.map(news => ({
+          ...news,
+          tags: Array.isArray(news.tags)
+            ? news.tags.map(tag => typeof tag === 'string' ? tag : tag.tagName)
+            : [],
+          author: news.account ? `${news.account.firstName} ${news.account.lastName}` : '',
+          category: typeof news.category === 'object' && news.category !== null
+            ? (news.category.code || news.category.categoryName || '')
+            : (news.category || ''),
+          status: news.statusNew || '',
+          publicationDate: news.publishDate,
+        }));
+        setDataSource(list);
+      } catch (err) {
+        message.error('Không thể tải danh sách tin tức.');
+      }
+    };
+    fetchNews();
+  }, []);
+
+  useEffect(() => {
     if (isFormModalVisible) {
       if (editingNews) {
         form.setFieldsValue({
           ...editingNews,
           publicationDate: editingNews.publicationDate ? moment(editingNews.publicationDate) : null,
-          tags: editingNews.tags ? editingNews.tags.join(', ') : '',
+          tagNames: editingNews.tagNames ? editingNews.tagNames.join(', ') : '',
         });
+        setImageUrlInput(editingNews.imageUrl || '');
+        setImageUploadList(editingNews.imageUrl ? [{
+          uid: '-1',
+          name: 'Ảnh hiện tại',
+          status: 'done',
+          url: editingNews.imageUrl,
+        }] : []);
       } else {
         form.resetFields();
-        form.setFieldsValue({ 
-          status: 'Bản nháp',
-          category: 'Phân tích thị trường',
-          author: 'Ban biên tập RealHome',
-          publicationDate: moment(),
-        });
+        setImageUrlInput('');
+        setImageUploadList([]);
       }
     }
   }, [editingNews, form, isFormModalVisible]);
@@ -189,38 +158,64 @@ const NewsManagement = () => {
     setFileList(newFileList);
   };
 
-  const handleFormSubmit = (values) => {
+  const handleImageUploadChange = ({ fileList }) => {
+    setImageUploadList(fileList);
+  };
+
+  const handleImageUrlInputChange = (e) => {
+    setImageUrlInput(e.target.value);
+  };
+
+  const handleFormSubmit = async (values) => {
+    let finalImageUrl = '';
+    if (
+      imageUploadList.length > 0 &&
+      imageUploadList[0].url &&
+      typeof imageUploadList[0].url === 'string' &&
+      !imageUploadList[0].url.startsWith('data:')
+    ) {
+      finalImageUrl = imageUploadList[0].url;
+    } else if (imageUrlInput && typeof imageUrlInput === 'string' && imageUrlInput.trim() !== '') {
+      finalImageUrl = imageUrlInput;
+    } else {
+      finalImageUrl = 'https://firebasestorage.googleapis.com/v0/b/fir-app-2f0da.appspot.com/o/avatars%2Fimages%2F2aca88009a83e2d5a5457f02f31c74b1a93f3440.jpg?alt=media&token=202bb0c6-c348-40d3-aec6-00b8cb54548e';
+    }
     const processedValues = {
-      ...values,
-      publicationDate: values.publicationDate ? values.publicationDate.format('YYYY-MM-DD') : '',
-      dateUpdated: moment().format('YYYY-MM-DD'),
-      tags: values.tags ? values.tags.split(',').map(tag => tag.trim()).filter(tag => tag) : [],
-      views: editingNews ? editingNews.views : 0,
-      images: fileList.map(file => ({
-        uid: file.uid,
-        name: file.name,
-        status: file.status || 'done',
-        url: file.url || file.thumbUrl,
-      })),
-      imageUrl: fileList.length > 0 ? (fileList[0].url || fileList[0].thumbUrl) : '',
+      title: values.title,
+      slug: values.slug || '',
+      content: values.content,
+      imageUrl: finalImageUrl,
+      categoryId: values.categoryId,
+      tagNames: typeof values.tagNames === 'string'
+        ? values.tagNames.split(',').map(tag => tag.trim()).filter(Boolean)
+        : Array.isArray(values.tagNames) ? values.tagNames : [],
+      statusNew: values.statusNew,
     };
 
-    if (editingNews) {
-      setDataSource(prevData => 
-        prevData.map(news => 
-          news.id === editingNews.id ? { ...news, ...processedValues } : news
-        )
-      );
-      message.success("Cập nhật bài viết thành công!");
-    } else {
-      const newId = `NEWS${String(dataSource.length > 0 ? (parseInt(dataSource[dataSource.length-1].id.replace('NEWS','')) + 1) : 1).padStart(3,'0')}`;
-      const newNews = {
-        id: newId,
-        ...processedValues,
-        dateCreated: moment().format('YYYY-MM-DD'),
-      };
-      setDataSource(prevData => [...prevData, newNews]);
-      message.success("Thêm bài viết mới thành công!");
+    console.log('Submit data:', processedValues);
+
+    try {
+      if (editingNews) {
+        await updateNews(editingNews.id, processedValues);
+        message.success('Cập nhật bài viết thành công!');
+      } else {
+        await addNews(processedValues);
+        message.success('Thêm bài viết mới thành công!');
+      }
+      // Sau khi thêm/sửa, reload lại danh sách
+      const data = await getNewsList();
+      let list = [];
+      if (Array.isArray(data)) {
+        list = data;
+      } else if (Array.isArray(data?.data?.rowDatas)) {
+        list = data.data.rowDatas;
+      }
+      setDataSource(list);
+    } catch (err) {
+      if (err.response) {
+        console.log('API error:', err.response.data);
+      }
+      message.error('Có lỗi xảy ra khi lưu bài viết!');
     }
     setIsFormModalVisible(false);
     setEditingNews(null);
@@ -235,30 +230,41 @@ const NewsManagement = () => {
       okText: "Xóa",
       okType: "danger",
       cancelText: "Hủy",
-      onOk() {
-        setDataSource(prevData => prevData.filter(n => n.id !== newsId));
-        message.success(`Xóa bài viết "${newsTitle}" thành công!`);
+      async onOk() {
+        try {
+          await deleteNews(newsId);
+          message.success(`Xóa bài viết "${newsTitle}" thành công!`);
+          // Sau khi xóa, reload lại danh sách
+          const data = await getNewsList();
+          let list = [];
+          if (Array.isArray(data)) {
+            list = data;
+          } else if (Array.isArray(data?.data?.rowDatas)) {
+            list = data.data.rowDatas;
+          }
+          setDataSource(list);
+        } catch (err) {
+          message.error('Có lỗi xảy ra khi xóa bài viết!');
+        }
       },
     });
   };
 
   const getStatusColor = (status) => {
     switch (status) {
-      case 'Bản nháp': return 'orange';
-      case 'Đã xuất bản': return 'green';
-      case 'Tạm ẩn': return 'red';
-      case 'Chờ duyệt': return 'blue';
+      case 'DRAFT': return 'orange';
+      case 'PUBLISHED': return 'green';
+      case 'ARCHIVED': return 'red';
       default: return 'default';
     }
   };
 
   const getCategoryColor = (category) => {
     switch (category) {
-      case 'Phân tích thị trường': return 'purple';
-      case 'Kinh nghiệm đầu tư': return 'cyan';
-      case 'Thiết kế - Trang trí': return 'geekblue';
-      case 'Pháp lý BĐS': return 'volcano';
-      case 'Tin tức dự án': return 'magenta';
+      case 'DỰ_ÁN': return 'purple';
+      case 'LOẠI_DỰ_ÁN': return 'cyan';
+      case 'LOẠI_TÀI_SẢN': return 'geekblue';
+      case 'THỊ_TRƯỜNG': return 'volcano';
       default: return 'default';
     }
   };
@@ -338,7 +344,7 @@ const NewsManagement = () => {
       render: (tags) => (
         <div>
           {tags && tags.slice(0, 2).map(tag => (
-            <Tag key={tag} size="small" style={{marginBottom: 2}}>{tag}</Tag>
+            <Tag key={tag} size="small" style={{marginBottom: 2}}>{typeof tag === 'string' ? tag : tag.tagName}</Tag>
           ))}
           {tags && tags.length > 2 && <Tag size="small">+{tags.length - 2}</Tag>}
         </div>
@@ -413,6 +419,24 @@ const NewsManagement = () => {
     setSelectedNews(null);
   };
 
+  useEffect(() => {
+    const token = localStorage.getItem('accessToken'); // Đổi tên key nếu bạn lưu token bằng tên khác
+    fetch('https://bemodernestate.site/api/v1/categories', {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    })
+      .then(res => res.json())
+      .then(data => {
+        console.log('Categories from API:', data);
+        setCategories(data.rowDatas || []);
+      })
+      .catch(err => {
+        console.error('Fetch categories error:', err);
+        setCategories([]);
+      });
+  }, []);
+
   return (
     <div style={{ background: "#fff", padding: "20px", borderRadius: "8px", boxShadow: "0 2px 8px rgba(0,0,0,0.05)" }}>
       <Title level={3} style={{ marginBottom: "20px", color: primaryColor }}>
@@ -475,55 +499,36 @@ const NewsManagement = () => {
             <Input placeholder="VD: Thị trường căn hộ TP.HCM Quý 2/2025"/>
           </Form.Item>
 
-          <Row gutter={16}>
-            <Col span={12}>
-              <Form.Item 
-                name="author" 
-                label="Tác giả" 
-                rules={[{ required: true, message: 'Vui lòng nhập tên tác giả!' }]}
-              >
-                <Input placeholder="VD: Ban biên tập RealHome"/>
-              </Form.Item>
-            </Col>
-            <Col span={12}>
-              <Form.Item 
-                name="category" 
-                label="Danh mục" 
-                rules={[{ required: true, message: 'Vui lòng chọn danh mục!' }]}
-              >
-                <Select>
-                  {Object.entries(newsCategories).map(([key, text]) => 
-                    <Option key={key} value={key}>{text}</Option>
-                  )}
-                </Select>
-              </Form.Item>
-            </Col>
-          </Row>
+          <Form.Item 
+            name="slug" 
+            label="Slug (không bắt buộc)"
+          >
+            <Input placeholder="slug-bai-viet"/>
+          </Form.Item>
 
-          <Row gutter={16}>
-            <Col span={12}>
-              <Form.Item 
-                name="status" 
-                label="Trạng thái" 
-                rules={[{ required: true }]}
-              >
-                <Select>
-                  {Object.entries(newsStatuses).map(([key, text]) => 
-                    <Option key={key} value={key}>{text}</Option>
-                  )}
-                </Select>
-              </Form.Item>
-            </Col>
-            <Col span={12}>
-              <Form.Item 
-                name="publicationDate" 
-                label="Ngày xuất bản" 
-                rules={[{ required: true, message: 'Vui lòng chọn ngày xuất bản!' }]}
-              >
-                <DatePicker style={{width: '100%'}} format="DD/MM/YYYY" placeholder="Chọn ngày xuất bản"/>
-              </Form.Item>
-            </Col>
-          </Row>
+          <Form.Item 
+            name="categoryId" 
+            label="Danh mục" 
+            rules={[{ required: true, message: 'Vui lòng chọn danh mục!' }]}
+          >
+            <Select placeholder="Chọn danh mục">
+              {categories.map(cat => (
+                <Option key={cat.id} value={cat.id}>{cat.categoryName}</Option>
+              ))}
+            </Select>
+          </Form.Item>
+
+          <Form.Item 
+            name="statusNew" 
+            label="Trạng thái" 
+            rules={[{ required: true, message: 'Vui lòng chọn trạng thái!' }]}
+          >
+            <Select>
+              <Option value="DRAFT">Bản nháp</Option>
+              <Option value="PUBLISHED">Đã xuất bản</Option>
+              <Option value="ARCHIVED">Lưu trữ</Option>
+            </Select>
+          </Form.Item>
 
           <Form.Item 
             name="content" 
@@ -534,7 +539,7 @@ const NewsManagement = () => {
           </Form.Item>
 
           <Form.Item 
-            name="tags" 
+            name="tagNames" 
             label="Tags (phân cách bằng dấu phẩy)" 
             rules={[{ required: true, message: 'Vui lòng nhập ít nhất một tag!' }]}
           >
@@ -542,15 +547,18 @@ const NewsManagement = () => {
           </Form.Item>
 
           <Form.Item
-            name="images"
-            label="Hình ảnh bài viết"
-            rules={[{ required: true, message: 'Vui lòng tải lên ít nhất một hình ảnh!' }]}
+            label="Ảnh đại diện (URL hoặc upload)"
+            required={false}
           >
+            <Input
+              placeholder="Dán URL ảnh..."
+              value={imageUrlInput}
+              onChange={handleImageUrlInputChange}
+              style={{ marginBottom: 8 }}
+            />
             <Upload
               listType="picture-card"
-              multiple
-              maxCount={3}
-              fileList={fileList}
+              fileList={imageUploadList}
               beforeUpload={(file) => {
                 const isImage = file.type.startsWith('image/');
                 if (!isImage) {
@@ -562,12 +570,13 @@ const NewsManagement = () => {
                   message.error('Hình ảnh phải nhỏ hơn 2MB!');
                   return Upload.LIST_IGNORE;
                 }
-                return true;
+                return false; // Không upload tự động
               }}
+              onChange={handleImageUploadChange}
               onPreview={handlePreview}
-              onChange={handleChange}
+              maxCount={1}
             >
-              {fileList.length >= 3 ? null : (
+              {imageUploadList.length >= 1 ? null : (
                 <div>
                   <PlusOutlined />
                   <div style={{ marginTop: 8 }}>Tải lên</div>
@@ -637,13 +646,13 @@ const NewsManagement = () => {
                 <strong><CalendarOutlined /> Ngày xuất bản:</strong> {moment(selectedNews.publicationDate).format('DD/MM/YYYY')}
               </Col>
               <Col xs={24} sm={12}>
-                <strong><EyeOutlined /> Lượt xem:</strong> {selectedNews.views.toLocaleString()}
+                <strong><EyeOutlined /> Lượt xem:</strong> {selectedNews.views ? Number(selectedNews.views).toLocaleString() : '0'}
               </Col>
               <Col xs={24} sm={12}>
                 <strong><TagsOutlined /> Tags:</strong>
                 <div style={{marginTop: 4}}>
                   {selectedNews.tags.map(tag => (
-                    <Tag key={tag} style={{marginBottom: 4}}>{tag}</Tag>
+                    <Tag key={tag} style={{marginBottom: 4}}>{typeof tag === 'string' ? tag : tag.tagName}</Tag>
                   ))}
                 </div>
               </Col>

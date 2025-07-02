@@ -1,7 +1,8 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Row, Col, Pagination } from 'antd'
 import BreadcrumbComponent from '../../components/ui/BreadcrumbComponent'
 import NewCardComponent from '../../components/cards/NewCardComponent'
+import { getNewsList } from '../../apis/newsApi'
 
 const News = () => {
     const breadcrumbItems = [
@@ -10,125 +11,50 @@ const News = () => {
     ]
 
     // — Dữ liệu mẫu —
-    const newsList = [
-        {
-            id: 1,
-            image: '/images/cards/card-1.jpg',
-            avatar: '/images/avatars/avatar-1.png',
-            author: 'Minh Nghĩa',
-            date: 'Mar 10, 2025',
-            title: 'Xu hướng sống xanh: Vì sao nhà ở sinh thái là Vì sao nhà ở sinh thái là Vì sao nhà ở sinh thái là',
-            description:
-                'Nhu cầu về nhà ở thân thiện với môi trường đang tăng cao khi người mua tìm kiếm không gian sống bền vững và tiết kiệm năng lượng. Nhu cầu về nhà ở thân thiện với môi trường đang tăng cao khi người mua tìm kiếm không gian sống bền vững và tiết kiệm năng lượng.',
-            to: '/posts/1'
-        },
-        {
-            id: 2,
-            image: '/images/cards/card-2.jpg',
-            avatar: '/images/avatars/avatar-1.png',
-            author: 'Trần Thuỳ',
-            date: 'Nov 22, 2024',
-            title: 'Nhà thông minh & bền vững: Sự kết hợp hoàn hảo',
-            description:
-                'Công nghệ thông minh đang thay đổi cách chúng ta sống, giúp tiết kiệm năng lượng, bảo vệ môi trường.',
-            to: '/posts/2'
-        },
-        {
-            id: 3,
-            image: '/images/cards/card-3.jpg',
-            avatar: '/images/avatars/avatar-1.png',
-            author: 'Trần Thuỳ',
-            date: 'Nov 22, 2024',
-            title: 'Nhà thông minh & bền vững: Sự kết hợp hoàn hảo',
-            description:
-                'Công nghệ thông minh đang thay đổi cách chúng ta sống, giúp tiết kiệm năng lượng, bảo vệ môi trường.',
-            to: '/posts/2'
-        },
-        {
-            id: 4,
-            image: '/images/cards/card-4.jpg',
-            avatar: '/images/avatars/avatar-1.png',
-            author: 'Trần Thuỳ',
-            date: 'Nov 22, 2024',
-            title: 'Nhà thông minh & bền vững: Sự kết hợp hoàn hảo',
-            description:
-                'Công nghệ thông minh đang thay đổi cách chúng ta sống, giúp tiết kiệm năng lượng, bảo vệ môi trường.',
-            to: '/posts/2'
-        },
-        {
-            id: 5,
-            image: '/images/cards/card-5.jpg',
-            avatar: '/images/avatars/avatar-1.png',
-            author: 'Trần Thuỳ',
-            date: 'Nov 22, 2024',
-            title: 'Nhà thông minh & bền vững: Sự kết hợp hoàn hảo',
-            description:
-                'Công nghệ thông minh đang thay đổi cách chúng ta sống, giúp tiết kiệm năng lượng, bảo vệ môi trường.',
-            to: '/posts/2'
-        },
-        {
-            id: 6,
-            image: '/images/cards/card-6.jpg',
-            avatar: '/images/avatars/avatar-1.png',
-            author: 'Trần Thuỳ',
-            date: 'Nov 22, 2024',
-            title: 'Nhà thông minh & bền vững: Sự kết hợp hoàn hảo',
-            description:
-                'Công nghệ thông minh đang thay đổi cách chúng ta sống, giúp tiết kiệm năng lượng, bảo vệ môi trường.',
-            to: '/posts/2'
-        },
-        {
-            id: 7,
-            image: '/images/cards/card-7.jpg',
-            avatar: '/images/avatars/avatar-1.png',
-            author: 'Trần Thuỳ',
-            date: 'Nov 22, 2024',
-            title: 'Nhà thông minh & bền vững: Sự kết hợp hoàn hảo',
-            description:
-                'Công nghệ thông minh đang thay đổi cách chúng ta sống, giúp tiết kiệm năng lượng, bảo vệ môi trường.',
-            to: '/posts/2'
-        },
-        {
-            id: 8,
-            image: '/images/cards/card-8.jpg',
-            avatar: '/images/avatars/avatar-1.png',
-            author: 'Trần Thuỳ',
-            date: 'Nov 22, 2024',
-            title: 'Nhà thông minh & bền vững: Sự kết hợp hoàn hảo',
-            description:
-                'Công nghệ thông minh đang thay đổi cách chúng ta sống, giúp tiết kiệm năng lượng, bảo vệ môi trường.',
-            to: '/posts/2'
-        },
-        {
-            id: 9,
-            image: '/images/cards/card-9.jpg',
-            avatar: '/images/avatars/avatar-1.png',
-            author: 'Trần Thuỳ',
-            date: 'Nov 22, 2024',
-            title: 'Nhà thông minh & bền vững: Sự kết hợp hoàn hảo',
-            description:
-                'Công nghệ thông minh đang thay đổi cách chúng ta sống, giúp tiết kiệm năng lượng, bảo vệ môi trường.',
-            to: '/posts/2'
-        },
-        {
-            id: 10,
-            image: '/images/cards/card-10.jpg',
-            avatar: '/images/avatars/avatar-1.png',
-            author: 'Trần Thuỳ',
-            date: 'Nov 22, 2024',
-            title: 'Nhà thông minh & bền vững: Sự kết hợp hoàn hảo',
-            description:
-                'Công nghệ thông minh đang thay đổi cách chúng ta sống, giúp tiết kiệm năng lượng, bảo vệ môi trường.',
-            to: '/posts/2'
-        },
-    ]
-
     const pageSize = 12
     const [current, setCurrent] = useState(1)
-    const pagedData = newsList.slice(
+    const [newsList, setNewsList] = useState([])
+    const [loading, setLoading] = useState(true)
+    const [error, setError] = useState(null)
+
+    useEffect(() => {
+        const fetchNews = async () => {
+            setLoading(true)
+            setError(null)
+            try {
+                const data = await getNewsList()
+                console.log('API news data:', data)
+                let list = []
+                if (Array.isArray(data)) {
+                  list = data
+                } else if (Array.isArray(data?.data?.rowDatas)) {
+                  list = data.data.rowDatas
+                }
+                setNewsList(list)
+            } catch (err) {
+                setError('Không thể tải tin tức. Vui lòng thử lại sau.')
+                setNewsList([])
+            } finally {
+                setLoading(false)
+            }
+        }
+        fetchNews()
+    }, [])
+
+    // Map dữ liệu cho NewCardComponent
+    const mappedPagedData = Array.isArray(newsList) ? newsList.slice(
         (current - 1) * pageSize,
         current * pageSize
-    )
+    ).map(item => ({
+        id: item.id,
+        image: item.imageUrl || '/images/cards/card-1.jpg',
+        avatar: item.account?.avatar || '/images/avatars/avatar-1.png',
+        author: item.account ? `${item.account.firstName} ${item.account.lastName}` : 'Ẩn danh',
+        date: item.publishDate ? new Date(item.publishDate).toLocaleDateString('vi-VN') : '',
+        title: item.title,
+        description: item.content,
+        to: `/posts/${item.id}`
+    })) : []
 
     return (
         <div className="container mx-auto px-4">
@@ -142,23 +68,31 @@ const News = () => {
                 </Col>
             </Row>
 
-            <Row gutter={[24, 24]} className="mt-8">
-                {pagedData.map(item => (
-                    <Col key={item.id} xs={24} sm={12} md={8} lg={6}>
-                        <NewCardComponent key={item.id} {...item} />
-                    </Col>
-                ))}
-            </Row>
+            {loading ? (
+                <div className="flex justify-center mt-8">Đang tải tin tức...</div>
+            ) : error ? (
+                <div className="flex justify-center mt-8 text-red-500">{error}</div>
+            ) : (
+                <>
+                    <Row gutter={[24, 24]} className="mt-8">
+                        {mappedPagedData.map(item => (
+                            <Col key={item.id} xs={24} sm={12} md={8} lg={6}>
+                                <NewCardComponent key={item.id} {...item} />
+                            </Col>
+                        ))}
+                    </Row>
 
-            <div className="flex justify-center mt-8">
-                <Pagination
-                    current={current}
-                    pageSize={pageSize}
-                    total={newsList.length}
-                    onChange={page => setCurrent(page)}
-                    showSizeChanger={false}
-                />
-            </div>
+                    <div className="flex justify-center mt-8">
+                        <Pagination
+                            current={current}
+                            pageSize={pageSize}
+                            total={newsList.length}
+                            onChange={page => setCurrent(page)}
+                            showSizeChanger={false}
+                        />
+                    </div>
+                </>
+            )}
         </div>
     )
 }
