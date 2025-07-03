@@ -37,7 +37,6 @@ import UserManagement from "./pages/admins/users/UserManagement";
 import { ROLES } from './constants/roles';
 import ForgotPassword from "./pages/auth/ForgotPassword";
 import MarketAnalysis from "./pages/User/marketAnalysis/MarketAnalysis";
-// import Packages from "./pages/package/Packages";
 import CreatePost from "./pages/post/CreatePost";
 import NewPost from "./pages/post/new-post";
 import PropertyListings from "./pages/PropertyListings";
@@ -150,7 +149,7 @@ const router = createBrowserRouter([
         element: <NewsDetail />,
       },
       {
-        path: "/owner-transactions",
+        path: "/owner-transaction",
         element: (
           <ProtectedRoute
             element={<OwnerTransactions />}

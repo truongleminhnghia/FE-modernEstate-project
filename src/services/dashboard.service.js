@@ -30,3 +30,18 @@ export const post = async () => {
     }
     return null
 }
+
+export const getRevenue = async () => {
+    const response = await axios.get(
+        `${import.meta.env.VITE_API_URL}dashboards/revenue`,
+        {
+            headers: {
+                Authorization: `${localStorage.getItem("token")}`,
+            },
+        }
+    );
+    if (response.status === 200 && response.data) {
+        return response.data;
+    }
+    return null;
+}

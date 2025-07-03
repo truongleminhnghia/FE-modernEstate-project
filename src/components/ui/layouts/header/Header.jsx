@@ -8,6 +8,62 @@ const Header = () => {
   const location = useLocation();
   const [isLoginButtonHovered, setIsLoginButtonHovered] = useState(false);
 
+  const user = localStorage.getItem("user")
+    ? JSON.parse(localStorage.getItem("user"))
+    : null;
+
+  // Xác định role
+  const role = user?.role?.roleName || null;
+
+  // Tạo menu items theo role
+  let menuItems = [];
+  if (role === "ROLE_ADMIN") {
+    menuItems = [
+      { label: "Quản trị viên", key: "admin-dashboard" },
+      { label: "Quản lý người dùng", key: "admin-users" },
+      { label: "Quản lý giao dịch", key: "admin-transactions" },
+      { label: "Hồ sơ quản trị", key: "admin-profile" },
+      { type: "divider" },
+      { label: "Đăng xuất", key: "logout", danger: true },
+    ];
+  } else if (role === "ROLE_STAFF") {
+    menuItems = [
+      { label: "Trang nhân viên", key: "staff-dashboard" },
+      { label: "Quản lý tin đăng", key: "staff-listings" },
+      { label: "Quản lý dịch vụ", key: "staff-services" },
+      { label: "Quản lý dự án", key: "staff-projects" },
+      { label: "Tin chờ duyệt", key: "staff-pending" },
+      { label: "Quản lý tin tức", key: "staff-news" },
+      { type: "divider" },
+      { label: "Đăng xuất", key: "logout", danger: true },
+    ];
+  } else if (role === "ROLE_BROKER") {
+    menuItems = [
+      { label: "Tài khoản môi giới", key: "profile" },
+      { label: "Giao dịch môi giới", key: "transaction" },
+      { label: "Danh sách yêu thích", key: "favorite" },
+      { type: "divider" },
+      { label: "Đăng xuất", key: "logout", danger: true },
+    ];
+  } else if (role === "ROLE_OWNER") {
+    menuItems = [
+      { label: "Tài khoản chủ nhà", key: "profile" },
+      { label: "Lịch sử giao dịch", key: "transaction" },
+      { label: "Danh sách yêu thích", key: "favorite" },
+      { type: "divider" },
+      { label: "Đăng xuất", key: "logout", danger: true },
+    ];
+  } else {
+    // Mặc định là user
+    menuItems = [
+      { label: "Tài khoản của tôi", key: "profile" },
+      { label: "Lịch sử giao dịch", key: "transaction" },
+      { label: "Danh sách yêu thích", key: "favorite" },
+      { type: "divider" },
+      { label: "Đăng xuất", key: "logout", danger: true },
+    ];
+  }
+
   const menu = (
     <Menu
       onClick={(info) => {
@@ -16,35 +72,50 @@ const Header = () => {
           localStorage.removeItem("user");
           navigate("/");
         } else if (info.key === "profile") {
-          navigate("/user-profile");
-        } else if (info.key === "transactions") {
-          navigate("/user-transactions");
+          if (role === "ROLE_BROKER") {
+            navigate("/broker-profile");
+          } else if (role === "ROLE_OWNER") {
+            navigate("/owner-profile");
+          } else {
+            navigate("/user-profile");
+          }
+        } else if (info.key === "transaction") {
+          if (role === "ROLE_BROKER") {
+            navigate("/broker-transaction");
+          } else if (role === "ROLE_OWNER") {
+            navigate("/owner-transaction");
+          } else {
+            navigate("/user-transactions");
+          }
         } else if (info.key === "favorite") {
-          navigate("/user-favorite");
+          if (role === "ROLE_BROKER") {
+            navigate("/broker-favorite");
+          } else if (role === "ROLE_OWNER") {
+            navigate("/owner-favorites");
+          } else {
+            navigate("/user-favorite");
+          }
+        } else if (info.key === "admin-dashboard") {
+          navigate("/admin/dashboard");
+        } else if (info.key === "admin-users") {
+          navigate("/admin/users");
+        } else if (info.key === "admin-transactions") {
+          navigate("/admin/transactions");
+        } else if (info.key === "admin-profile") {
+          navigate("/admin/profile");
+        } else if (info.key === "staff-dashboard" || info.key === "staff-listings") {
+          navigate("/staff/listings");
+        } else if (info.key === "staff-services") {
+          navigate("/staff/services");
+        } else if (info.key === "staff-projects") {
+          navigate("/staff/projects");
+        } else if (info.key === "staff-pending") {
+          navigate("/staff/listings/pending-approval");
+        } else if (info.key === "staff-news") {
+          navigate("/staff/news");
         }
       }}
-      items={[
-        {
-          label: "Tài khoản của tôi",
-          key: "profile",
-        },
-        {
-          label: "Lịch sử giao dịch",
-          key: "transactions",
-        },
-        {
-          label: "Danh sách yêu thích",
-          key: "favorite",
-        },
-        {
-          type: "divider",
-        },
-        {
-          label: "Đăng xuất",
-          key: "logout",
-          danger: true,
-        },
-      ]}
+      items={menuItems}
     />
   );
 
@@ -62,10 +133,6 @@ const Header = () => {
     borderColor: "#357abd",
     color: "#fff",
   };
-
-  const user = localStorage.getItem("user")
-    ? JSON.parse(localStorage.getItem("user"))
-    : null;
 
   const getNavLinkClass = (path) => {
     return location.pathname === path ? "active" : "";
