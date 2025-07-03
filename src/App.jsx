@@ -145,7 +145,7 @@ const router = createBrowserRouter([
         ),
       },
       {
-        path: "/news-detail",
+        path: "/news/:id",
         element: <NewsDetail />,
       },
       {

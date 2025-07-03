@@ -1,8 +1,6 @@
 // src/pages/publics/NewsDetailPage.js (Phiên bản Ant Design - không dùng ID từ URL)
 import React, { useState, useEffect } from "react";
-// Bỏ useParams nếu không dùng ID từ URL
-// import { useParams, Link, useNavigate } from 'react-router-dom';
-import { Link, useNavigate } from "react-router-dom"; // Vẫn giữ Link và useNavigate
+import { useParams, useNavigate, Link } from "react-router-dom";
 import {
   Row,
   Col,
@@ -37,55 +35,15 @@ import {
 } from "@ant-design/icons";
 import moment from "moment";
 import "moment/locale/vi";
+import axios from "axios";
 
 const { Title, Text, Paragraph } = Typography;
 const primaryColor = "#4a90e2";
 
-// Dữ liệu mẫu cho Tin tức (đặt trực tiếp trong component)
-const mockNewsArticles = [
-  {
-    id: "1", // ID vẫn cần để làm key hoặc tham chiếu nội bộ nếu cần
-    title:
-      "Thị trường căn hộ TP.HCM Quý 2/2025: Nguồn cung mới và xu hướng giá",
-    publicationDate: "2025-05-20T10:00:00Z",
-    author: "Ban biên tập RealHome",
-    category: "Phân tích thị trường",
-    imageUrl:
-      "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8YXBhcnRtZW50JTIwaW50ZXJpb3J8ZW58MHx8MHx8fDA%3D&auto=format&fit=crop&w=800&q=60",
-    content: `
-      <p>Quý 2 năm 2025 chứng kiến nhiều biến động đáng chú ý trên thị trường căn hộ TP.HCM. Theo báo cáo mới nhất từ Savills Việt Nam, nguồn cung căn hộ mới có sự cải thiện nhẹ so với quý trước, tập trung chủ yếu ở khu Đông và khu Nam thành phố.</p>
-      <img src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Nnx8YXBhcnRtZW50JTIwYnVpbGRpbmd8ZW58MHx8MHx8fDA%3D&auto=format&fit=crop&w=700&q=60" alt="Dự án mới" style="width:100%;max-width:600px;margin:15px auto;display:block;border-radius:8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);" />
-      <h2>Nguồn cung và Phân khúc chủ đạo</h2>
-      <p>Các dự án mới ra mắt chủ yếu thuộc phân khúc trung và cao cấp, đáp ứng nhu cầu ở thực của một bộ phận lớn người dân cũng như giới đầu tư. Phân khúc căn hộ bình dân vẫn khan hiếm, tạo ra áp lực không nhỏ lên giá nhà ở các khu vực ven trung tâm.</p>
-      <p>Ông Troy Griffiths, Phó Tổng Giám đốc Savills Việt Nam, nhận định: "<em>Thị trường đang dần tìm thấy điểm cân bằng mới. Tuy nhiên, các yếu tố như chính sách tín dụng, lãi suất và tiến độ pháp lý dự án vẫn sẽ là những yếu tố then chốt ảnh hưởng đến sức mua trong các quý tới.</em>"</p>
-      <h3 style="color: ${primaryColor};">Xu hướng giá</h3>
-      <p>Giá bán sơ cấp căn hộ tại TP.HCM trong quý 2/2025 ghi nhận mức tăng trung bình từ 3-5% so với quý trước, tùy thuộc vào vị trí và phân khúc. Các dự án có pháp lý hoàn chỉnh, tiến độ xây dựng tốt và được phát triển bởi các chủ đầu tư uy tín vẫn thu hút được sự quan tâm lớn.</p>
-      <ul style="list-style-type: disc; margin-left: 20px; padding-left: 5px;">
-        <li><strong>Khu Đông:</strong> Giá tiếp tục neo ở mức cao do hạ tầng phát triển mạnh.</li>
-        <li><strong>Khu Nam:</strong> Nguồn cung mới dồi dào hơn, giá cạnh tranh.</li>
-        <li><strong>Khu Tây:</strong> Phát triển ổn định, tập trung vào nhu cầu ở thực.</li>
-      </ul>
-      <h2>Dự báo cho Quý 3</h2>
-      <p>Dự kiến Quý 3/2025, thị trường sẽ tiếp tục sôi động hơn khi một số dự án lớn được cấp phép xây dựng và mở bán. Tuy nhiên, người mua nhà được khuyên nên cẩn trọng tìm hiểu kỹ thông tin pháp lý và uy tín chủ đầu tư trước khi ra quyết định.</p>
-    `,
-    tags: ["căn hộ", "TP.HCM", "bất động sản", "nguồn cung", "xu hướng giá"],
-  },
-  {
-    id: "2",
-    title: "5 Lưu ý vàng khi đầu tư bất động sản cho người mới bắt đầu",
-    publicationDate: "2025-05-15T14:30:00Z",
-    author: "Chuyên gia John Doe",
-    category: "Kinh nghiệm đầu tư",
-    imageUrl:
-      "https://images.unsplash.com/photo-1582407947304-fd86f028f716?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NXx8cmVhbCUyMGVzdGF0ZXxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=800&q=60",
-    content: `<p>Đầu tư bất động sản là một lựa chọn tốt...</p>`,
-    tags: ["đầu tư", "bất động sản", "kinh nghiệm"],
-  },
-];
-
 const NewsDetail = () => {
+  const { id } = useParams();
   const navigate = useNavigate();
-  const [currentNews, setCurrentNews] = useState(null);
+  const [news, setNews] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -93,29 +51,20 @@ const NewsDetail = () => {
     moment.locale("vi");
     setLoading(true);
     setError(null);
-
-    const newsIdToDisplay = "1";
-    const foundNews = mockNewsArticles.find(
-      (article) => article.id === newsIdToDisplay
-    );
-
-    const timer = setTimeout(() => {
-      if (foundNews) {
-        setCurrentNews(foundNews);
-        document.title = `${foundNews.title} | RealHome News`;
-      } else {
-        // Nếu ID fix cứng không có trong mock data
-        setError(`Không tìm thấy bài viết mẫu với ID "${newsIdToDisplay}".`);
-      }
-      setLoading(false);
-    }, 200); // Giảm độ trễ để xem nhanh hơn
-
-    return () => clearTimeout(timer);
-  }, []); // Bỏ newsId khỏi mảng dependencies, chỉ chạy 1 lần
+    axios.get(`https://bemodernestate.site/api/v1/news/${id}`)
+      .then(res => {
+        setNews(res.data.data || res.data);
+        setLoading(false);
+      })
+      .catch(() => {
+        setError("Không tìm thấy bài viết hoặc có lỗi khi tải dữ liệu.");
+        setLoading(false);
+      });
+  }, [id]);
 
   const handleShare = (platform) => {
     const url = window.location.href; // URL của trang hiện tại (sẽ là route tĩnh bạn đặt cho trang này)
-    const title = currentNews?.title || "Bài viết thú vị";
+    const title = news?.title || "Bài viết thú vị";
     let shareUrl = "";
 
     switch (platform) {
@@ -180,12 +129,12 @@ const NewsDetail = () => {
     );
   }
 
-  if (error || !currentNews) {
+  if (error || !news) {
     return (
       <Result
         status="404"
         title="404 - Lỗi hoặc không tìm thấy"
-        subTitle={error || "Không có dữ liệu bài viết mẫu để hiển thị."}
+        subTitle={error || "Không có dữ liệu bài viết để hiển thị."}
         extra={
           <Button
             type="primary"
@@ -280,7 +229,7 @@ const NewsDetail = () => {
                 whiteSpace: "nowrap",
               }}
             >
-              {currentNews.title}
+              {news.title}
             </Breadcrumb.Item>
           </Breadcrumb>
 
@@ -294,7 +243,7 @@ const NewsDetail = () => {
                   padding: "3px 10px",
                 }}
               >
-                {currentNews.category}
+                {news.category && typeof news.category === 'object' ? news.category.categoryName : news.category}
               </Tag>
               <Title
                 level={1}
@@ -304,30 +253,30 @@ const NewsDetail = () => {
                   lineHeight: "1.3",
                 }}
               >
-                {currentNews.title}
+                {news.title}
               </Title>
               <Space
                 size="middle"
                 style={{ color: "#595959", fontSize: "0.95em" }}
               >
                 <span>
-                  <UserOutlined /> {currentNews.author}
+                  <UserOutlined /> {news.author}
                 </span>
                 <span>
                   <CalendarOutlined />{" "}
-                  {moment(currentNews.publicationDate).format(
+                  {moment(news.publishDate || news.publicationDate).format(
                     "dddd, DD/MM/YYYY HH:mm"
                   )}
                 </span>
               </Space>
             </header>
 
-            {currentNews.imageUrl && (
+            {news.imageUrl && (
               <Row justify="center" style={{ marginBottom: "24px" }}>
                 <Col>
                   <Image
-                    src={currentNews.imageUrl}
-                    alt={currentNews.title}
+                    src={news.imageUrl}
+                    alt={news.title}
                     style={{
                       width: "100%",
                       maxHeight: "500px",
@@ -349,17 +298,17 @@ const NewsDetail = () => {
                 color: "#333",
                 padding: "0 8px",
               }}
-              dangerouslySetInnerHTML={{ __html: currentNews.content }}
+              dangerouslySetInnerHTML={{ __html: news.content }}
             />
 
-            {currentNews.tags && currentNews.tags.length > 0 && (
+            {news.tags && news.tags.length > 0 && (
               <div style={{ marginTop: "32px" }}>
                 <Text strong style={{ fontSize: "1.05em" }}>
-                  <TagsOutlined /> Tags:{" "}
+                  <TagsOutlined /> Tags: {" "}
                 </Text>
-                {currentNews.tags.map((tag) => (
+                {news.tags.map((tag) => (
                   <Tag
-                    key={tag}
+                    key={tag.id}
                     color="blue"
                     style={{
                       margin: "4px",
@@ -367,7 +316,7 @@ const NewsDetail = () => {
                       padding: "3px 8px",
                     }}
                   >
-                    <Link to={`/news`}>{tag}</Link>
+                    <Link to={`/news`}>{tag.tagName}</Link>
                   </Tag>
                 ))}
               </div>
@@ -384,7 +333,7 @@ const NewsDetail = () => {
                 <Button
                   type="default"
                   shape="round"
-                  onClick={() => navigate("/news")} // Nút này sẽ đưa về trang danh sách tin
+                  onClick={() => navigate("/news")}
                   icon={<ReadOutlined />}
                   style={{ borderColor: primaryColor, color: primaryColor }}
                 >

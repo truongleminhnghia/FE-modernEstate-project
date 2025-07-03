@@ -2,6 +2,7 @@ import { Badge } from '../components/ui/badge';
 import { Button } from '../components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader } from '../components/ui/card';
 import { MapPin, Calendar, Home, Phone, Mail, Eye } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 const formatPrice = (price, currency) => {
   if (currency === 'VND') {
@@ -46,6 +47,7 @@ const getTypeColor = (type) => {
 };
 
 const ProjectCard = ({ project, viewMode }) => {
+  const navigate = useNavigate();
   const fullAddress = `${project.address.houseNumber} ${project.address.street}, ${project.address.ward}, ${project.address.district}, ${project.address.city}`;
 
   if (viewMode === 'list') {
@@ -125,6 +127,7 @@ const ProjectCard = ({ project, viewMode }) => {
               <Button
                 style={{ cursor: 'pointer', color: 'white', backgroundColor: '#4a90e2' }}
                 className="hover:opacity-90"
+                onClick={() => navigate(`/du-an/${project.id}`)}
               >
                 Xem chi tiết
               </Button>
@@ -199,6 +202,7 @@ const ProjectCard = ({ project, viewMode }) => {
         <Button
           style={{ cursor: 'pointer', color: 'white', backgroundColor: '#4a90e2' }}
           className="w-full hover:opacity-90"
+          onClick={() => navigate(`/du-an/${project.id}`)}
         >
           Xem chi tiết
         </Button>
