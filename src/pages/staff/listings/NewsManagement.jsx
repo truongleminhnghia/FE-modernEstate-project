@@ -80,7 +80,7 @@ const NewsManagement = () => {
             : [],
           author: news.account ? `${news.account.firstName} ${news.account.lastName}` : '',
           category: typeof news.category === 'object' && news.category !== null
-            ? (news.category.code || news.category.categoryName || '')
+            ? news.category.categoryName
             : (news.category || ''),
           status: news.statusNew || '',
           publicationDate: news.publishDate,
@@ -185,7 +185,7 @@ const NewsManagement = () => {
       slug: values.slug || '',
       content: values.content,
       imageUrl: finalImageUrl,
-      categoryId: values.categoryId,
+      categoryId: typeof values.categoryId === 'object' && values.categoryId !== null ? values.categoryId.id : values.categoryId,
       tagNames: typeof values.tagNames === 'string'
         ? values.tagNames.split(',').map(tag => tag.trim()).filter(Boolean)
         : Array.isArray(values.tagNames) ? values.tagNames : [],
@@ -276,7 +276,7 @@ const NewsManagement = () => {
       key: "id", 
       width: 120, 
       sorter: (a,b) => a.id.localeCompare(b.id), 
-      render: (id) => <Text strong style={{color: primaryColor}}>{id}</Text>, 
+      render: (id, record, index) => <Text strong style={{color: primaryColor}}>{index + 1}</Text>, 
       fixed: 'left',
     },
     { 
@@ -306,7 +306,11 @@ const NewsManagement = () => {
       width: 150,
       filters: Object.entries(newsCategories).map(([value, text]) => ({text, value})),
       onFilter: (value, record) => record.category === value,
-      render: category => <Tag color={getCategoryColor(category)}>{category}</Tag>
+      render: category => (
+        <Tag color={getCategoryColor(category && category.categoryName ? category.categoryName : category)}>
+          {category && category.categoryName ? category.categoryName : category}
+        </Tag>
+      )
     },
     {
       title: "Trạng thái", 
@@ -343,10 +347,11 @@ const NewsManagement = () => {
       width: 200,
       render: (tags) => (
         <div>
-          {tags && tags.slice(0, 2).map(tag => (
-            <Tag key={tag} size="small" style={{marginBottom: 2}}>{typeof tag === 'string' ? tag : tag.tagName}</Tag>
+          {tags && tags.map(tag => (
+            <Tag key={typeof tag === 'string' ? tag : tag.tagName} size="small" style={{marginBottom: 2}}>
+              {typeof tag === 'string' ? tag : tag.tagName}
+            </Tag>
           ))}
-          {tags && tags.length > 2 && <Tag size="small">+{tags.length - 2}</Tag>}
         </div>
       ),
     },
@@ -429,7 +434,7 @@ const NewsManagement = () => {
       .then(res => res.json())
       .then(data => {
         console.log('Categories from API:', data);
-        setCategories(data.rowDatas || []);
+        setCategories(data.data?.rowDatas || []);
       })
       .catch(err => {
         console.error('Fetch categories error:', err);

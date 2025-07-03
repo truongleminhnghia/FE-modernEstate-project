@@ -35,7 +35,11 @@ export const createProject = async (projectData) => {
     const response = await axios.post(`${API_BASE_URL}/projects`, projectData);
     return response.data;
   } catch (error) {
-    console.error('Error creating project:', error);
+    if (error.response) {
+      console.error('Error creating project (response):', error.response.data);
+    } else {
+      console.error('Error creating project:', error);
+    }
     throw error;
   }
 };
@@ -117,6 +121,40 @@ export const getPosts = async (page = 1, pageSize = 10) => {
     return response.data;
   } catch (error) {
     console.error('Error fetching posts:', error);
+    throw error;
+  }
+};
+
+// Create new post
+export const createPost = async (postData) => {
+  try {
+    const token = localStorage.getItem('token');
+    const response = await axios.post(`${API_BASE_URL}/posts`, postData, {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error creating post:', error);
+    throw error;
+  }
+};
+
+// Create new property (alternative endpoint)
+export const createProperty = async (propertyData) => {
+  try {
+    const token = localStorage.getItem('token');
+    const response = await axios.post(`${API_BASE_URL}/properties`, propertyData, {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error creating property:', error);
     throw error;
   }
 };

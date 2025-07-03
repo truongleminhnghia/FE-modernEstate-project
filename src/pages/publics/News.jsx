@@ -53,7 +53,7 @@ const News = () => {
         date: item.publishDate ? new Date(item.publishDate).toLocaleDateString('vi-VN') : '',
         title: item.title,
         description: item.content,
-        to: `/posts/${item.id}`
+        to: `/news/${item.id}`
     })) : []
 
     return (

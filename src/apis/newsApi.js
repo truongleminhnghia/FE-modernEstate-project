@@ -13,7 +13,17 @@ export const getNewsList = async () => {
 
 export const addNews = async (newsData) => {
   try {
-    const response = await axios.post(`${API_BASE_URL}/news`, newsData);
+    const token = localStorage.getItem('token');
+    const response = await axios.post(
+      `${API_BASE_URL}/news`,
+      newsData,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      }
+    );
     return response.data;
   } catch (error) {
     throw error;
@@ -22,7 +32,17 @@ export const addNews = async (newsData) => {
 
 export const updateNews = async (id, newsData) => {
   try {
-    const response = await axios.put(`${API_BASE_URL}/news/${id}`, newsData);
+    const token = localStorage.getItem('token');
+    const response = await axios.put(
+      `${API_BASE_URL}/news/${id}`,
+      newsData,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      }
+    );
     return response.data;
   } catch (error) {
     throw error;
@@ -31,7 +51,15 @@ export const updateNews = async (id, newsData) => {
 
 export const deleteNews = async (id) => {
   try {
-    const response = await axios.delete(`${API_BASE_URL}/news/${id}`);
+    const token = localStorage.getItem('token');
+    const response = await axios.delete(
+      `${API_BASE_URL}/news/${id}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      }
+    );
     return response.data;
   } catch (error) {
     throw error;
