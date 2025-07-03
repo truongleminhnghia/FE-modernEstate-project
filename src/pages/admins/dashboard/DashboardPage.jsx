@@ -9,7 +9,7 @@ import ListingsTrendChart from './ListingsTrendChart';
 import UserRolesPieChart from './UserRolesPieChart';
 import RecentListingsTable from './RecentListingsTable';
 import RecentUsersTable from './RecentUsersTable';
-import { account, post } from '../../../services/dashboard.service';
+import { account, post, getRevenue } from '../../../services/dashboard.service';
 
 const { Title } = Typography;
 const primaryColor = '#4a90e2';
@@ -27,21 +27,18 @@ const DashboardPage = () => {
   const [summaryStats, setSummaryStats] = useState({});
   const [accountData, setAccountData] = useState({ totalAccounts: 0 });
   const [postData, setPostData] = useState({});
-
+  const [revenue, setRevenue] = useState(0);
 
   useEffect(() => {
     const loadAccount = async () => {
       setLoadingStats(true);
       try {
         const res = await account();
-        console.log("res", res)
-
         if (res) {
           setAccountData(res.data);
         }
       } catch (error) {
         console.error('Error loading account data:', error);
-        message.error('Không thể tải dữ liệu tài khoản.');
       } finally {
         setLoadingStats(false);
       }
@@ -50,23 +47,34 @@ const DashboardPage = () => {
   }, []);
 
   useEffect(() => {
-    const loadAccount = async () => {
+    const loadPost = async () => {
       setLoadingStats(true);
       try {
         const res = await post();
-        console.log("res", res)
-
         if (res) {
           setPostData(res.data);
         }
       } catch (error) {
-        console.error('Error loading account data:', error);
-        message.error('Không thể tải dữ liệu tài khoản.');
+        console.error('Error loading post data:', error);
       } finally {
         setLoadingStats(false);
       }
     };
-    loadAccount();
+    loadPost();
+  }, []);
+
+  useEffect(() => {
+    const fetchRevenue = async () => {
+      try {
+        const res = await getRevenue();
+        if (res && res.data && typeof res.data.totalRevenue === 'number') {
+          setRevenue(res.data.totalRevenue);
+        }
+      } catch (error) {
+        console.error('Error loading revenue:', error);
+      }
+    };
+    fetchRevenue();
   }, []);
 
   useEffect(() => {
@@ -91,7 +99,7 @@ const DashboardPage = () => {
           <StatCard title="Tổng Tin đăng" value={postData.totalCount} icon={<ContainerOutlined />} color="#FAAD14" loading={loadingStats} />
         </Col>
         <Col xs={24} sm={12} md={12} lg={6}>
-          <StatCard title="Doanh thu" value={summaryStats.revenue?.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })} icon={<DollarCircleOutlined />} color="#13C2C2" loading={loadingStats} />
+          <StatCard title="Doanh thu" value={revenue.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })} icon={<DollarCircleOutlined />} color="#13C2C2" loading={loadingStats} />
         </Col>
         <Col xs={24} sm={12} md={12} lg={6}>
           <StatCard title="Tin chờ duyệt" value={postData.totalConfirm} icon={<ClockCircleOutlined />} color="#FF4D4F" loading={loadingStats} />

@@ -5,11 +5,11 @@ import { Card, CardContent } from '../components/ui/card.jsx';
 import { Badge } from '../components/ui/badge.jsx';
 import { Button } from '../components/ui/button.jsx';
 import { cn } from '../lib/utils.js';
+import { wardMap, districtMap, cityMap } from '../constants/addressMapping';
 
 const PropertyCard = ({ post, onContactClick }) => {
   const navigate = useNavigate();
   const { property, contact } = post;
-  console.log(property);
   const handleCardClick = () => {
     navigate(`/can-ho/${post.id}`);
   };
@@ -43,6 +43,13 @@ const PropertyCard = ({ post, onContactClick }) => {
     };
     return colors[priority] || 'bg-gray-500';
   };
+  
+  const addressParts = [
+    property.address?.street,
+    wardMap[property.address?.ward] || property.address?.ward,
+    districtMap[property.address?.district] || property.address?.district,
+    cityMap[property.address?.city] || property.address?.city,
+  ].filter(Boolean); // loại bỏ phần rỗng/null
 
   return (
     <Card 
@@ -52,9 +59,19 @@ const PropertyCard = ({ post, onContactClick }) => {
       <div className="relative">
         <div className="h-48 bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center">
           <div className="text-gray-500 text-center">
-            {/* <Maximize className="h-12 w-12 mx-auto" />
-            <p className="text-sm mt-2">Hình ảnh sẽ hiển thị tại đây</p> */}
-            <img src={property.propertyImages} alt="Property" className="w-full h-full object-cover" />
+            {property.propertyImages && property.propertyImages.length > 0 && property.propertyImages[0].imageUrl ? (
+              <img 
+                src={property.propertyImages[0].imageUrl} 
+                alt="Property" 
+                className="w-full h-full object-cover" 
+              />
+            ) : (
+              <img 
+                src="https://www.lendlease.com/contentassets/302840d3bc9846579cb9f785ed8abb9a/luxury-interior-design.jpg" 
+                alt="Default Property" 
+                className="w-full h-full object-cover" 
+              />
+            )}
           </div>
         </div>
         <div className="absolute top-3 left-3 flex gap-2">
@@ -82,7 +99,7 @@ const PropertyCard = ({ post, onContactClick }) => {
             <div className="flex items-center text-gray-600 mt-1">
               <MapPin className="h-4 w-4 mr-1 flex-shrink-0" />
               <span className="text-sm truncate">
-                {property.address.street}, {property.address.ward}, {property.address.district}
+                {addressParts.join(', ')}
               </span>
             </div>
           </div>

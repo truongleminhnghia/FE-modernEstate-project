@@ -314,11 +314,11 @@ const ApartmentDetail = () => {
 
   const property = apartment.property;
   const contact = apartment.contact;
-  const images =
-    property.propertyImages?.length > 0
-      ? property.propertyImages.map((img) => img.url)
-      : fallbackImages;
+  const validImages = (property.propertyImages || [])
+    .map(img => img.imageUrl)
+    .filter(Boolean); // chỉ lấy ảnh có imageUrl
 
+  const images = validImages.length > 0 ? validImages : fallbackImages;
   const addressObj = property.address;
   const addressString = [
     addressObj.houseNumber,
