@@ -26,12 +26,26 @@ export default function AddressForm({ onFinish, initialValues }) {
         form.setFieldsValue({ ward: undefined });
     };
 
+    const handleFinish = (values) => {
+        const cityObj = provinces.find(p => p.code === values.city);
+        const districtObj = districts.find(d => d.code === values.district);
+        const wardObj = wards.find(w => w.code === values.ward);
+
+        const data = {
+            ...values,
+            city: cityObj ? cityObj.name : values.city,
+            district: districtObj ? districtObj.name : values.district,
+            ward: wardObj ? wardObj.name : values.ward,
+        };
+        onFinish(data);
+    };
+
     return (
         <Form
             form={form}
             layout="vertical"
             initialValues={initialValues}
-            onFinish={onFinish}
+            onFinish={handleFinish}
             className="space-y-4"
         >
             <Form.Item label="Tỉnh/Thành Phố" name="city">
