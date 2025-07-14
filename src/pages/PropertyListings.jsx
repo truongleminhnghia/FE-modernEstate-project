@@ -22,8 +22,8 @@ const PropertyListings = () => {
   const [filters, setFilters] = useState({
     demand: 'ALL',
     propertyType: 'ALL',
-    priceRange: [0, 500],
-    areaRange: [0, 2000],
+    priceRange: [0, 999999999],
+    areaRange: [0, 999999999],
     bedrooms: null,
     bathrooms: null,
     district: 'ALL',
