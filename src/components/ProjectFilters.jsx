@@ -163,7 +163,10 @@ const ProjectFilters = ({
             <Button
               variant="outline"
               size="sm"
-              onClick={() => form.setFieldValue('priceRange', [0, 2000000000])}
+              onClick={() => {
+                form.setFieldValue('priceRange', [0, 2000000000]);
+                onChange({ ...form.getFieldsValue(), priceRange: [0, 2000000000] });
+              }}
               className="justify-start text-left border-emerald-200 hover:bg-emerald-50"
             >
               Dưới 2 tỷ VND
@@ -171,7 +174,10 @@ const ProjectFilters = ({
             <Button
               variant="outline"
               size="sm"
-              onClick={() => form.setFieldValue('priceRange', [2000000000, 5000000000])}
+              onClick={() => {
+                form.setFieldValue('priceRange', [2000000000, 5000000000]);
+                onChange({ ...form.getFieldsValue(), priceRange: [2000000000, 5000000000] });
+              }}
               className="justify-start text-left border-emerald-200 hover:bg-emerald-50"
             >
               2 - 5 tỷ VND
@@ -179,7 +185,10 @@ const ProjectFilters = ({
             <Button
               variant="outline"
               size="sm"
-              onClick={() => form.setFieldValue('priceRange', [5000000000, 10000000000])}
+              onClick={() => {
+                form.setFieldValue('priceRange', [5000000000, 10000000000]);
+                onChange({ ...form.getFieldsValue(), priceRange: [5000000000, 10000000000] });
+              }}
               className="justify-start text-left border-emerald-200 hover:bg-emerald-50"
             >
               5 - 10 tỷ VND
@@ -187,7 +196,10 @@ const ProjectFilters = ({
             <Button
               variant="outline"
               size="sm"
-              onClick={() => form.setFieldValue('priceRange', [10000000000, 15000000000])}
+              onClick={() => {
+                form.setFieldValue('priceRange', [10000000000, 15000000000]);
+                onChange({ ...form.getFieldsValue(), priceRange: [10000000000, 15000000000] });
+              }}
               className="justify-start text-left border-emerald-200 hover:bg-emerald-50"
             >
               Trên 10 tỷ VND

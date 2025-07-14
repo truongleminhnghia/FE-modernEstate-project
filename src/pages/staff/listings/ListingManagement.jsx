@@ -18,11 +18,13 @@ import BaseForm from '../../post/new-post/BaseForm';
 import PropertyForm from '../../post/new-post/PropertyForm';
 import AddressForm from '../../post/new-post/AddressForm';
 import PackageForm from '../../post/new-post/PackageForm';
+import { getDistricts, getProvinces, getWards } from "vietnam-provinces";
 
 const { Title, Text } = Typography;
 const { confirm } = Modal;
 const { Option } = Select;
 const { TextArea } = Input;
+const { TabPane } = Tabs;
 
 const mockOwnersForSelect = [
   { id: 1, name: "Nguyễn Văn An (Chủ sở hữu)" },
@@ -121,6 +123,23 @@ const ListingManagement = () => {
   const [propertyData, setPropertyData] = useState({});
   const [addressData, setAddressData] = useState({});
 
+  // Địa chỉ động
+  const [provinces, setProvinces] = useState([]);
+  const [districts, setDistricts] = useState([]);
+  const [wards, setWards] = useState([]);
+  useEffect(() => {
+    setProvinces(getProvinces());
+  }, []);
+  const handleProvinceChange = (value) => {
+    setDistricts(getDistricts(value));
+    setWards([]);
+    form.setFieldsValue({ district: undefined, ward: undefined });
+  };
+  const handleDistrictChange = (value) => {
+    setWards(getWards(value));
+    form.setFieldsValue({ ward: undefined });
+  };
+
   const filteredDataSource = dataSource.filter((listing) => {
     const search = searchText.toLowerCase();
     // Lấy dữ liệu từ property/contact nếu có
@@ -211,55 +230,87 @@ const ListingManagement = () => {
   const handleStep2 = (data) => { setPropertyData(data); setCurrentStep(2); };
   const handleStep3 = (data) => { setAddressData(data); setCurrentStep(3); };
 
+  // State cho từng tab
+  const [tab1Data, setTab1Data] = useState({});
+  const [tab2Data, setTab2Data] = useState({});
+  const [tab3Data, setTab3Data] = useState({});
+  const [tab4Data, setTab4Data] = useState({});
+  const [tab5Data, setTab5Data] = useState({});
+  const [currentTab, setCurrentTab] = useState("1");
+
+  // Khi chuyển tab, lưu lại value tab cũ, set lại value tab mới
+  const handleTabChange = (activeKey) => {
+    if (currentTab === "1") setTab1Data(form.getFieldsValue());
+    if (currentTab === "2") setTab2Data(form.getFieldsValue());
+    if (currentTab === "3") setTab3Data(form.getFieldsValue());
+    if (currentTab === "4") setTab4Data(form.getFieldsValue());
+    if (currentTab === "5") setTab5Data(form.getFieldsValue());
+    setCurrentTab(activeKey);
+    // Set lại value tab mới
+    if (activeKey === "1") form.setFieldsValue(tab1Data);
+    if (activeKey === "2") form.setFieldsValue(tab2Data);
+    if (activeKey === "3") form.setFieldsValue(tab3Data);
+    if (activeKey === "4") form.setFieldsValue(tab4Data);
+    if (activeKey === "5") form.setFieldsValue(tab5Data);
+  };
+
   const handleSubmitAll = async () => {
-    let userId = "08dda40b-e895-4779-8e2a-85cc7c729403";
-    let contactName = baseData.contactName || "Nguyễn Văn A";
-    let contactEmail = baseData.contactEmail || "vana@example.com";
-    let contactPhone = baseData.contactPhone || "0901234567";
+    // Lưu lại tab hiện tại
+    if (currentTab === "1") setTab1Data(form.getFieldsValue());
+    if (currentTab === "2") setTab2Data(form.getFieldsValue());
+    if (currentTab === "3") setTab3Data(form.getFieldsValue());
+    if (currentTab === "4") setTab4Data(form.getFieldsValue());
+    if (currentTab === "5") setTab5Data(form.getFieldsValue());
+    // Merge toàn bộ dữ liệu
+    const values = { ...tab1Data, ...tab2Data, ...tab3Data, ...tab4Data, ...tab5Data, ...form.getFieldsValue() };
+    // mapping code sang tên
+    const cityObj = provinces.find(p => p.code === values.city);
+    const districtObj = districts.find(d => d.code === values.district);
+    const wardObj = wards.find(w => w.code === values.ward);
+    let userId = "";
     try {
       const user = JSON.parse(localStorage.getItem('user') || '{}');
       if (user && user.id) userId = user.id;
-      if (user && user.firstName) contactName = user.firstName + (user.lastName ? ' ' + user.lastName : '');
-      if (user && user.email) contactEmail = user.email;
-      if (user && user.phone) contactPhone = user.phone;
     } catch (e) { /* ignore */ }
-
     const payload = {
-      PostBy: userId,
-      Demand: baseData.demand || 'MUA_BAN',
-      NewProperty: {
-        Title: propertyData.title,
-        Description: propertyData.description,
-        Attribute: propertyData.attribute || [],
-        Type: propertyTypeEnumMap[propertyData.type] || "CAN_HO_CHUNG_CU",
-        Area: propertyData.area,
-        AreaUnit: propertyData.areaUnit || "m2",
-        Price: propertyData.price,
-        PriceUnit: propertyData.priceUnit || "VND",
-        Document: propertyData.document || ["Sổ đỏ"],
-        Interior: propertyData.interior || "Full",
-        NumberOfBedrooms: propertyData.numberOfBedrooms,
-        NumberOfBathrooms: propertyData.numberOfBathrooms,
-        HouseDirection: propertyData.houseDirection,
-        VideoUrl: propertyData.videoUrl || [],
-        Address: {
-          HouseNumber: addressData.houseNumber || "123",
-          Street: addressData.street || "Nguyễn Huệ",
-          Ward: addressData.ward || "Phường 1",
-          District: addressData.district || "Quận 1",
-          City: addressData.city || "TP. Hồ Chí Minh",
-          Country: addressData.country || "Việt Nam",
-          AddressDetail: addressData.addressDetail || "123 Nguyễn Huệ"
-        },
-        ProjectId: propertyData.projectId || null,
-        Images: propertyData.images
-          ? propertyData.images.map(f => f.url ? { imageUrl: f.url } : (f.imageUrl ? { imageUrl: f.imageUrl } : null)).filter(Boolean)
-          : [{ imageUrl: "https://firebasestorage.googleapis.com/v0/b/fir-app-2f0da.appspot.com/o/property-images%2F1751467100945_film_roll.png?alt=media&token=2cf6c111-811c-46b0-ab02-21ba286e1535" }]
+      postBy: userId,
+      demand: values.demand,
+      newProperty: {
+        title: values.title,
+        description: values.description,
+        attribute: values.attribute,
+        type: values.type,
+        area: values.area,
+        areaUnit: values.areaUnit,
+        price: values.price,
+        priceUnit: values.priceUnit,
+        document: values.document,
+        interior: values.interior,
+        numberOfBedrooms: values.numberOfBedrooms,
+        numberOfBathrooms: values.numberOfBathrooms,
+        houseDirection: values.houseDirection,
+        videoUrl: values.videoUrl,
+        images: values.images,
+        address: {
+          ward: wardObj ? wardObj.name : values.ward,
+          district: districtObj ? districtObj.name : values.district,
+          city: cityObj ? cityObj.name : values.city,
+          country: values.country,
+          addressDetail: values.addressDetail
+        }
       },
-      Contact: {
-        ContactName: contactName,
-        ContactEmail: contactEmail,
-        ContactPhone: contactPhone
+      contact: {
+        contactName: values.contactName,
+        contactEmail: values.contactEmail,
+        contactPhone: values.contactPhone
+      },
+      postPackagesRequest: {
+        startDate: values.startDate ? moment(values.startDate).format('YYYY-MM-DD') : moment().format('YYYY-MM-DD'),
+        endDate: values.endDate ? moment(values.endDate).format('YYYY-MM-DD') : moment().add(30, 'days').format('YYYY-MM-DD'),
+        totalAmout: 0,
+        currency: 'VND',
+        packageId: 'STAFF_FREE',
+        accountId: userId
       }
     };
     try {
@@ -267,8 +318,8 @@ const ListingManagement = () => {
       console.log('Payload gửi lên API /posts:', wrappedPayload);
       await createPost(wrappedPayload);
       message.success("Tạo tin đăng thành công!");
-    setIsFormModalVisible(false);
-    setEditingListing(null);
+      setIsFormModalVisible(false);
+      setEditingListing(null);
       setPagination(prev => ({ ...prev }));
       setCurrentStep(0);
     } catch (err) {
@@ -421,129 +472,6 @@ const ListingManagement = () => {
         </Col>
         <Col>
           <Button type="primary" icon={<PlusOutlined />} style={{ backgroundColor: primaryColor, borderColor: primaryColor, marginRight: 8 }} onClick={showAddModal}>Thêm Tin đăng</Button>
-          <Button type="default" onClick={async () => {
-            try {
-              // Test GET request trước
-              console.log('Testing GET /posts endpoint...');
-              const testGet = await getPosts(1, 5);
-              console.log('GET /posts success:', testGet);
-              
-              // Test các endpoint khác có thể tồn tại
-              console.log('Testing other possible endpoints...');
-              try {
-                const testPost = await axios.post('https://bemodernestate.site/api/v1/post', { test: 'data' });
-                console.log('POST /post (singular) success:', testPost);
-              } catch (e) {
-                console.log('POST /post failed:', e.response?.status);
-              }
-              
-              try {
-                const testProperty = await axios.post('https://bemodernestate.site/api/v1/properties', { test: 'data' });
-                console.log('POST /properties success:', testProperty);
-              } catch (e) {
-                console.log('POST /properties failed:', e.response?.status);
-              }
-              
-              // Test với authentication header
-              const token = localStorage.getItem('token');
-              if (token) {
-                console.log('Testing with auth token...');
-                try {
-                  const authTest = await axios.post('https://bemodernestate.site/api/v1/posts', 
-                    { test: 'data' },
-                    { headers: { Authorization: `Bearer ${token}` } }
-                  );
-                  console.log('POST with auth success:', authTest);
-                } catch (e) {
-                  console.log('POST with auth failed:', e.response?.status);
-                }
-              }
-              
-              const data = {
-                postBy: "08dda40b-e895-4779-8e2a-85cc7c729403",
-                demand: "MUA_BÁN",
-                newProperty: {
-                  title: "string",
-                  description: "string",
-                  attribute: ["string"],
-                  type: "Căn_hộ_Chung_cư",
-                  area: 0,
-                  areaUnit: "m2",
-                  price: 0,
-                  priceUnit: "VND",
-                  document: ["string"],
-                  interior: "string",
-                  numberOfBedrooms: 0,
-                  numberOfBathrooms: 0,
-                  houseDirection: "Đông",
-                  videoUrl: ["string"],
-                  address: {
-                    ward: "string",
-                    district: "string",
-                    city: "string",
-                    country: "string",
-                    addressDetail: "string"
-                  },
-                  projectId: "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-                  images: [
-                    { imageUrl: "string" }
-                  ]
-                },
-                contact: {
-                  contactName: "string",
-                  contactEmail: "string",
-                  contactPhone: "string"
-                },
-                postPackagesRequest: {
-                  startDate: "2025-07-03",
-                  endDate: "2025-07-03",
-                  totalAmout: 0,
-                  currency: "VND",
-                  accountId: "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-                  packageId: "3fa85f64-5717-4562-b3fc-2c963f66afa6"
-                }
-              };
-              console.log('Testing POST /posts with data:', data);
-              const res = await createPost(data);
-              message.success('Tạo tin đăng mẫu thành công!');
-              // Sau khi tạo, reload lại danh sách
-              setPagination(prev => ({ ...prev }));
-            } catch (err) {
-              console.error('API Error details:', {
-                status: err.response?.status,
-                statusText: err.response?.statusText,
-                url: err.config?.url,
-                method: err.config?.method,
-                data: err.response?.data
-              });
-              message.error(`API Error: ${err.response?.status} - ${err.response?.statusText || err.message}`);
-            }
-          }}>Test API</Button>
-          <Button type="default" onClick={async () => {
-            try {
-              const propertyData = {
-                title: "Test Property",
-                description: "Test description",
-                type: "Căn_hộ_Chung_cư",
-                area: 80,
-                price: 2500000000,
-                address: {
-                  ward: "001",
-                  district: "001", 
-                  city: "01",
-                  country: "Việt Nam",
-                  addressDetail: "123 Test Street"
-                }
-              };
-              console.log('Testing POST /properties with data:', propertyData);
-              const res = await createPost(propertyData);
-              message.success('Tạo property thành công!');
-              console.log('Property created:', res);
-            } catch (err) {
-              console.error('Property API Error:', err);
-              message.error(`Property API Error: ${err.response?.status} - ${err.response?.statusText || err.message}`);
-            }
-          }}>Test Properties API</Button>
         </Col>
       </Row>
 
@@ -613,17 +541,131 @@ const ListingManagement = () => {
         )}
       </Modal>
 
-      <Modal title={<span style={{color: primaryColor, fontWeight: 'bold'}}>{editingListing ? <><EditOutlined /> Chỉnh sửa Tin đăng</> : <><PlusOutlined/> Thêm mới Tin đăng</>}</span>} visible={isFormModalVisible} onCancel={handleFormCancel} footer={null} width={900} destroyOnClose>
-        {currentStep === 0 && <BaseForm onFinish={handleStep1} initialValues={baseData} />}
-        {currentStep === 1 && <PropertyForm onFinish={handleStep2} initialValues={propertyData} />}
-        {currentStep === 2 && <AddressForm onFinish={handleStep3} initialValues={addressData} />}
-        {currentStep === 3 && (
-          <div style={{padding: 24}}>
-            <h3>Xác nhận thông tin và đăng tin</h3>
-            <Button type="primary" onClick={handleSubmitAll}>Xác nhận & Đăng tin</Button>
-            <Button style={{marginLeft: 8}} onClick={()=>setCurrentStep(0)}>Quay lại</Button>
-          </div>
-        )}
+      <Modal title={<span style={{color: primaryColor, fontWeight: 'bold'}}>{editingListing ? <><EditOutlined /> Chỉnh sửa Tin đăng</> : <><PlusOutlined/> Thêm mới Tin đăng</>}</span>} visible={isFormModalVisible} onCancel={handleFormCancel} footer={null} width={900}>
+        <Form form={form} layout="vertical" onFinish={handleSubmitAll} scrollToFirstError>
+          <Tabs defaultActiveKey="1" activeKey={currentTab} onChange={handleTabChange}>
+            <TabPane tab="Thông tin cơ bản" key="1">
+              <Form.Item name="demand" label="Nhu cầu" rules={[{ required: true, message: 'Vui lòng chọn nhu cầu!' }]} validateTrigger="onChange">
+                <Select>
+                  <Option value="MUA_BÁN">Mua bán</Option>
+                  <Option value="CHO_THUÊ">Cho thuê</Option>
+                </Select>
+              </Form.Item>
+              <Form.Item name="type" label="Loại BĐS" rules={[{ required: true, message: 'Vui lòng chọn loại BĐS!' }]} validateTrigger="onChange">
+                <Select>
+                  <Option value="Căn_hộ_Chung_cư">Căn hộ chung cư</Option>
+                  <Option value="Chung_Cư_Mini">Chung cư mini</Option>
+                  <Option value="Căn_hộ_dịch_vụ">Căn hộ dịch vụ</Option>
+                  <Option value="Nhà_riêng">Nhà riêng</Option>
+                  <Option value="Nhà_biệt_thự">Nhà biệt thự</Option>
+                  <Option value="Nhà_mặt_phố">Nhà mặt phố</Option>
+                  <Option value="Shophouse">Shophouse</Option>
+                  <Option value="Nhà_mặt_phố_thương_mại">Nhà mặt phố thương mại</Option>
+                  <Option value="Đất_nền_dự_án">Đất nền dự án</Option>
+                  <Option value="Trang_trại">Trang trại</Option>
+                  <Option value="Kho_nhà_xưởng">Kho, nhà xưởng</Option>
+                  <Option value="Khác">Khác</Option>
+                </Select>
+              </Form.Item>
+              <Form.Item name="title" label="Tiêu đề" rules={[{ required: true, message: 'Vui lòng nhập tiêu đề!' }]} validateTrigger="onChange"> <Input /> </Form.Item>
+              <Form.Item name="description" label="Mô tả" rules={[{ required: true, message: 'Vui lòng nhập mô tả!' }]} validateTrigger="onChange"> <Input.TextArea rows={3} /> </Form.Item>
+            </TabPane>
+            <TabPane tab="Thông tin bất động sản" key="2">
+              <Form.Item name="attribute" label="Đặc tính"> <Select mode="tags" style={{ width: '100%' }} placeholder="Nhập đặc tính" /> </Form.Item>
+              <Form.Item name="area" label="Diện tích" rules={[{ required: true, message: 'Vui lòng nhập diện tích!' }]} validateTrigger="onChange"> <InputNumber min={0} style={{ width: '100%' }} /> </Form.Item>
+              <Form.Item name="areaUnit" label="Đơn vị diện tích" rules={[{ required: true, message: 'Vui lòng chọn đơn vị!' }]} validateTrigger="onChange">
+                <Select>
+                  <Option value="m2">m²</Option>
+                  <Option value="km2">km²</Option>
+                  <Option value="ha">ha</Option>
+                  <Option value="acre">acre</Option>
+                  <Option value="squareFoot">squareFoot</Option>
+                  <Option value="squareYard">squareYard</Option>
+                </Select>
+              </Form.Item>
+              <Form.Item name="price" label="Giá" rules={[{ required: true, message: 'Vui lòng nhập giá!' }]} validateTrigger="onChange"> <InputNumber min={0} style={{ width: '100%' }} /> </Form.Item>
+              <Form.Item name="priceUnit" label="Đơn vị tiền tệ" rules={[{ required: true, message: 'Vui lòng chọn đơn vị!' }]} validateTrigger="onChange">
+                <Select><Option value="VND">VND</Option><Option value="USD">USD</Option></Select>
+              </Form.Item>
+              <Form.Item name="document" label="Pháp lý"> <Select mode="tags" style={{ width: '100%' }} placeholder="Nhập giấy tờ pháp lý" /> </Form.Item>
+              <Form.Item name="interior" label="Nội thất"> <Input /> </Form.Item>
+              <Form.Item name="numberOfBedrooms" label="Số phòng ngủ" rules={[{ required: true, message: 'Vui lòng nhập số phòng ngủ!' }]} validateTrigger="onChange"> <InputNumber min={0} style={{ width: '100%' }} /> </Form.Item>
+              <Form.Item name="numberOfBathrooms" label="Số phòng tắm" rules={[{ required: true, message: 'Vui lòng nhập số phòng tắm!' }]} validateTrigger="onChange"> <InputNumber min={0} style={{ width: '100%' }} /> </Form.Item>
+              <Form.Item name="houseDirection" label="Hướng nhà"> <Select>
+                <Option value="Đông">Đông</Option>
+                <Option value="Tây">Tây</Option>
+                <Option value="Nam">Nam</Option>
+                <Option value="Bắc">Bắc</Option>
+                <Option value="Đông_Nam">Đông Nam</Option>
+                <Option value="Đông_Bắc">Đông Bắc</Option>
+                <Option value="Tây_Nam">Tây Nam</Option>
+                <Option value="Tây_Bắc">Tây Bắc</Option>
+              </Select> </Form.Item>
+              <Form.Item name="videoUrl" label="Video URL"> <Select mode="tags" style={{ width: '100%' }} placeholder="Nhập URL video" /> </Form.Item>
+              <Form.Item name="images" label="Hình ảnh"> <Upload listType="picture-card" multiple maxCount={10}><Button icon={<UploadOutlined />}>Tải lên</Button></Upload> </Form.Item>
+            </TabPane>
+            <TabPane tab="Địa chỉ" key="3">
+              <Form.Item name="city" label="Tỉnh/Thành phố" rules={[{ required: true, message: 'Vui lòng chọn tỉnh/thành phố!' }]} validateTrigger="onChange">
+                <Select
+                  placeholder="Tỉnh/Thành phố"
+                  showSearch
+                  onChange={handleProvinceChange}
+                  filterOption={(input, option) => option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+                >
+                  {provinces.map((province) => (
+                    <Option key={province.code} value={province.code}>{province.name}</Option>
+                  ))}
+                </Select>
+              </Form.Item>
+              <Form.Item name="district" label="Quận/Huyện" rules={[{ required: true, message: 'Vui lòng chọn quận/huyện!' }]} validateTrigger="onChange">
+                <Select
+                  placeholder="Quận/Huyện"
+                  showSearch
+                  onChange={handleDistrictChange}
+                  disabled={!districts.length}
+                  filterOption={(input, option) => option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+                >
+                  {districts.map((district) => (
+                    <Option key={district.code} value={district.code}>{district.name}</Option>
+                  ))}
+                </Select>
+              </Form.Item>
+              <Form.Item name="ward" label="Phường/Xã" rules={[{ required: true, message: 'Vui lòng chọn phường/xã!' }]} validateTrigger="onChange">
+                <Select
+                  placeholder="Phường/Xã"
+                  showSearch
+                  disabled={!wards.length}
+                  filterOption={(input, option) => option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+                >
+                  {wards.map((ward) => (
+                    <Option key={ward.code} value={ward.code}>{ward.name}</Option>
+                  ))}
+                </Select>
+              </Form.Item>
+              <Form.Item name="country" label="Quốc gia"> <Input /> </Form.Item>
+              <Form.Item name="addressDetail" label="Chi tiết địa chỉ" rules={[{ required: true, message: 'Vui lòng nhập chi tiết địa chỉ!' }]} validateTrigger="onChange"> <Input /> </Form.Item>
+            </TabPane>
+            <TabPane tab="Liên hệ" key="4">
+              <Form.Item name="contactName" label="Tên liên hệ" rules={[{ required: true, message: 'Vui lòng nhập tên liên hệ!' }]} validateTrigger="onChange"> <Input /> </Form.Item>
+              <Form.Item name="contactEmail" label="Email liên hệ" rules={[{ required: true, type: 'email', message: 'Vui lòng nhập email hợp lệ!' }]} validateTrigger="onChange"> <Input /> </Form.Item>
+              <Form.Item name="contactPhone" label="Số điện thoại liên hệ" rules={[{ required: true, message: 'Vui lòng nhập số điện thoại!' }]} validateTrigger="onChange"> <Input /> </Form.Item>
+            </TabPane>
+            <TabPane tab="Thời gian đăng tin" key="5">
+              <Form.Item name="startDate" label="Ngày bắt đầu" rules={[{ required: true, message: 'Vui lòng chọn ngày bắt đầu!' }]} validateTrigger="onChange">
+                <DatePicker style={{ width: '100%' }} format="YYYY-MM-DD" />
+              </Form.Item>
+              <Form.Item name="endDate" label="Ngày kết thúc" dependencies={["startDate"]} rules={[{ required: true, message: 'Vui lòng chọn ngày kết thúc!' }, ({ getFieldValue }) => ({ validator(_, value) { const start = getFieldValue('startDate'); if (!value || !start || value.isAfter(start)) { return Promise.resolve(); } return Promise.reject(new Error('Ngày kết thúc phải sau ngày bắt đầu!')); } })]} validateTrigger="onChange">
+                <DatePicker style={{ width: '100%' }} format="YYYY-MM-DD" />
+              </Form.Item>
+            </TabPane>
+          </Tabs>
+          <Row justify="end" style={{marginTop: 24}}>
+            <Space>
+              <Button icon={<CloseCircleOutlined/>} onClick={handleFormCancel}>Hủy</Button>
+              <Button type="primary" htmlType="submit" icon={<SaveOutlined/>} style={{backgroundColor: primaryColor, borderColor: primaryColor}}>Lưu</Button>
+            </Space>
+          </Row>
+        </Form>
       </Modal>
     </div>
   );

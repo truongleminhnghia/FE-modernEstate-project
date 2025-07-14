@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import {
   Table, Button, Input, Space, Tag, Typography, Modal, Tooltip, Row, Col, Form, message, Select,
-  InputNumber, DatePicker, Upload, Image
+  InputNumber, DatePicker, Upload, Image, Tabs
 } from "antd";
 import {
   PlusOutlined, SearchOutlined, EditOutlined, DeleteOutlined, ExclamationCircleFilled,
   SaveOutlined, CloseCircleOutlined, BuildOutlined, CalendarOutlined,
   DollarCircleOutlined, UserOutlined, EnvironmentOutlined, UploadOutlined,
-  PictureOutlined, EyeOutlined, FileTextOutlined
+  PictureOutlined, EyeOutlined, FileTextOutlined, HomeOutlined, BankOutlined
 
 } from "@ant-design/icons";
 import moment from 'moment';
@@ -17,6 +17,7 @@ const { Title, Text } = Typography;
 const { confirm } = Modal;
 const { Option } = Select;
 const { TextArea } = Input;
+const { TabPane } = Tabs;
 
 
 const primaryColor = '#4a90e2';
@@ -106,7 +107,10 @@ const ProjectManagement = () => {
         form.setFieldsValue({ 
           status: 'Sắp_Mở_Bán',
           typeProject: 'Chung_Cư',
-          budget: 0,
+          totalInvestment: 0,
+          unitCurrency: 'VND',
+          unitArea: 'm²',
+          invetorType: 'INDIVIDUAL',
         });
       }
     }
@@ -164,17 +168,14 @@ const ProjectManagement = () => {
         totalFloor: values.totalFloor ?? 0,
         projectArea: values.projectArea ?? 0,
         attribute: values.attribute ? values.attribute.split(',').map(s => s.trim()).filter(Boolean) : [],
-        timeStart: values.startDate ? values.startDate.format('YYYY-MM-DDTHH:mm:ss.SSS[Z]') : new Date().toISOString(),
         priceMin: values.priceMin ?? 0,
         priceMax: values.priceMax ?? 0,
-        unitArea: values.unitArea || 'm2',
+        unitArea: values.unitArea || 'm²',
         unitCurrency: values.unitCurrency || 'VND',
         description: values.description || '',
-        totalInvestment: values.budget ?? 0,
+        totalInvestment: values.totalInvestment ?? 0,
         status: values.status || '',
         addressRequest: {
-          houseNumber: values.addressRequest?.houseNumber || '',
-          street: values.addressRequest?.street || '',
           ward: values.addressRequest?.ward || '',
           district: values.addressRequest?.district || '',
           city: values.addressRequest?.city || '',
@@ -190,23 +191,71 @@ const ProjectManagement = () => {
           avatar: values.invetorRequest?.avatar || '',
           invetorType: values.invetorRequest?.invetorType || 'INDIVIDUAL',
         },
-        imageRequests: fileList.length > 0 ? fileList.map(file => ({ imageUrl: file.url || file.thumbUrl || '' })) : [{ imageUrl: 'https://via.placeholder.com/300x200.png?text=No+Image' }]
+        imageRequests: fileList.length > 0 ? fileList.map(file => ({ imageUrl: file.url || file.thumbUrl || '' })) : []
       };
       console.log('Dữ liệu gửi lên API:', apiData);
       console.log('Status gửi lên API:', apiData.status);
-      await createProject(apiData);
+      
+      // Test với request tối thiểu
+      const minimalData = {
+        title: values.title || 'Test Project',
+        typeProject: values.typeProject || 'Chung_Cư',
+        status: values.status || 'Sắp_Mở_Bán',
+        description: values.description || 'Test description',
+        totalBlock: values.totalBlock ?? 1,
+        totalFloor: values.totalFloor ?? 1,
+        projectArea: values.projectArea ?? 100,
+        priceMin: values.priceMin ?? 1000000,
+        priceMax: values.priceMax ?? 5000000,
+        unitArea: values.unitArea || 'm²',
+        unitCurrency: values.unitCurrency || 'VND',
+        totalInvestment: values.totalInvestment ?? 10000000,
+        blockName: values.blockName ? values.blockName.split(',').map(s => s.trim()).filter(Boolean) : ['Block A'],
+        attribute: values.attribute ? values.attribute.split(',').map(s => s.trim()).filter(Boolean) : ['Test Attribute'],
+        addressRequest: {
+          ward: values.addressRequest?.ward || 'Test Ward',
+          district: values.addressRequest?.district || 'Test District', 
+          city: values.addressRequest?.city || 'Test City',
+          country: values.addressRequest?.country || 'Việt Nam',
+          addressDetail: values.addressRequest?.addressDetail || 'Test Address'
+        },
+        invetorRequest: {
+          name: values.invetorRequest?.name || 'Test Investor',
+          companyName: values.invetorRequest?.companyName || 'Test Company',
+          taxCode: values.invetorRequest?.taxCode || '123456789',
+          phoneNumber: values.invetorRequest?.phoneNumber || '0123456789',
+          email: values.invetorRequest?.email || 'test@example.com',
+          avatar: values.invetorRequest?.avatar || '',
+          invetorType: values.invetorRequest?.invetorType || 'INDIVIDUAL'
+        },
+        imageRequests: []
+      };
+      
+      console.log('Test với dữ liệu tối thiểu:', minimalData);
+      await createProject(minimalData);
       message.success('Thêm dự án mới thành công!');
       await fetchProjects();
       setIsFormModalVisible(false);
       setEditingProject(null);
       setFileList([]);
     } catch (error) {
-      if (error.response && error.response.data && error.response.data.message) {
-        message.error('API: ' + error.response.data.message);
+      console.error('Error saving project:', error);
+      console.error('Error response:', error.response);
+      console.error('Error response data:', error.response?.data);
+      
+      if (error.response && error.response.data) {
+        if (error.response.data.message) {
+          message.error('API: ' + error.response.data.message);
+        } else if (error.response.data.error) {
+          message.error('API: ' + error.response.data.error);
+        } else if (typeof error.response.data === 'string') {
+          message.error('API: ' + error.response.data);
+        } else {
+          message.error('Lỗi API: ' + JSON.stringify(error.response.data));
+        }
       } else {
         message.error('Có lỗi xảy ra khi lưu dự án');
       }
-      console.error('Error saving project:', error);
     }
   };
 
@@ -445,355 +494,365 @@ const ProjectManagement = () => {
         destroyOnClose
       >
         <Form form={form} layout="vertical" onFinish={handleFormSubmit} scrollToFirstError>
-          <Row gutter={16}>
-            <Col span={16}>
-              <Form.Item 
-                name="title" 
-                label="Tên dự án" 
-                rules={[{ required: true, message: 'Vui lòng nhập tên dự án!' }]}
+          <Tabs defaultActiveKey="1" style={{ marginBottom: 24 }}>
+            {/* Tab 1: Thông tin dự án */}
+            <TabPane 
+              tab={<span><HomeOutlined /> Thông tin dự án</span>} 
+              key="1"
+            >
+              <Row gutter={16}>
+                <Col span={16}>
+                  <Form.Item 
+                    name="title" 
+                    label="Tên dự án" 
+                    rules={[{ required: true, message: 'Vui lòng nhập tên dự án!' }]}
+                  >
+                    <Input placeholder="VD: Khu dân cư Sunrise"/>
+                  </Form.Item>
+                </Col>
+                <Col span={8}>
+                  <Form.Item 
+                    name="status" 
+                    label="Trạng thái dự án" 
+                    rules={[{ required: true, message: 'Vui lòng chọn trạng thái dự án!' }]}
+                  >
+                    <Select placeholder="Chọn trạng thái dự án">
+                      {projectStatuses.map(status => (
+                        <Option key={status} value={status}>{status.replace(/_/g, ' ')}</Option>
+                      ))}
+                    </Select>
+                  </Form.Item>
+                </Col>
+              </Row>
+
+              <Form.Item
+                name="typeProject" 
+                label="Loại hình dự án" 
+                rules={[{ required: true, message: 'Vui lòng chọn loại hình dự án!' }]}
               >
-                <Input placeholder="VD: Khu dân cư Sunrise"/>
-              </Form.Item>
-            </Col>
-            <Col span={8}>
-              <Form.Item 
-                name="status" 
-                label="Trạng thái dự án" 
-                rules={[{ required: true, message: 'Vui lòng chọn trạng thái dự án!' }]}
-              >
-                <Select placeholder="Chọn trạng thái dự án">
-                  {projectStatuses.map(status => (
-                    <Option key={status} value={status}>{status.replace(/_/g, ' ')}</Option>
+                <Select placeholder="Chọn loại hình dự án">
+                  {projectTypes.map(type => (
+                    <Option key={type} value={type}>{type.replace(/_/g, ' ')}</Option>
                   ))}
                 </Select>
               </Form.Item>
-            </Col>
-          </Row>
 
-          <Row gutter={16}>
-            <Col span={8}>
-              <Form.Item name={['addressRequest', 'houseNumber']} label="Số nhà">
-                <Input placeholder="VD: 123" />
+              <Form.Item 
+                name="description" 
+                label="Mô tả chi tiết dự án" 
+                rules={[{ required: true, message: 'Vui lòng nhập mô tả!' }]}
+              >
+                <TextArea rows={3} placeholder="Mô tả chi tiết về dự án, quy mô, tiện ích..."/>
               </Form.Item>
-            </Col>
-            <Col span={8}>
-              <Form.Item name={['addressRequest', 'street']} label="Đường">
-                <Input placeholder="VD: Nguyễn Huệ" />
+
+              <Row gutter={16}>
+                <Col xs={24} sm={12}>
+                  <Form.Item 
+                    name="totalInvestment" 
+                    label="Tổng vốn đầu tư (VND)" 
+                    rules={[{ required: true, message: 'Vui lòng nhập tổng vốn đầu tư!'}]}
+                  >
+                    <InputNumber 
+                      style={{width: '100%'}} 
+                      min={0} 
+                      formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')} 
+                      parser={value => value.replace(/\$\s?|(,*)/g, '')} 
+                      placeholder="Nhập tổng vốn đầu tư"
+                    />
+                  </Form.Item>
+                </Col>
+              </Row>
+
+              <Row gutter={16}>
+                <Col xs={24} sm={12}>
+                  <Form.Item 
+                    name="totalBlock" 
+                    label="Tổng số Block" 
+                    rules={[{ required: true, message: 'Vui lòng nhập tổng số Block!' }]}
+                  >
+                    <InputNumber min={1} style={{width: '100%'}} placeholder="VD: 5" />
+                  </Form.Item>
+                </Col>
+                <Col xs={24} sm={12}>
+                  <Form.Item 
+                    name="totalFloor" 
+                    label="Tổng số tầng" 
+                    rules={[{ required: true, message: 'Vui lòng nhập tổng số tầng!' }]}
+                  >
+                    <InputNumber min={1} style={{width: '100%'}} placeholder="VD: 3" />
+                  </Form.Item>
+                </Col>
+              </Row>
+
+              <Row gutter={16}>
+                <Col xs={24} sm={12}>
+                  <Form.Item 
+                    name="projectArea" 
+                    label="Diện tích dự án (m2)" 
+                    rules={[{ required: true, message: 'Vui lòng nhập diện tích dự án!' }]}
+                  >
+                    <InputNumber min={1} style={{width: '100%'}} placeholder="VD: 15000" />
+                  </Form.Item>
+                </Col>
+                <Col xs={24} sm={12}>
+                  <Form.Item 
+                    name="unitArea" 
+                    label="Đơn vị diện tích" 
+                    rules={[{ required: true, message: 'Vui lòng nhập đơn vị diện tích!' }]}
+                  >
+                    <Input placeholder="VD: m2" />
+                  </Form.Item>
+                </Col>
+              </Row>
+
+              <Row gutter={16}>
+                <Col xs={24} sm={12}>
+                  <Form.Item 
+                    name="unitCurrency" 
+                    label="Đơn vị tiền tệ" 
+                    rules={[{ required: true, message: 'Vui lòng nhập đơn vị tiền tệ!' }]}
+                  >
+                    <Select placeholder="Chọn đơn vị tiền tệ">
+                      <Option value="VND">VND</Option>
+                      <Option value="USD">USD</Option>
+                    </Select>
+                  </Form.Item>
+                </Col>
+                <Col xs={24} sm={12}>
+                  <Form.Item 
+                    name="priceMin" 
+                    label="Giá thấp nhất" 
+                    rules={[{ required: true, message: 'Vui lòng nhập giá thấp nhất!' }]}
+                  >
+                    <InputNumber min={0} style={{width: '100%'}} placeholder="VD: 15000000000" />
+                  </Form.Item>
+                </Col>
+              </Row>
+
+              <Row gutter={16}>
+                <Col xs={24} sm={12}>
+                  <Form.Item 
+                    name="priceMax" 
+                    label="Giá cao nhất" 
+                    rules={[{ required: true, message: 'Vui lòng nhập giá cao nhất!' }]}
+                  >
+                    <InputNumber min={0} style={{width: '100%'}} placeholder="VD: 35000000000" />
+                  </Form.Item>
+                </Col>
+                <Col xs={24} sm={12}>
+                  <Form.Item 
+                    name="blockName" 
+                    label="Tên các Block (cách nhau bởi dấu phẩy)" 
+                    rules={[{ required: true, message: 'Vui lòng nhập tên các Block!' }]}
+                  >
+                    <Input placeholder="VD: Block A, Block B, Block C" />
+                  </Form.Item>
+                </Col>
+              </Row>
+
+              <Form.Item 
+                name="attribute" 
+                label="Thuộc tính dự án (cách nhau bởi dấu phẩy)" 
+                rules={[{ required: true, message: 'Vui lòng nhập thuộc tính dự án!' }]}
+              >
+                <Input placeholder="VD: Biệt thự song lập, Biệt thự đơn lập, Shophouse" />
               </Form.Item>
-            </Col>
-            <Col span={8}>
-              <Form.Item name={['addressRequest', 'ward']} label="Phường/Xã">
-                <Input placeholder="VD: Bến Nghé" />
-              </Form.Item>
-            </Col>
-          </Row>
-          <Row gutter={16}>
-            <Col span={8}>
-              <Form.Item name={['addressRequest', 'district']} label="Quận/Huyện">
-                <Input placeholder="VD: Quận 1" />
-              </Form.Item>
-            </Col>
-            <Col span={8}>
-              <Form.Item name={['addressRequest', 'city']} label="Thành phố">
-                <Input placeholder="VD: Hồ Chí Minh" />
-              </Form.Item>
-            </Col>
-            <Col span={8}>
-              <Form.Item name={['addressRequest', 'country']} label="Quốc gia">
-                <Input placeholder="VD: Việt Nam" />
-              </Form.Item>
-            </Col>
-          </Row>
-          <Row gutter={16}>
-            <Col span={24}>
-              <Form.Item name={['addressRequest', 'addressDetail']} label="Chi tiết địa chỉ">
+            </TabPane>
+
+            {/* Tab 2: Địa chỉ dự án */}
+            <TabPane 
+              tab={<span><EnvironmentOutlined /> Địa chỉ dự án</span>} 
+              key="2"
+            >
+              <Row gutter={16}>
+                <Col span={12}>
+                  <Form.Item 
+                    name={['addressRequest', 'ward']} 
+                    label="Phường/Xã *" 
+                    rules={[{ required: true, message: 'Vui lòng nhập phường/xã!' }]}
+                  >
+                    <Input placeholder="VD: Bến Nghé" />
+                  </Form.Item>
+                </Col>
+                <Col span={12}>
+                  <Form.Item 
+                    name={['addressRequest', 'district']} 
+                    label="Quận/Huyện *" 
+                    rules={[{ required: true, message: 'Vui lòng nhập quận/huyện!' }]}
+                  >
+                    <Input placeholder="VD: Quận 1" />
+                  </Form.Item>
+                </Col>
+              </Row>
+
+              <Row gutter={16}>
+                <Col span={12}>
+                  <Form.Item 
+                    name={['addressRequest', 'city']} 
+                    label="Thành phố *" 
+                    rules={[{ required: true, message: 'Vui lòng nhập thành phố!' }]}
+                  >
+                    <Input placeholder="VD: Hồ Chí Minh" />
+                  </Form.Item>
+                </Col>
+                <Col span={12}>
+                  <Form.Item 
+                    name={['addressRequest', 'country']} 
+                    label="Quốc gia"
+                  >
+                    <Input placeholder="VD: Việt Nam" />
+                  </Form.Item>
+                </Col>
+              </Row>
+
+              <Form.Item 
+                name={['addressRequest', 'addressDetail']} 
+                label="Chi tiết địa chỉ *" 
+                rules={[{ required: true, message: 'Vui lòng nhập chi tiết địa chỉ!' }]}
+              >
                 <Input placeholder="VD: Căn hộ 12A, Tòa nhà Landmark 81" />
               </Form.Item>
-            </Col>
-          </Row>
+            </TabPane>
 
-          <Form.Item 
-            name="description" 
-            label="Mô tả chi tiết dự án" 
-            rules={[{ required: true, message: 'Vui lòng nhập mô tả!' }]}
-          >
-            <TextArea rows={3} placeholder="Mô tả chi tiết về dự án, quy mô, tiện ích..."/>
-          </Form.Item>
+            {/* Tab 3: Chủ đầu tư */}
+            <TabPane 
+              tab={<span><BankOutlined /> Chủ đầu tư</span>} 
+              key="3"
+            >
+              <Row gutter={16}>
+                <Col xs={24} sm={12}>
+                  <Form.Item 
+                    name={["invetorRequest", "name"]} 
+                    label="Tên chủ đầu tư"
+                  >
+                    <Input placeholder="VD: Nguyễn Văn A" />
+                  </Form.Item>
+                </Col>
+                <Col xs={24} sm={12}>
+                  <Form.Item 
+                    name={["invetorRequest", "companyName"]} 
+                    label="Tên công ty"
+                  >
+                    <Input placeholder="VD: Tập đoàn Sunshine Group" />
+                  </Form.Item>
+                </Col>
+              </Row>
 
-          <Row gutter={16}>
-            <Col xs={24} sm={12}>
-              <Form.Item 
-                name="budget" 
-                label="Ngân sách (VND)" 
-                rules={[{ required: true, message: 'Vui lòng nhập ngân sách dự án!'}]}
-              >
-                <InputNumber 
-                  style={{width: '100%'}} 
-                  min={0} 
-                  formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')} 
-                  parser={value => value.replace(/\$\s?|(,*)/g, '')} 
-                  placeholder="Nhập ngân sách bằng số"
-                />
-              </Form.Item>
-            </Col>
-            <Col xs={24} sm={12}>
-              <Form.Item 
-                name="projectManager" 
-                label="Quản lý Dự án" 
-                rules={[{ required: true, message: 'Vui lòng nhập tên quản lý dự án!' }]}
-              >
-                <Input placeholder="VD: Nguyễn Văn A"/>
-              </Form.Item>
-            </Col>
-          </Row>
+              <Row gutter={16}>
+                <Col xs={24} sm={12}>
+                  <Form.Item 
+                    name={["invetorRequest", "taxCode"]} 
+                    label="Mã số thuế"
+                  >
+                    <Input placeholder="VD: 0108888888" />
+                  </Form.Item>
+                </Col>
+                <Col xs={24} sm={12}>
+                  <Form.Item 
+                    name={["invetorRequest", "phoneNumber"]} 
+                    label="Số điện thoại"
+                  >
+                    <Input placeholder="VD: 0912345678" />
+                  </Form.Item>
+                </Col>
+              </Row>
 
-          <Row gutter={16}>
-            <Col xs={24} sm={12}>
-              <Form.Item 
-                name="startDate" 
-                label="Ngày bắt đầu" 
-                rules={[{ required: true, message: 'Vui lòng chọn ngày bắt đầu!' }]}
-              >
-                <DatePicker style={{width: '100%'}} format="DD/MM/YYYY" placeholder="Chọn ngày bắt đầu"/>
-              </Form.Item>
-            </Col>
-            <Col xs={24} sm={12}>
-              <Form.Item 
-                name="expectedCompletion" 
-                label="Dự kiến hoàn thành" 
-                rules={[{ required: true, message: 'Vui lòng chọn ngày hoàn thành dự kiến!' }]}
-              >
-                <DatePicker style={{width: '100%'}} format="DD/MM/YYYY" placeholder="Chọn ngày hoàn thành"/>
-              </Form.Item>
-            </Col>
-          </Row>
+              <Row gutter={16}>
+                <Col xs={24} sm={12}>
+                  <Form.Item 
+                    name={["invetorRequest", "email"]} 
+                    label="Email" 
+                    rules={[{ type: 'email', message: 'Vui lòng nhập email hợp lệ!' }]}
+                  >
+                    <Input placeholder="VD: nguyenvana@sunshinegroup.com.vn" />
+                  </Form.Item>
+                </Col>
+                <Col xs={24} sm={12}>
+                  <Form.Item 
+                    name={["invetorRequest", "avatar"]} 
+                    label="Avatar (URL)"
+                  > 
+                    <Input placeholder="URL ảnh đại diện" />
+                  </Form.Item>
+                </Col>
+              </Row>
 
-          <Row gutter={16}>
-            <Col xs={24} sm={12}>
               <Form.Item 
-                name="contactEmail" 
-                label="Email Liên hệ" 
-                rules={[{ type: 'email', message: 'Vui lòng nhập email hợp lệ!' }]}
-              >
-                <Input placeholder="VD: contact@company.com"/>
+                name={["invetorRequest", "invetorType"]} 
+                label="Loại chủ đầu tư"
+              > 
+                <Select placeholder="Chọn loại">
+                  <Option value="INDIVIDUAL">Cá nhân</Option>
+                  <Option value="COMPANY">Công ty</Option>
+                </Select>
               </Form.Item>
-            </Col>
-            <Col xs={24} sm={12}>
-              <Form.Item 
-                name="contactPhone" 
-                label="Số điện thoại Liên hệ" 
+            </TabPane>
+
+            {/* Tab 4: Hình ảnh */}
+            <TabPane 
+              tab={<span><PictureOutlined /> Hình ảnh</span>} 
+              key="4"
+            >
+              <Form.Item
+                name="images"
+                label="Hình ảnh dự án"
                 rules={[]}
               >
-                <Input placeholder="VD: 0901 234 567"/>
+                <Upload
+                  listType="picture-card"
+                  multiple
+                  maxCount={5}
+                  fileList={fileList}
+                  beforeUpload={(file) => {
+                    const isImage = file.type.startsWith('image/');
+                    if (!isImage) {
+                      message.error('Bạn chỉ có thể tải lên file hình ảnh!');
+                      return Upload.LIST_IGNORE;
+                    }
+                    const isLt2M = file.size / 1024 / 1024 < 2;
+                    if (!isLt2M) {
+                      message.error('Hình ảnh phải nhỏ hơn 2MB!');
+                      return Upload.LIST_IGNORE;
+                    }
+                    return true;
+                  }}
+                  onPreview={handlePreview}
+                  onChange={handleChange}
+                >
+                  {fileList.length >= 5 ? null : (
+                    <div>
+                      <PlusOutlined />
+                      <div style={{ marginTop: 8 }}>Tải lên</div>
+                    </div>
+                  )}
+                </Upload>
+                <Input
+                  placeholder="Hoặc dán URL ảnh vào đây"
+                  style={{ marginTop: 8 }}
+                  onPressEnter={e => {
+                    const url = e.target.value.trim();
+                    if (!url) return;
+                    if (!/^https?:\/\//.test(url)) {
+                      message.error('URL không hợp lệ!');
+                      return;
+                    }
+                    setFileList(prev => ([...prev, { uid: Date.now() + '', url, name: url, status: 'done' }]));
+                    e.target.value = '';
+                  }}
+                  onBlur={e => {
+                    const url = e.target.value.trim();
+                    if (!url) return;
+                    if (!/^https?:\/\//.test(url)) {
+                      message.error('URL không hợp lệ!');
+                      return;
+                    }
+                    setFileList(prev => ([...prev, { uid: Date.now() + '', url, name: url, status: 'done' }]));
+                    e.target.value = '';
+                  }}
+                />
               </Form.Item>
-            </Col>
-          </Row>
-
-          <Form.Item
-            name="typeProject" 
-            label="Loại hình dự án" 
-            rules={[{ required: true, message: 'Vui lòng chọn loại hình dự án!' }]}
-          >
-            <Select placeholder="Chọn loại hình dự án">
-              {projectTypes.map(type => (
-                <Option key={type} value={type}>{type.replace(/_/g, ' ')}</Option>
-              ))}
-            </Select>
-          </Form.Item>
-
-          <Form.Item
-            name="images"
-            label="Hình ảnh dự án"
-            rules={[]}
-          >
-            <Upload
-              listType="picture-card"
-              multiple
-              maxCount={5}
-              fileList={fileList}
-              beforeUpload={(file) => {
-                const isImage = file.type.startsWith('image/');
-                if (!isImage) {
-                  message.error('Bạn chỉ có thể tải lên file hình ảnh!');
-                  return Upload.LIST_IGNORE;
-                }
-                const isLt2M = file.size / 1024 / 1024 < 2;
-                if (!isLt2M) {
-                  message.error('Hình ảnh phải nhỏ hơn 2MB!');
-                  return Upload.LIST_IGNORE;
-                }
-                // Allow the file to be added, Ant Design sẽ generate thumbUrl
-                return true;
-              }}
-              onPreview={handlePreview}
-              onChange={handleChange}
-            >
-              {fileList.length >= 5 ? null : (
-                <div>
-                  <PlusOutlined />
-                  <div style={{ marginTop: 8 }}>Tải lên</div>
-                </div>
-              )}
-            </Upload>
-            <Input
-              placeholder="Hoặc dán URL ảnh vào đây"
-              style={{ marginTop: 8 }}
-              onPressEnter={e => {
-                const url = e.target.value.trim();
-                if (!url) return;
-                if (!/^https?:\/\//.test(url)) {
-                  message.error('URL không hợp lệ!');
-                  return;
-                }
-                setFileList(prev => ([...prev, { uid: Date.now() + '', url, name: url, status: 'done' }]));
-                e.target.value = '';
-              }}
-              onBlur={e => {
-                const url = e.target.value.trim();
-                if (!url) return;
-                if (!/^https?:\/\//.test(url)) {
-                  message.error('URL không hợp lệ!');
-                  return;
-                }
-                setFileList(prev => ([...prev, { uid: Date.now() + '', url, name: url, status: 'done' }]));
-                e.target.value = '';
-              }}
-            />
-          </Form.Item>
-
-          <Row gutter={16}>
-            <Col xs={24} sm={12}>
-              <Form.Item 
-                name="totalBlock" 
-                label="Tổng số Block" 
-                rules={[{ required: true, message: 'Vui lòng nhập tổng số Block!' }]}
-              >
-                <InputNumber min={1} style={{width: '100%'}} placeholder="VD: 5" />
-              </Form.Item>
-            </Col>
-            <Col xs={24} sm={12}>
-              <Form.Item 
-                name="totalFloor" 
-                label="Tổng số tầng" 
-                rules={[{ required: true, message: 'Vui lòng nhập tổng số tầng!' }]}
-              >
-                <InputNumber min={1} style={{width: '100%'}} placeholder="VD: 3" />
-              </Form.Item>
-            </Col>
-          </Row>
-          <Row gutter={16}>
-            <Col xs={24} sm={12}>
-              <Form.Item 
-                name="projectArea" 
-                label="Diện tích dự án (m2)" 
-                rules={[{ required: true, message: 'Vui lòng nhập diện tích dự án!' }]}
-              >
-                <InputNumber min={1} style={{width: '100%'}} placeholder="VD: 15000" />
-              </Form.Item>
-            </Col>
-            <Col xs={24} sm={12}>
-              <Form.Item 
-                name="unitArea" 
-                label="Đơn vị diện tích" 
-                rules={[{ required: true, message: 'Vui lòng nhập đơn vị diện tích!' }]}
-              >
-                <Input placeholder="VD: m2" />
-              </Form.Item>
-            </Col>
-          </Row>
-          <Row gutter={16}>
-            <Col xs={24} sm={12}>
-              <Form.Item 
-                name="unitCurrency" 
-                label="Đơn vị tiền tệ" 
-                rules={[{ required: true, message: 'Vui lòng nhập đơn vị tiền tệ!' }]}
-              >
-                <Input placeholder="VD: VND" />
-              </Form.Item>
-            </Col>
-            <Col xs={24} sm={12}>
-              <Form.Item 
-                name="priceMin" 
-                label="Giá thấp nhất" 
-                rules={[{ required: true, message: 'Vui lòng nhập giá thấp nhất!' }]}
-              >
-                <InputNumber min={0} style={{width: '100%'}} placeholder="VD: 15000000000" />
-              </Form.Item>
-            </Col>
-          </Row>
-          <Row gutter={16}>
-            <Col xs={24} sm={12}>
-              <Form.Item 
-                name="priceMax" 
-                label="Giá cao nhất" 
-                rules={[{ required: true, message: 'Vui lòng nhập giá cao nhất!' }]}
-              >
-                <InputNumber min={0} style={{width: '100%'}} placeholder="VD: 35000000000" />
-              </Form.Item>
-            </Col>
-            <Col xs={24} sm={12}>
-              <Form.Item 
-                name="blockName" 
-                label="Tên các Block (cách nhau bởi dấu phẩy)" 
-                rules={[{ required: true, message: 'Vui lòng nhập tên các Block!' }]}
-              >
-                <Input placeholder="VD: Block A, Block B, Block C" />
-              </Form.Item>
-            </Col>
-          </Row>
-          <Form.Item 
-            name="attribute" 
-            label="Thuộc tính dự án (cách nhau bởi dấu phẩy)" 
-            rules={[{ required: true, message: 'Vui lòng nhập thuộc tính dự án!' }]}
-          >
-            <Input placeholder="VD: Biệt thự song lập, Biệt thự đơn lập, Shophouse" />
-          </Form.Item>
-          <Form.Item label="Thông tin Chủ đầu tư" style={{marginBottom: 0}}>
-            <Row gutter={16}>
-              <Col xs={24} sm={8}>
-                <Form.Item name={["invetorRequest", "name"]} label="Tên chủ đầu tư" rules={[{ required: true, message: 'Nhập tên chủ đầu tư!' }]}>
-                  <Input placeholder="VD: Nguyễn Văn A" />
-                </Form.Item>
-              </Col>
-              <Col xs={24} sm={8}>
-                <Form.Item name={["invetorRequest", "companyName"]} label="Tên công ty" rules={[{ required: true, message: 'Nhập tên công ty!' }]}>
-                  <Input placeholder="VD: Tập đoàn Sunshine Group" />
-                </Form.Item>
-              </Col>
-              <Col xs={24} sm={8}>
-                <Form.Item name={["invetorRequest", "taxCode"]} label="Mã số thuế" rules={[{ required: true, message: 'Nhập mã số thuế!' }]}>
-                  <Input placeholder="VD: 0108888888" />
-                </Form.Item>
-              </Col>
-            </Row>
-            <Row gutter={16}>
-              <Col xs={24} sm={8}>
-                <Form.Item name={["invetorRequest", "phoneNumber"]} label="Số điện thoại" rules={[{ required: true, message: 'Nhập số điện thoại!' }]}>
-                  <Input placeholder="VD: 0912345678" />
-                </Form.Item>
-              </Col>
-              <Col xs={24} sm={8}>
-                <Form.Item name={["invetorRequest", "email"]} label="Email" rules={[{ required: true, type: 'email', message: 'Nhập email hợp lệ!' }]}>
-                  <Input placeholder="VD: nguyenvana@sunshinegroup.com.vn" />
-                </Form.Item>
-              </Col>
-              <Col xs={24} sm={8}>
-                <Form.Item name={["invetorRequest", "avatar"]} label="Avatar (URL)" rules={[]}> 
-                  <Input placeholder="URL ảnh đại diện" />
-                </Form.Item>
-              </Col>
-            </Row>
-            <Row gutter={16}>
-              <Col xs={24} sm={8}>
-                <Form.Item name={["invetorRequest", "invetorType"]} label="Loại chủ đầu tư" rules={[{ required: true, message: 'Chọn loại chủ đầu tư!' }]}> 
-                  <Select placeholder="Chọn loại">
-                    <Option value="INDIVIDUAL">Cá nhân</Option>
-                    <Option value="COMPANY">Công ty</Option>
-                  </Select>
-                </Form.Item>
-              </Col>
-            </Row>
-          </Form.Item>
+            </TabPane>
+          </Tabs>
 
           <Row justify="end" style={{marginTop: 24}}>
             <Space>
