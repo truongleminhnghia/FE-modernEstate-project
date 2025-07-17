@@ -6,6 +6,7 @@ import {
   SettingOutlined,
   FileTextOutlined,
   ShoppingCartOutlined,
+  StarOutlined,
 } from "@ant-design/icons";
 import { useNavigate, useLocation } from "react-router-dom";
 
@@ -33,6 +34,12 @@ const AdminSidebar = ({ collapsed, onCollapse }) => {
       icon: <ShoppingCartOutlined />,
       label: "Giao dịch",
       path: "/admin/transactions",
+    },
+    {
+      key: "reviews",
+      icon: <StarOutlined />,
+      label: "Quản lý đánh giá",
+      path: "/admin/reviews",
     }
   ];
 

@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Table, Tag, Space, Typography, Spin, Alert, Input, Row, Col, Select, DatePicker, Tooltip } from 'antd';
+import { Table, Tag, Space, Typography, Spin, Alert, Input, Row, Col, Select, DatePicker, Tooltip, message } from 'antd';
 import moment from 'moment';
 import 'moment/locale/vi'; 
+import TransactionDetail from '../../components/ui/TransactionDetail';
 
 moment.locale('vi');
 
@@ -133,13 +134,15 @@ const getTransactionTypeText = (type) => {
 };
 
 const OwnerTransactions = () => {
-  const [transactions, setTransactions] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [transactions, setTransactions] = useState(mockTransactions);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [searchText, setSearchText] = useState('');
   const [filterType, setFilterType] = useState(null);
   const [filterStatus, setFilterStatus] = useState(null);
   const [filterDateRange, setFilterDateRange] = useState(null);
+  const [selectedTransaction, setSelectedTransaction] = useState(null);
+  const [detailModalVisible, setDetailModalVisible] = useState(false);
 
   // Giả lập fetch dữ liệu
   useEffect(() => {
@@ -176,6 +179,20 @@ const OwnerTransactions = () => {
 
   const handleDateRangeFilterChange = (dates) => {
     setFilterDateRange(dates);
+  };
+
+  const handleViewDetails = (record) => {
+    setSelectedTransaction(record);
+    setDetailModalVisible(true);
+  };
+
+  const handleDetailClose = () => {
+    setDetailModalVisible(false);
+    setSelectedTransaction(null);
+  };
+
+  const handleReviewSuccess = () => {
+    message.success('Đánh giá đã được gửi thành công!');
   };
 
 
@@ -264,7 +281,7 @@ const OwnerTransactions = () => {
       key: 'action',
       render: (_, record) => (
         <Space size="middle">
-          <a onClick={() => alert(`Xem chi tiết giao dịch: ${record.id}\nGhi chú: ${record.notes}`)}>Xem Chi Tiết</a>
+          <a onClick={() => handleViewDetails(record)}>Xem Chi Tiết</a>
           {/* Bạn có thể thêm các hành động khác ở đây, ví dụ: Sửa, Hủy (nếu có quyền) */}
         </Space>
       ),
@@ -344,6 +361,14 @@ const OwnerTransactions = () => {
           expandedRowRender: record => <p style={{ margin: 0 }}><b>Ghi chú:</b> {record.notes || 'Không có ghi chú'}</p>,
           // rowExpandable: record => record.notes && record.notes.length > 0, // Chỉ cho phép mở rộng nếu có ghi chú
         }}
+      />
+
+      {/* Modal chi tiết giao dịch */}
+      <TransactionDetail
+        visible={detailModalVisible}
+        transaction={selectedTransaction}
+        onClose={handleDetailClose}
+        onReviewSuccess={handleReviewSuccess}
       />
     </div>
   );

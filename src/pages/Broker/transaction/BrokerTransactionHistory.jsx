@@ -21,6 +21,7 @@ import {
 } from '@ant-design/icons'
 import '../BrokerProfile.css'
 import axios from 'axios'
+import TransactionDetail from '../../../components/ui/TransactionDetail'
 
 const { Title } = Typography
 const { RangePicker } = DatePicker
@@ -45,6 +46,8 @@ const BrokerTransactionHistory = () => {
   const [transactions, setTransactions] = useState([])
   const [filteredData, setFilteredData] = useState([])
   const [loading, setLoading] = useState(true)
+  const [selectedTransaction, setSelectedTransaction] = useState(null)
+  const [detailModalVisible, setDetailModalVisible] = useState(false)
 
   // Fetch transactions from API
   useEffect(() => {
@@ -114,7 +117,18 @@ const BrokerTransactionHistory = () => {
   }
 
   const handleViewDetails = (record) => {
-    message.info(`Xem chi tiết giao dịch: ${record.reference}`)
+    setSelectedTransaction(record);
+    setDetailModalVisible(true);
+  }
+
+  const handleDetailClose = () => {
+    setDetailModalVisible(false);
+    setSelectedTransaction(null);
+  }
+
+  const handleReviewSuccess = () => {
+    message.success('Đánh giá đã được gửi thành công!');
+    // Có thể refresh lại danh sách giao dịch nếu cần
   }
 
   const columns = [
@@ -272,6 +286,14 @@ const BrokerTransactionHistory = () => {
           />
         )}
       </Card>
+
+      {/* Modal chi tiết giao dịch */}
+      <TransactionDetail
+        visible={detailModalVisible}
+        transaction={selectedTransaction}
+        onClose={handleDetailClose}
+        onReviewSuccess={handleReviewSuccess}
+      />
     </div>
   )
 }

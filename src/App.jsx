@@ -1,3 +1,4 @@
+import React from "react";
 import { createBrowserRouter, Navigate, RouterProvider } from "react-router-dom";
 import LayoutGuest from "./components/layouts/LayoutGuest";
 import HomeScreen from "./pages/User/home/HomeScreen";
@@ -22,6 +23,7 @@ import ListingManagement from "./pages/staff/listings/ListingManagement";
 import TransactionManagement from "./pages/admins/transactions/TransactionManagement";
 import DashboardPage from "./pages/admins/dashboard/DashboardPage";
 import AdminProfile from "./pages/admins/profile/AdminProfile";
+import ReviewManagement from "./pages/admins/reviews/ReviewManagement";
 import StaffLayout from "./components/ui/layouts/staff/StaffLayout";
 import ServiceManagementPage from "./pages/staff/listings/services/ServiceManagement";
 import ApartmentsPage from "./pages/ApartmentsPage/ApartmentsPage";
@@ -237,6 +239,10 @@ const router = createBrowserRouter([
       {
         path: "transactions",
         element: <TransactionManagement />,
+      },
+      {
+        path: "reviews",
+        element: <ReviewManagement />,
       },
       {
         path: "profile",
