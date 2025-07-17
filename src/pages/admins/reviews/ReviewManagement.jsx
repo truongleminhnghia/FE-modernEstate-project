@@ -25,7 +25,7 @@ import {
   UserOutlined,
   CalendarOutlined
 } from '@ant-design/icons';
-import { getReviews } from '../../../apis/apiCustomer.api';
+import { getReviews } from '../../../services/review.service';
 import moment from 'moment';
 
 const { Title, Text } = Typography;

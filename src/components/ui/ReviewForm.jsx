@@ -13,7 +13,7 @@ import {
   StarOutlined,
   SendOutlined
 } from '@ant-design/icons';
-import { createReview } from '../../apis/apiCustomer.api';
+import { createReview } from '../../services/review.service'
 
 const { Title, Text } = Typography;
 const { TextArea } = Input;
