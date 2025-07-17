@@ -9,7 +9,8 @@ import ListingsTrendChart from './ListingsTrendChart';
 import UserRolesPieChart from './UserRolesPieChart';
 import RecentListingsTable from './RecentListingsTable';
 import RecentUsersTable from './RecentUsersTable';
-import { account, post, getRevenue } from '../../../services/dashboard.service';
+import { account, post, getRevenue, getReview } from '../../../services/dashboard.service';
+import ReviewTable from './ReviewTable';
 
 const { Title } = Typography;
 const primaryColor = '#4a90e2';
@@ -27,6 +28,7 @@ const DashboardPage = () => {
   const [summaryStats, setSummaryStats] = useState({});
   const [accountData, setAccountData] = useState({ totalAccounts: 0 });
   const [postData, setPostData] = useState({});
+  const [reviewData, setReviewData] = useState({});
   const [revenue, setRevenue] = useState(0);
 
   useEffect(() => {
@@ -44,6 +46,25 @@ const DashboardPage = () => {
       }
     };
     loadAccount();
+  }, []);
+
+  useEffect(() => {
+    const loadReview = async () => {
+      setLoadingStats(true);
+      try {
+        const res = await getReview();
+        if (res) {
+          setReviewData(res.data);
+        }
+      }
+      catch (error) {
+        console.error('Error loading review data:', error);
+      }
+      finally {
+        setLoadingStats(false);
+      }
+    };
+    loadReview();
   }, []);
 
   useEffect(() => {
@@ -102,13 +123,13 @@ const DashboardPage = () => {
           <StatCard title="Doanh thu" value={revenue.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })} icon={<DollarCircleOutlined />} color="#13C2C2" loading={loadingStats} />
         </Col>
         <Col xs={24} sm={12} md={12} lg={6}>
-          <StatCard title="Tin chờ duyệt" value={postData.totalConfirm} icon={<ClockCircleOutlined />} color="#FF4D4F" loading={loadingStats} />
+          <StatCard title="Đánh giá" value={reviewData.totalReviews} icon={<ClockCircleOutlined />} color="#FF4D4F" loading={loadingStats} />
         </Col>
       </Row>
 
       <Row gutter={[24, 24]} style={{ marginBottom: 24 }}>
-        <Col xs={24} lg={16}><ListingsTrendChart /></Col>
-        <Col xs={24} lg={8}><UserRolesPieChart /></Col>
+        <Col xs={24} lg={12}><ListingsTrendChart /></Col>
+        <Col xs={24} lg={12}><ReviewTable listReview={reviewData.reviews} /></Col>
       </Row>
 
       <Row gutter={[24, 24]}>
