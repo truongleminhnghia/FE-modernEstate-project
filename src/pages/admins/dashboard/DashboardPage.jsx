@@ -133,7 +133,7 @@ const DashboardPage = () => {
       </Row>
 
       <Row gutter={[24, 24]}>
-        <Col xs={24} lg={12}><RecentListingsTable /></Col>
+        <Col xs={24} lg={12}><RecentListingsTable listPost={postData.posts} /></Col>
         <Col xs={24} lg={12}><RecentUsersTable listUser={accountData.accounts} /></Col>
       </Row>
     </div>

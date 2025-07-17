@@ -1,7 +1,9 @@
+import axios from "axios";
+
 export const createReview = async (value) => {
-    const response = await axios.get(
-        `${import.meta.env.VITE_API_URL}dashboards/reviews`,
-        request = value,
+    const response = await axios.post(
+        `${import.meta.env.VITE_API_URL}reviews`,
+        value,
         {
             headers: {
                 Authorization: `${localStorage.getItem("token")}`,
@@ -16,7 +18,7 @@ export const createReview = async (value) => {
 
 export const getReviews = async () => {
     const response = await axios.get(
-        `${import.meta.env.VITE_API_URL}dashboards/reviews`,
+        `${import.meta.env.VITE_API_URL}reviews`,
         {
             headers: {
                 Authorization: `${localStorage.getItem("token")}`,
