@@ -215,12 +215,9 @@ const ApartmentDetail = () => {
         console.warn('Trình duyệt không hỗ trợ geolocation')
       }
     }
-
-    // Delay để đảm bảo Maps và Symbol đều ready
     const delay = setTimeout(() => {
       runGeo()
-    }, 300) // 👈 delay 300ms đảm bảo ổn định
-
+    }, 300)
     return () => clearTimeout(delay)
   }, [isLoaded])
 
@@ -233,8 +230,7 @@ const ApartmentDetail = () => {
     ) {
       const addressObj = apartment.property.address
       const addressString = [
-        addressObj.houseNumber,
-        addressObj.street,
+        addressObj.addressDetail,
         addressObj.ward,
         addressObj.district,
         addressObj.city,
@@ -247,10 +243,14 @@ const ApartmentDetail = () => {
       geocoder.geocode({ address: addressString }, (results, status) => {
         if (status === 'OK' && results[0]) {
           const loc = results[0].geometry.location
-          setMapLatLng({ lat: loc.lat(), lng: loc.lng() })
+          const lat = loc.lat();
+          const lng = loc.lng();
+          // setMapLatLng({ lat: loc.lat(), lng: loc.lng() })
+          setMapLatLng({ lat, lng });
           if (streetViewRef.current) {
             new window.google.maps.StreetViewPanorama(streetViewRef.current, {
-              position: { lat: 10.841172783357809, lng: 106.83782579813013 },
+              // position: { lat: 10.841172783357809, lng: 106.83782579813013 },
+              position: { lat, lng },
               pov: { heading: 34, pitch: 10 },
               zoom: 1,
             })
@@ -326,8 +326,7 @@ const ApartmentDetail = () => {
   const images = validImages.length > 0 ? validImages : fallbackImages
   const addressObj = property.address
   const addressString = [
-    addressObj.houseNumber,
-    addressObj.street,
+    addressObj.addressDetail,
     addressObj.ward,
     addressObj.district,
     addressObj.city,

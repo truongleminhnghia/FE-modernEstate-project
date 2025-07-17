@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Lottie from 'lottie-react';
-import { Rate, Input, Button, message } from 'antd';
+import { Rate, Input, Button, message, List, Avatar } from 'antd';
 import axios from 'axios';
 
 import successAnimation from '../../auth/success.json';
-import { createReview } from '../../../services/review.service';
+import { createReview, getReviews } from '../../../services/review.service';
 
 const Success = ({
   title = 'Thanh toán thành công!',
@@ -19,6 +19,31 @@ const Success = ({
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState('');
   const [submitting, setSubmitting] = useState(false);
+
+  // State và loader cho danh sách reviews
+  const [reviews, setReviews] = useState([]);
+  const [loadingReviews, setLoadingReviews] = useState(false);
+
+  // Fetch reviews từ server
+  const fetchReviews = async () => {
+    setLoadingReviews(true);
+    try {
+      const res = await getReviews({ pageCurrent: 1, pageSize: 100 });
+      if (res.success && res.data) {
+        // Giả sử API trả về { rowDatas: [...] }
+        setReviews(res.data.rowDatas || []);
+      }
+    } catch (err) {
+      console.error('Error fetching reviews:', err);
+      message.error('Không thể tải danh sách đánh giá');
+    } finally {
+      setLoadingReviews(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchReviews();
+  }, []);
 
   const handleClick = () => {
     if (onButtonClick) {
@@ -37,7 +62,7 @@ const Success = ({
     try {
       const user = JSON.parse(localStorage.getItem('user') || '{}');
       const payload = {
-        accountId: user.id,// hoặc lấy từ props/context
+        accountId: user.id,
         rating,
         comment
       };
@@ -46,8 +71,8 @@ const Success = ({
         message.success('Cảm ơn đánh giá của bạn!');
         setRating(0);
         setComment('');
-      }
-       else {
+        fetchReviews();
+      } else {
         message.error('Gửi đánh giá không thành công');
       }
     } catch (err) {
@@ -62,7 +87,7 @@ const Success = ({
     <div className='container'>
       <div style={{ minHeight: '60vh', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column' }}>
         <div style={{ width: 250 }}>
-          <Lottie animationData={successAnimation} loop={true} />
+          <Lottie animationData={successAnimation} loop />
         </div>
         <h2 style={{ marginTop: 0 }}>{title}</h2>
         <p>{description}</p>
@@ -106,6 +131,27 @@ const Success = ({
         >
           Gửi đánh giá
         </Button>
+
+        <h3 style={{ marginTop: 40, textAlign: 'left' }}>Nhận xét trước đây</h3>
+        <List
+          bordered
+          loading={loadingReviews}
+          dataSource={reviews}
+          locale={{ emptyText: 'Chưa có đánh giá nào.' }}
+          renderItem={item => (
+            <List.Item>
+              <List.Item.Meta
+                avatar={
+                  <Avatar>
+                    <Rate disabled defaultValue={item.rating} style={{ fontSize: 12 }} />
+                  </Avatar>
+                }
+                title={<Rate disabled defaultValue={item.rating} />}
+                description={item.comment}
+              />
+            </List.Item>
+          )}
+        />
       </div>
     </div>
   );
