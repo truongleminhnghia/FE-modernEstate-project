@@ -16,8 +16,8 @@ const favoriteApi = {
   getFavorites: async (accountId) => {
     console.log("Getting favorites for account:", accountId);
     try {
-      const response = await axios.get(`${API_BASE}?accountId=${accountId}`, { 
-        headers: getAuthHeaders() 
+      const response = await axios.get(`${API_BASE}?accountId=${accountId}`, {
+        headers: getAuthHeaders()
       });
       console.log("Get favorites success:", response.data);
       return response;
@@ -27,11 +27,11 @@ const favoriteApi = {
     }
   },
 
-  addFavorite: async (propertyId) => {
-    console.log("Adding favorite for property:", propertyId);
+  addFavorite: async (propertyId, accountId) => {
+    console.log("Adding favorite for property:", propertyId, "account:", accountId);
     try {
-      const response = await axios.post(API_BASE, { propertyId }, { 
-        headers: getAuthHeaders() 
+      const response = await axios.post(API_BASE, { propertyId, accountId }, {
+        headers: getAuthHeaders()
       });
       console.log("Add favorite success:", response.data);
       return response;
@@ -44,8 +44,8 @@ const favoriteApi = {
   removeFavorite: async (favoriteId) => {
     console.log("Removing favorite with ID:", favoriteId);
     try {
-      const response = await axios.delete(`${API_BASE}/${favoriteId}`, { 
-        headers: getAuthHeaders() 
+      const response = await axios.delete(`${API_BASE}/${favoriteId}`, {
+        headers: getAuthHeaders()
       });
       console.log("Remove favorite success:", response.data);
       return response;

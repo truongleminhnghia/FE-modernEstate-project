@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react'
 import {
   Card,
   Row,
@@ -11,71 +11,74 @@ import {
   Space,
   Empty,
   message,
-} from 'antd';
+} from 'antd'
 import {
   SearchOutlined,
   DeleteOutlined,
   EyeOutlined,
   StarFilled,
-} from '@ant-design/icons';
-import favoriteApi from '../../apis/favoriteApi';
+} from '@ant-design/icons'
+import favoriteApi from '../../apis/favoriteApi'
 
-const { Title, Text } = Typography;
-const { Option } = Select;
+const { Title, Text } = Typography
+const { Option } = Select
 
 export default function OwnerFavorites() {
-  const [loading, setLoading] = useState(false);
-  const [searchText, setSearchText] = useState('');
-  const [filterType, setFilterType] = useState('all');
-  const [favorites, setFavorites] = useState([]);
+  const [loading, setLoading] = useState(false)
+  const [searchText, setSearchText] = useState('')
+  const [filterType, setFilterType] = useState('all')
+  const [favorites, setFavorites] = useState([])
 
   useEffect(() => {
-    fetchFavorites();
-  }, []);
+    fetchFavorites()
+  }, [])
 
   const fetchFavorites = async () => {
-    setLoading(true);
+    setLoading(true)
     try {
-      const res = await favoriteApi.getFavorites();
-      setFavorites(res.data || []);
+      const user = JSON.parse(localStorage.getItem('user'))
+      const accountId = user?.id
+      const res = await favoriteApi.getFavorites(accountId)
+      setFavorites(res.data || [])
     } catch (error) {
-      message.error('Không thể tải danh sách yêu thích!');
+      message.error('Không thể tải danh sách yêu thích!')
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
   const handleSearch = (value) => {
-    setSearchText(value);
+    setSearchText(value)
     // Implement search logic
-  };
+  }
 
   const handleFilter = (value) => {
-    setFilterType(value);
+    setFilterType(value)
     // Implement filter logic
-  };
+  }
 
   const handleViewDetails = (id) => {
     // Implement view details logic
-    message.info('Xem chi tiết căn hộ');
-  };
+    message.info('Xem chi tiết căn hộ')
+  }
 
   const handleRemoveFavorite = async (propertyId) => {
     try {
-      await favoriteApi.removeFavorite(propertyId);
-      message.success('Đã xóa khỏi danh sách yêu thích');
-      fetchFavorites();
+      await favoriteApi.removeFavorite(propertyId)
+      message.success('Đã xóa khỏi danh sách yêu thích')
+      fetchFavorites()
     } catch (error) {
-      message.error('Xóa khỏi danh sách yêu thích thất bại!');
+      message.error('Xóa khỏi danh sách yêu thích thất bại!')
     }
-  };
+  }
 
-  const filteredList = favorites.filter(item => {
-    const matchesSearch = item.title?.toLowerCase().includes(searchText.toLowerCase()) ||
-                         item.location?.toLowerCase().includes(searchText.toLowerCase());
-    const matchesFilter = filterType === 'all' || item.type === filterType;
-    return matchesSearch && matchesFilter;
-  });
+  const filteredList = favorites.filter((item) => {
+    const matchesSearch =
+      item.title?.toLowerCase().includes(searchText.toLowerCase()) ||
+      item.location?.toLowerCase().includes(searchText.toLowerCase())
+    const matchesFilter = filterType === 'all' || item.type === filterType
+    return matchesSearch && matchesFilter
+  })
 
   return (
     <div style={{ padding: '24px', maxWidth: '1200px', margin: '0 auto' }}>
@@ -132,7 +135,9 @@ export default function OwnerFavorites() {
                     <Button
                       type="text"
                       icon={<EyeOutlined />}
-                      onClick={() => handleViewDetails(item.id || item.propertyId)}
+                      onClick={() =>
+                        handleViewDetails(item.id || item.propertyId)
+                      }
                     >
                       Xem chi tiết
                     </Button>,
@@ -140,7 +145,9 @@ export default function OwnerFavorites() {
                       type="text"
                       danger
                       icon={<DeleteOutlined />}
-                      onClick={() => handleRemoveFavorite(item.id || item.propertyId)}
+                      onClick={() =>
+                        handleRemoveFavorite(item.id || item.propertyId)
+                      }
                     >
                       Xóa
                     </Button>,
@@ -159,7 +166,8 @@ export default function OwnerFavorites() {
                     {item.price}
                   </div>
                   <div style={{ color: '#888', fontSize: 14 }}>
-                    {item.area} &nbsp; • &nbsp; {item.bed} &nbsp; • &nbsp; {item.bath}
+                    {item.area} &nbsp; • &nbsp; {item.bed} &nbsp; • &nbsp;{' '}
+                    {item.bath}
                   </div>
                   <div style={{ color: '#888', fontSize: 14 }}>
                     {item.location}
@@ -176,5 +184,5 @@ export default function OwnerFavorites() {
         )}
       </Card>
     </div>
-  );
+  )
 }

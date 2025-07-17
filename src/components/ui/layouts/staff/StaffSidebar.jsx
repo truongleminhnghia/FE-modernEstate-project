@@ -73,6 +73,18 @@ const StaffSidebar = ({ collapsed, onCollapse }) => {
       label: "Quản lý tin tức",
       path: "/staff/news",
     },
+    {
+      key: "notifications",
+      icon: <BellOutlined />,
+      label: "Thông báo",
+      path: "/staff/notifications",
+    },
+    {
+      key: "settings",
+      icon: <SettingOutlined />,
+      label: "Cài đặt",
+      path: "/staff/settings",
+    },
   ];
 
   const handleMenuClick = ({ key }) => {

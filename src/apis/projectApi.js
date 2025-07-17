@@ -32,16 +32,7 @@ export const getProjectById = async (projectId) => {
 // Create new project
 export const createProject = async (projectData) => {
   try {
-    const token = localStorage.getItem('token');
-    const headers = {
-      'Content-Type': 'application/json',
-    };
-    
-    if (token) {
-      headers['Authorization'] = `Bearer ${token}`;
-    }
-    
-    const response = await axios.post(`${API_BASE_URL}/projects`, projectData, { headers });
+    const response = await axios.post(`${API_BASE_URL}/projects`, projectData);
     return response.data;
   } catch (error) {
     if (error.response) {

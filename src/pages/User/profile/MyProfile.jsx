@@ -296,35 +296,41 @@ export default function MyProfile() {
                 </Form>
               </TabPane>
 
-              <TabPane 
-                tab={
-                  <span>
-                    <ShopOutlined style={{ marginRight: "5px" }} />
-                    Thông tin môi giới
-                  </span>
-                } 
-                key="3"
-              >
-                <BrokerRegistration 
-                  userData={user}
-                  onUpdate={handleBrokerUpdate}
-                />
-              </TabPane>
+              {/* Tab Thông tin môi giới chỉ hiển thị nếu chưa là owner */}
+              {!user?.isOwner && (
+                <TabPane 
+                  tab={
+                    <span>
+                      <ShopOutlined style={{ marginRight: "5px" }} />
+                      Thông tin môi giới
+                    </span>
+                  } 
+                  key="3"
+                >
+                  <BrokerRegistration 
+                    userData={user}
+                    onUpdate={handleBrokerUpdate}
+                  />
+                </TabPane>
+              )}
 
-              <TabPane 
-                tab={
-                  <span>
-                    <HomeOutlined style={{ marginRight: "5px" }} />
-                    Thông tin chủ sở hữu
-                  </span>
-                } 
-                key="4"
-              >
-                <OwnerRegistration 
-                  userData={user}
-                  onUpdate={handleOwnerUpdate}
-                />
-              </TabPane>
+              {/* Tab Thông tin chủ sở hữu chỉ hiển thị nếu chưa là broker */}
+              {!user?.isBroker && (
+                <TabPane 
+                  tab={
+                    <span>
+                      <HomeOutlined style={{ marginRight: "5px" }} />
+                      Thông tin chủ sở hữu
+                    </span>
+                  } 
+                  key="4"
+                >
+                  <OwnerRegistration 
+                    userData={user}
+                    onUpdate={handleOwnerUpdate}
+                  />
+                </TabPane>
+              )}
             </Tabs>
           </Card>
         </Col>

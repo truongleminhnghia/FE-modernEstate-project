@@ -43,3 +43,41 @@ export const getFavorites = async ({ accountId, propertyId, page_current = 1, pa
     throw error;
   }
 };
+
+// Đăng ký làm môi giới
+export const registerBroker = async () => {
+  try {
+    const token = localStorage.getItem("token");
+    const response = await axios.post(
+      `${API_BASE_URL}/brokers/register`,
+      {}, // Body rỗng vì BE tự xử lý hết
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+// Đăng ký làm chủ sở hữu
+export const registerPropertyOwner = async () => {
+  try {
+    const token = localStorage.getItem("token");
+    const response = await axios.post(
+      `${API_BASE_URL}/property-owners/register`,
+      {}, // Body rỗng vì BE tự xử lý hết
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};

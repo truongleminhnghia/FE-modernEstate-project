@@ -1,26 +1,48 @@
-import React, { useState, useEffect } from 'react';
-import { Card, Row, Col, Typography, Button, Select, Input, Tag, Space, Empty, message, Spin } from 'antd';
-import { SearchOutlined, EyeOutlined, DeleteOutlined, HomeOutlined, EnvironmentOutlined, StarFilled } from '@ant-design/icons';
-import '../BrokerProfile.css';
-import favoriteApi from '../../../apis/favoriteApi';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react'
+import {
+  Card,
+  Row,
+  Col,
+  Typography,
+  Button,
+  Select,
+  Input,
+  Tag,
+  Space,
+  Empty,
+  message,
+  Spin,
+} from 'antd'
+import {
+  SearchOutlined,
+  EyeOutlined,
+  DeleteOutlined,
+  HomeOutlined,
+  EnvironmentOutlined,
+  StarFilled,
+} from '@ant-design/icons'
+import '../BrokerProfile.css'
+import favoriteApi from '../../../apis/favoriteApi'
+import { useNavigate } from 'react-router-dom'
 
-const { Option } = Select;
-const { Title, Text } = Typography;
+const { Option } = Select
+const { Title, Text } = Typography
 
 const BrokerWatchedApartments = () => {
-  const [searchText, setSearchText] = useState('');
-  const [typeFilter, setTypeFilter] = useState(undefined);
-  const [watchedList, setWatchedList] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const navigate = useNavigate();
+  const [searchText, setSearchText] = useState('')
+  const [typeFilter, setTypeFilter] = useState(undefined)
+  const [watchedList, setWatchedList] = useState([])
+  const [loading, setLoading] = useState(true)
+  const navigate = useNavigate()
 
   const fetchFavorites = async () => {
-    setLoading(true);
+    setLoading(true)
     try {
-      const response = await favoriteApi.getFavorites();
+      const user = JSON.parse(localStorage.getItem('user'))
+      const accountId = user?.id
+      const response = await favoriteApi.getFavorites(accountId)
       if (response && response.data) {
-        const favorites = response.data.map(fav => {
+        const favorites = response.data.map((fav) => {
           // Map fields as needed for display
           return {
             id: fav.id,
@@ -31,63 +53,73 @@ const BrokerWatchedApartments = () => {
             bed: fav.numberOfBedrooms,
             bath: fav.numberOfBathrooms,
             location: fav.location,
-            image: fav.image || 'https://via.placeholder.com/400x250?text=No+Image',
+            image:
+              fav.image || 'https://via.placeholder.com/400x250?text=No+Image',
             type: fav.type || 'Căn hộ',
             watchedDate: fav.createdAt,
             isHot: fav.isHot,
-          };
-        });
-        setWatchedList(favorites);
+          }
+        })
+        setWatchedList(favorites)
       }
     } catch (error) {
-      message.error('Không thể tải danh sách yêu thích.');
-      console.error(error);
+      message.error('Không thể tải danh sách yêu thích.')
+      console.error(error)
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
   useEffect(() => {
-    fetchFavorites();
-  }, []);
+    fetchFavorites()
+  }, [])
 
   const handleSearch = (e) => {
-    setSearchText(e.target.value);
-  };
+    setSearchText(e.target.value)
+  }
 
   const handleTypeFilter = (value) => {
-    setTypeFilter(value);
-  };
+    setTypeFilter(value)
+  }
 
   const handleUnwatch = async (propertyId) => {
     try {
-      await favoriteApi.removeFavorite(propertyId);
-      setWatchedList((prev) => prev.filter((item) => item.propertyId !== propertyId));
-    message.success('Đã bỏ theo dõi căn hộ!');
+      await favoriteApi.removeFavorite(propertyId)
+      setWatchedList((prev) =>
+        prev.filter((item) => item.propertyId !== propertyId)
+      )
+      message.success('Đã bỏ theo dõi căn hộ!')
     } catch (error) {
-      message.error("Bỏ theo dõi thất bại!");
+      message.error('Bỏ theo dõi thất bại!')
     }
-  };
+  }
 
   const filteredList = watchedList.filter(
     (item) =>
       (!typeFilter || item.type === typeFilter) &&
       (item.title?.toLowerCase().includes(searchText.toLowerCase()) ||
         item.location?.toLowerCase().includes(searchText.toLowerCase()))
-  );
+  )
 
   if (loading) {
     return (
-      <div className="broker-container" style={{ textAlign: 'center', marginTop: '50px' }}>
+      <div
+        className="broker-container"
+        style={{ textAlign: 'center', marginTop: '50px' }}
+      >
         <Spin size="large" />
       </div>
-    );
+    )
   }
 
   return (
     <div className="broker-container">
       <Card className="broker-card" style={{ marginBottom: 32 }}>
-        <Row justify="space-between" align="middle" style={{ marginBottom: 16 }}>
+        <Row
+          justify="space-between"
+          align="middle"
+          style={{ marginBottom: 16 }}
+        >
           <Col>
             <Title level={4} style={{ margin: 0 }}>
               Căn hộ đang theo dõi
@@ -129,9 +161,16 @@ const BrokerWatchedApartments = () => {
                 <Card
                   cover={
                     <div className="listing-image-container">
-                      <img src={item.image} alt={item.title} className="listing-image" />
+                      <img
+                        src={item.image}
+                        alt={item.title}
+                        className="listing-image"
+                      />
                       {item.isHot && (
-                        <Tag color="red" style={{ position: 'absolute', top: 12, left: 12 }}>
+                        <Tag
+                          color="red"
+                          style={{ position: 'absolute', top: 12, left: 12 }}
+                        >
                           <StarFilled /> Hot
                         </Tag>
                       )}
@@ -161,10 +200,10 @@ const BrokerWatchedApartments = () => {
                   ]}
                 >
                   <div className="favorite-content">
-                    <Title level={5}>
-                      {item.title}
-                    </Title>
-                    <Text className="favorite-price">{item.price?.toLocaleString()}đ</Text>
+                    <Title level={5}>{item.title}</Title>
+                    <Text className="favorite-price">
+                      {item.price?.toLocaleString()}đ
+                    </Text>
                     <div className="favorite-details">
                       <Space size="middle">
                         <span>
@@ -236,7 +275,7 @@ const BrokerWatchedApartments = () => {
         </Row>
       </Card>
     </div>
-  );
-};
+  )
+}
 
-export default BrokerWatchedApartments;
+export default BrokerWatchedApartments

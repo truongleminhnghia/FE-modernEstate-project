@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from 'react'
 import {
   Card,
   Row,
@@ -12,75 +12,77 @@ import {
   Empty,
   message,
   Pagination,
-} from "antd";
+} from 'antd'
 import {
   SearchOutlined,
   EnvironmentOutlined,
   HomeOutlined,
   DeleteOutlined,
   EyeOutlined,
-} from "@ant-design/icons";
-import "./FavoritesList.css";
-import favoriteApi from '../../../apis/favoriteApi';
+} from '@ant-design/icons'
+import './FavoritesList.css'
+import favoriteApi from '../../../apis/favoriteApi'
 
-const { Title, Text } = Typography;
-const { Option } = Select;
+const { Title, Text } = Typography
+const { Option } = Select
 
 const FavoritesList = () => {
-  const [loading, setLoading] = useState(false);
-  const [searchText, setSearchText] = useState("");
-  const [favorites, setFavorites] = useState([]);
-  const [page, setPage] = useState(1);
-  const [pageSize, setPageSize] = useState(10);
-  const [total, setTotal] = useState(0);
+  const [loading, setLoading] = useState(false)
+  const [searchText, setSearchText] = useState('')
+  const [favorites, setFavorites] = useState([])
+  const [page, setPage] = useState(1)
+  const [pageSize, setPageSize] = useState(10)
+  const [total, setTotal] = useState(0)
 
   useEffect(() => {
-    fetchFavorites();
+    fetchFavorites()
     // eslint-disable-next-line
-  }, [page, pageSize]);
+  }, [page, pageSize])
 
   const fetchFavorites = async () => {
-    setLoading(true);
+    setLoading(true)
     try {
-      const res = await favoriteApi.getFavorites();
-      setFavorites(res.data || []);
-      setTotal(res.total || 0);
+      const user = JSON.parse(localStorage.getItem('user'))
+      const accountId = user?.id
+      const res = await favoriteApi.getFavorites(accountId)
+      setFavorites(res.data?.rowDatas || [])
+      setTotal(res.data?.total || 0)
     } catch (error) {
-      message.error("Không thể tải danh sách yêu thích!");
+      message.error('Không thể tải danh sách yêu thích!')
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
   const handleSearch = (value) => {
-    setSearchText(value);
+    setSearchText(value)
     // Có thể gọi lại API với filter nếu backend hỗ trợ
-  };
+  }
 
   const handleFilter = (values) => {
     // Có thể gọi lại API với filter nếu backend hỗ trợ
-    console.log("Filter values:", values);
-  };
+    console.log('Filter values:', values)
+  }
 
   const handleRemoveFavorite = async (propertyId) => {
     try {
-      await favoriteApi.removeFavorite(propertyId);
-      message.success("Đã xóa khỏi danh sách yêu thích");
-      fetchFavorites();
+      await favoriteApi.removeFavorite(propertyId)
+      message.success('Đã xóa khỏi danh sách yêu thích')
+      fetchFavorites()
     } catch (error) {
-      message.error("Xóa khỏi danh sách yêu thích thất bại!");
+      message.error('Xóa khỏi danh sách yêu thích thất bại!')
     }
-  };
+  }
 
   const handleViewDetails = (id) => {
     // Chuyển hướng sang trang chi tiết căn hộ
-    window.location.href = `/can-ho/${id}`;
-  };
+    window.location.href = `/can-ho/${id}`
+  }
 
   // Lọc trên client nếu cần
-  const filteredFavorites = favorites.filter(item =>
-    item.title?.toLowerCase().includes(searchText.toLowerCase())
-  );
+  const filteredFavorites = favorites.filter((item) =>
+    item.property?.title?.toLowerCase().includes(searchText.toLowerCase())
+  )
 
   return (
     <div className="favorites-container">
@@ -100,7 +102,7 @@ const FavoritesList = () => {
               <Col xs={24} sm={12} md={8}>
                 <Select
                   placeholder="Loại căn hộ"
-                  style={{ width: "100%" }}
+                  style={{ width: '100%' }}
                   onChange={(value) => handleFilter({ type: value })}
                   allowClear
                 >
@@ -112,7 +114,7 @@ const FavoritesList = () => {
               <Col xs={24} sm={12} md={8}>
                 <Select
                   placeholder="Sắp xếp theo"
-                  style={{ width: "100%" }}
+                  style={{ width: '100%' }}
                   onChange={(value) => handleFilter({ sort: value })}
                   defaultValue="newest"
                 >
@@ -137,12 +139,14 @@ const FavoritesList = () => {
                     cover={
                       <div className="favorite-image-container">
                         <img
-                          alt={item.title}
-                          src={item.image || item.propertyImage || ''}
+                          alt={item.property?.title}
+                          src={
+                            item.property?.propertyImages?.[0]?.imageUrl || ''
+                          }
                           className="favorite-image"
                         />
                         <Tag color="blue" className="property-type">
-                          {item.type || item.propertyType}
+                          {item.property?.type}
                         </Tag>
                       </div>
                     }
@@ -150,7 +154,7 @@ const FavoritesList = () => {
                       <Button
                         type="text"
                         icon={<EyeOutlined />}
-                        onClick={() => handleViewDetails(item.id || item.propertyId)}
+                        onClick={() => handleViewDetails(item.propertyId)}
                       >
                         Xem chi tiết
                       </Button>,
@@ -158,7 +162,7 @@ const FavoritesList = () => {
                         type="text"
                         danger
                         icon={<DeleteOutlined />}
-                        onClick={() => handleRemoveFavorite(item.id || item.propertyId)}
+                        onClick={() => handleRemoveFavorite(item.id)}
                       >
                         Xóa
                       </Button>,
@@ -166,24 +170,26 @@ const FavoritesList = () => {
                   >
                     <div className="favorite-content">
                       <Title level={5} className="favorite-title">
-                        {item.title || item.propertyTitle}
+                        {item.property?.title}
                       </Title>
-                      <Text className="favorite-price">{item.price || item.propertyPrice}</Text>
+                      <Text className="favorite-price">
+                        {item.property?.price?.toLocaleString()}{' '}
+                        {item.property?.priceUnit}
+                      </Text>
                       <div className="favorite-details">
                         <Space size="middle">
                           <span>
-                            <HomeOutlined /> {item.area || item.propertyArea}
+                            <HomeOutlined /> {item.property?.area}{' '}
+                            {item.property?.areaUnit}
                           </span>
-                          <span>
-                            {item.bed || item.propertyBed}
-                          </span>
-                          <span>
-                            {item.bath || item.propertyBath}
-                          </span>
+                          <span>{item.property?.numberOfBedrooms} PN</span>
+                          <span>{item.property?.numberOfBathrooms} WC</span>
                         </Space>
                       </div>
                       <div>
-                        <EnvironmentOutlined /> {item.location || item.propertyLocation}
+                        <EnvironmentOutlined />{' '}
+                        {item.property?.address?.addressDetail ||
+                          'Địa chỉ cập nhật sau'}
                       </div>
                     </div>
                   </Card>
@@ -196,7 +202,7 @@ const FavoritesList = () => {
               total={total}
               onChange={setPage}
               onShowSizeChange={(current, size) => setPageSize(size)}
-              style={{ marginTop: 24, textAlign: "right" }}
+              style={{ marginTop: 24, textAlign: 'right' }}
             />
           </>
         ) : (
@@ -204,7 +210,7 @@ const FavoritesList = () => {
         )}
       </Card>
     </div>
-  );
-};
+  )
+}
 
-export default FavoritesList;
+export default FavoritesList

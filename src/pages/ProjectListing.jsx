@@ -18,11 +18,9 @@ const fetchProjects = async () => {
 
 const ProjectListing = () => {
   const [searchTerm, setSearchTerm] = useState('');
-  const [filters, setFilters] = useState({
-    typeProject: 'all',
-    status: 'all',
-    priceRange: [0, 15000000000]
-  });
+  const [selectedType, setSelectedType] = useState('all');
+  const [selectedStatus, setSelectedStatus] = useState('all');
+  const [priceRange, setPriceRange] = useState([0, 15000000000]);
   const [viewMode, setViewMode] = useState('grid');
 
   // Use React Query to fetch data
@@ -33,15 +31,17 @@ const ProjectListing = () => {
 
   const filteredProjects = useMemo(() => {
     if (!projectsData?.rowDatas) return [];
+    
     return projectsData.rowDatas.filter((project) => {
       const matchesSearch = project.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                            project.description.toLowerCase().includes(searchTerm.toLowerCase());
-      const matchesType = filters.typeProject === 'all' || project.typeProject === filters.typeProject;
-      const matchesStatus = filters.status === 'all' || project.status === filters.status;
-      const matchesPrice = project.priceMin >= filters.priceRange[0] && project.priceMax <= filters.priceRange[1];
+      const matchesType = selectedType === 'all' || project.typeProject === selectedType;
+      const matchesStatus = selectedStatus === 'all' || project.status === selectedStatus;
+      const matchesPrice = project.priceMin >= priceRange[0] && project.priceMax <= priceRange[1];
+      
       return matchesSearch && matchesType && matchesStatus && matchesPrice;
     });
-  }, [searchTerm, filters, projectsData]);
+  }, [searchTerm, selectedType, selectedStatus, priceRange, projectsData]);
 
   if (error) {
     return (
@@ -86,8 +86,12 @@ const ProjectListing = () => {
           {/* Filters Sidebar */}
           <div className="lg:w-80">
             <ProjectFilters
-              filters={filters}
-              onChange={setFilters}
+              selectedType={selectedType}
+              setSelectedType={setSelectedType}
+              selectedStatus={selectedStatus}
+              setSelectedStatus={setSelectedStatus}
+              priceRange={priceRange}
+              setPriceRange={setPriceRange}
             />
           </div>
 
