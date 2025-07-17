@@ -1,8 +1,22 @@
 import React, { useState, useEffect } from "react";
 import "./ApartmentsPage.css";
-import { Select, Card, Tag, Pagination, Spin, message, Slider, Checkbox, Button } from "antd";
+import {
+  Select,
+  Card,
+  Tag,
+  Pagination,
+  Spin,
+  message,
+  Slider,
+  Checkbox,
+  Button,
+} from "antd";
 import { useNavigate, Link } from "react-router-dom";
-import { MessageOutlined, FilterOutlined, ClearOutlined } from '@ant-design/icons';
+import {
+  MessageOutlined,
+  FilterOutlined,
+  ClearOutlined,
+} from "@ant-design/icons";
 import { getPosts, transformPostsList } from "../../apis/projectApi";
 
 const { Option } = Select;
@@ -19,21 +33,38 @@ const ApartmentsPage = () => {
 
   // Filter states
   const [filters, setFilters] = useState({
-    demand: '',
+    demand: "",
     bedrooms: [],
-    priceRange: [0, 50],
+    priceRange: [0, 9999999999999],
     districts: [],
-    areaRange: [0, 200],
+    areaRange: [0, 999999999999],
     interior: [],
-    document: []
+    document: [],
   });
 
   // Extract unique values for filters
-  const uniqueDemands = [...new Set(allApartments.map(apt => apt.demand))];
-  const uniqueBedrooms = [...new Set(allApartments.map(apt => apt.bed).filter(bed => bed !== 'N/A'))];
-  const uniqueDistricts = [...new Set(allApartments.map(apt => apt.location).filter(loc => loc !== 'N/A'))];
-  const uniqueInteriors = [...new Set(allApartments.map(apt => apt.interior).filter(int => int))];
-  const uniqueDocuments = [...new Set(allApartments.map(apt => apt.document).flat().filter(doc => doc))];
+  const uniqueDemands = [...new Set(allApartments.map((apt) => apt.demand))];
+  const uniqueBedrooms = [
+    ...new Set(
+      allApartments.map((apt) => apt.bed).filter((bed) => bed !== "N/A")
+    ),
+  ];
+  const uniqueDistricts = [
+    ...new Set(
+      allApartments.map((apt) => apt.location).filter((loc) => loc !== "N/A")
+    ),
+  ];
+  const uniqueInteriors = [
+    ...new Set(allApartments.map((apt) => apt.interior).filter((int) => int)),
+  ];
+  const uniqueDocuments = [
+    ...new Set(
+      allApartments
+        .map((apt) => apt.document)
+        .flat()
+        .filter((doc) => doc)
+    ),
+  ];
 
   // Fetch all apartments for filter data
   const fetchAllApartments = async () => {
@@ -44,7 +75,7 @@ const ApartmentsPage = () => {
         setAllApartments(transformedData);
       }
     } catch (error) {
-      console.error('Error fetching all apartments for filters:', error);
+      console.error("Error fetching all apartments for filters:", error);
     }
   };
 
@@ -53,17 +84,17 @@ const ApartmentsPage = () => {
     try {
       setLoading(true);
       const response = await getPosts(currentPage, PAGE_SIZE);
-      
+
       if (response.success && response.data) {
         const transformedData = transformPostsList(response.data.rowDatas);
         setApartments(transformedData);
         setTotal(response.data.total);
       } else {
-        message.error('Không thể tải dữ liệu căn hộ');
+        message.error("Không thể tải dữ liệu căn hộ");
       }
     } catch (error) {
-      console.error('Error fetching apartments:', error);
-      message.error('Có lỗi xảy ra khi tải dữ liệu');
+      console.error("Error fetching apartments:", error);
+      message.error("Có lỗi xảy ra khi tải dữ liệu");
     } finally {
       setLoading(false);
     }
@@ -79,41 +110,47 @@ const ApartmentsPage = () => {
   };
 
   const handleFilterChange = (filterType, value) => {
-    setFilters(prev => ({
+    setFilters((prev) => ({
       ...prev,
-      [filterType]: value
+      [filterType]: value,
     }));
   };
 
   const clearFilters = () => {
     setFilters({
-      demand: '',
+      demand: "",
       bedrooms: [],
-      priceRange: [0, 50],
+      priceRange: [0, 9999999999],
       districts: [],
-      areaRange: [0, 200],
+      areaRange: [0, 99999999999999],
       interior: [],
-      document: []
+      document: [],
     });
   };
 
   const applyFilters = () => {
     // Apply filters logic here
-    console.log('Applying filters:', filters);
+    console.log("Applying filters:", filters);
     // You can implement the actual filtering logic here
-    message.success('Đã áp dụng bộ lọc');
+    message.success("Đã áp dụng bộ lọc");
   };
 
   // Filter apartments based on current filters
-  const filteredApartments = apartments.filter(apt => {
+  const filteredApartments = apartments.filter((apt) => {
     if (filters.demand && apt.demand !== filters.demand) return false;
-    if (filters.bedrooms.length > 0 && !filters.bedrooms.includes(apt.bed)) return false;
-    if (filters.districts.length > 0 && !filters.districts.includes(apt.location)) return false;
-    
+    if (filters.bedrooms.length > 0 && !filters.bedrooms.includes(apt.bed))
+      return false;
+    if (
+      filters.districts.length > 0 &&
+      !filters.districts.includes(apt.location)
+    )
+      return false;
+
     // Price filter
-    const price = parseFloat(apt.price.replace(/[^\d]/g, ''));
-    if (price < filters.priceRange[0] || price > filters.priceRange[1]) return false;
-    
+    const price = parseFloat(apt.price.replace(/[^\d]/g, ""));
+    if (price < filters.priceRange[0] || price > filters.priceRange[1])
+      return false;
+
     return true;
   });
 
@@ -136,11 +173,13 @@ const ApartmentsPage = () => {
 
             {/* Demand Filter */}
             <div className="apartments-filter-section">
-              <div className="apartments-filter-section-title">Loại giao dịch</div>
+              <div className="apartments-filter-section-title">
+                Loại giao dịch
+              </div>
               <div className="apartments-filter-item">
                 <Select
                   value={filters.demand}
-                  onChange={(value) => handleFilterChange('demand', value)}
+                  onChange={(value) => handleFilterChange("demand", value)}
                   placeholder="Chọn loại giao dịch"
                   allowClear
                 >
@@ -152,15 +191,21 @@ const ApartmentsPage = () => {
 
             {/* Bedrooms Filter */}
             <div className="apartments-filter-section">
-              <div className="apartments-filter-section-title">Số phòng ngủ</div>
+              <div className="apartments-filter-section-title">
+                Số phòng ngủ
+              </div>
               <div className="apartments-filter-item">
                 <Checkbox.Group
                   value={filters.bedrooms}
-                  onChange={(value) => handleFilterChange('bedrooms', value)}
+                  onChange={(value) => handleFilterChange("bedrooms", value)}
                   className="apartments-filter-checkbox-group"
                 >
-                  {uniqueBedrooms.map(bed => (
-                    <Checkbox key={bed} value={bed} className="apartments-filter-checkbox-item">
+                  {uniqueBedrooms.map((bed) => (
+                    <Checkbox
+                      key={bed}
+                      value={bed}
+                      className="apartments-filter-checkbox-item"
+                    >
                       {bed}
                     </Checkbox>
                   ))}
@@ -170,14 +215,16 @@ const ApartmentsPage = () => {
 
             {/* Price Range Filter */}
             <div className="apartments-filter-section">
-              <div className="apartments-filter-section-title">Khoảng giá (tỷ VND)</div>
+              <div className="apartments-filter-section-title">
+                Khoảng giá (tỷ VND)
+              </div>
               <div className="apartments-filter-item">
                 <Slider
                   range
                   min={0}
                   max={50}
                   value={filters.priceRange}
-                  onChange={(value) => handleFilterChange('priceRange', value)}
+                  onChange={(value) => handleFilterChange("priceRange", value)}
                   tipFormatter={(value) => `${value} tỷ`}
                 />
                 <div className="price-range-display">
@@ -192,11 +239,15 @@ const ApartmentsPage = () => {
               <div className="apartments-filter-item">
                 <Checkbox.Group
                   value={filters.districts}
-                  onChange={(value) => handleFilterChange('districts', value)}
+                  onChange={(value) => handleFilterChange("districts", value)}
                   className="apartments-filter-checkbox-group"
                 >
-                  {uniqueDistricts.map(district => (
-                    <Checkbox key={district} value={district} className="apartments-filter-checkbox-item">
+                  {uniqueDistricts.map((district) => (
+                    <Checkbox
+                      key={district}
+                      value={district}
+                      className="apartments-filter-checkbox-item"
+                    >
                       {district}
                     </Checkbox>
                   ))}
@@ -206,14 +257,16 @@ const ApartmentsPage = () => {
 
             {/* Area Range Filter */}
             <div className="apartments-filter-section">
-              <div className="apartments-filter-section-title">Diện tích (m²)</div>
+              <div className="apartments-filter-section-title">
+                Diện tích (m²)
+              </div>
               <div className="apartments-filter-item">
                 <Slider
                   range
                   min={0}
                   max={200}
                   value={filters.areaRange}
-                  onChange={(value) => handleFilterChange('areaRange', value)}
+                  onChange={(value) => handleFilterChange("areaRange", value)}
                   tipFormatter={(value) => `${value}m²`}
                 />
                 <div className="price-range-display">
@@ -224,14 +277,14 @@ const ApartmentsPage = () => {
 
             {/* Filter Actions */}
             <div className="apartments-filter-actions">
-              <Button 
-                type="primary" 
+              <Button
+                type="primary"
                 className="apartments-filter-btn"
                 onClick={applyFilters}
               >
                 Áp dụng bộ lọc
               </Button>
-              <Button 
+              <Button
                 className="apartments-filter-clear"
                 icon={<ClearOutlined />}
                 onClick={clearFilters}
@@ -247,13 +300,15 @@ const ApartmentsPage = () => {
           {/* Apartment Grid */}
           <div className="apartments-grid">
             {loading ? (
-              <div style={{ 
-                display: 'flex', 
-                justifyContent: 'center', 
-                alignItems: 'center', 
-                minHeight: '400px',
-                width: '100%'
-              }}>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  minHeight: "400px",
+                  width: "100%",
+                }}
+              >
                 <Spin size="large" />
               </div>
             ) : filteredApartments.length > 0 ? (
@@ -265,8 +320,17 @@ const ApartmentsPage = () => {
                   onClick={() => navigate(`/can-ho/${apt.id}`)}
                   cover={
                     <div className="apartment-card-img-wrap">
-                      <img alt={apt.title} src={apt.image} className="apartment-card-img" />
-                      <Tag className="apartment-card-tag" color={apt.tag === "Mua" ? "#52c41a" : "#4a90e2"}>{apt.tag}</Tag>
+                      <img
+                        alt={apt.title}
+                        src={apt.image}
+                        className="apartment-card-img"
+                      />
+                      <Tag
+                        className="apartment-card-tag"
+                        color={apt.tag === "Mua" ? "#52c41a" : "#4a90e2"}
+                      >
+                        {apt.tag}
+                      </Tag>
                     </div>
                   }
                   bodyStyle={{ padding: 16 }}
@@ -284,15 +348,17 @@ const ApartmentsPage = () => {
                 </Card>
               ))
             ) : (
-              <div style={{ 
-                display: 'flex', 
-                justifyContent: 'center', 
-                alignItems: 'center', 
-                minHeight: '400px',
-                width: '100%',
-                fontSize: '16px',
-                color: '#666'
-              }}>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  minHeight: "400px",
+                  width: "100%",
+                  fontSize: "16px",
+                  color: "#666",
+                }}
+              >
                 Không có căn hộ nào được tìm thấy
               </div>
             )}
@@ -312,7 +378,7 @@ const ApartmentsPage = () => {
           )}
         </div>
       </div>
-      
+
       {/* Message Button */}
       <button className="message-button">
         <MessageOutlined />
