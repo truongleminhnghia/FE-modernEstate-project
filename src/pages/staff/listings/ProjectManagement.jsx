@@ -801,7 +801,7 @@ const ProjectManagement = () => {
                 <Upload
                   listType="picture-card"
                   multiple
-                  maxCount={5}
+                  maxCount={20}
                   fileList={fileList}
                   beforeUpload={(file) => {
                     const isImage = file.type.startsWith('image/');
@@ -819,7 +819,7 @@ const ProjectManagement = () => {
                   onPreview={handlePreview}
                   onChange={handleChange}
                 >
-                  {fileList.length >= 5 ? null : (
+                  {fileList.length >= 20 ? null : (
                     <div>
                       <PlusOutlined />
                       <div style={{ marginTop: 8 }}>Tải lên</div>
@@ -827,26 +827,52 @@ const ProjectManagement = () => {
                   )}
                 </Upload>
                 <Input
-                  placeholder="Hoặc dán URL ảnh vào đây"
+                  placeholder="Dán nhiều URL ảnh, cách nhau bởi dấu phẩy, khoảng trắng hoặc xuống dòng (tối đa 20 ảnh)"
                   style={{ marginTop: 8 }}
                   onPressEnter={e => {
-                    const url = e.target.value.trim();
-                    if (!url) return;
-                    if (!/^https?:\/\//.test(url)) {
-                      message.error('URL không hợp lệ!');
-                      return;
-                    }
-                    setFileList(prev => ([...prev, { uid: Date.now() + '', url, name: url, status: 'done' }]));
+                    const value = e.target.value.trim();
+                    if (!value) return;
+                    const urls = value.split(/[\n, ]/).map(s => s.trim()).filter(Boolean);
+                    setFileList(prev => {
+                      let newList = [...prev];
+                      urls.forEach(url => {
+                        if (
+                          /^https?:\/\//.test(url) &&
+                          newList.length < 20 &&
+                          !newList.some(f => f.url === url)
+                        ) {
+                          newList.push({ uid: Date.now() + Math.random() + '', url, name: url, status: 'done' });
+                        }
+                      });
+                      if (newList.length > 20) {
+                        message.warning('Tối đa chỉ được 20 ảnh!');
+                        newList = newList.slice(0, 20);
+                      }
+                      return newList;
+                    });
                     e.target.value = '';
                   }}
                   onBlur={e => {
-                    const url = e.target.value.trim();
-                    if (!url) return;
-                    if (!/^https?:\/\//.test(url)) {
-                      message.error('URL không hợp lệ!');
-                      return;
-                    }
-                    setFileList(prev => ([...prev, { uid: Date.now() + '', url, name: url, status: 'done' }]));
+                    const value = e.target.value.trim();
+                    if (!value) return;
+                    const urls = value.split(/[\n, ]/).map(s => s.trim()).filter(Boolean);
+                    setFileList(prev => {
+                      let newList = [...prev];
+                      urls.forEach(url => {
+                        if (
+                          /^https?:\/\//.test(url) &&
+                          newList.length < 20 &&
+                          !newList.some(f => f.url === url)
+                        ) {
+                          newList.push({ uid: Date.now() + Math.random() + '', url, name: url, status: 'done' });
+                        }
+                      });
+                      if (newList.length > 20) {
+                        message.warning('Tối đa chỉ được 20 ảnh!');
+                        newList = newList.slice(0, 20);
+                      }
+                      return newList;
+                    });
                     e.target.value = '';
                   }}
                 />
