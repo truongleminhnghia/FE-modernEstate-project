@@ -266,9 +266,9 @@ const ProjectManagement = () => {
       title: "Mã Dự án", 
       dataIndex: "code", 
       key: "code", 
-      width: 100, 
+      width: 220, 
       sorter: (a,b) => a.code?.localeCompare(b.code), 
-      render: (code) => <Text strong style={{color: primaryColor}}>{code}</Text>, 
+      render: (code) => <Text strong style={{color: primaryColor, whiteSpace: 'nowrap', overflow: 'visible'}}>{code}</Text>, 
       fixed: 'left',
     },
     { 
