@@ -43,102 +43,6 @@ const { confirm } = Modal
 const { Option } = Select
 const { RangePicker } = DatePicker
 
-const mockUsersForSelect = [
-  { id: 1, name: 'Nguyễn Văn An' },
-  { id: 2, name: 'Trần Thị Bình' },
-  { id: 101, name: 'Trần Văn Minh (Khách)' },
-  { id: 102, name: 'Lê Thị Hoa (Khách)' },
-  { id: 201, name: 'Hoàng Thị Kim Dung (Môi giới)' },
-]
-
-const mockListingsForSelect = [
-  { id: 1, title: 'CHCC The Sun Avenue 2PN' },
-  { id: 2, title: 'Nhà mặt tiền Quận 1' },
-]
-
-const initialMockTransactions = [
-  {
-    id: 'TXN001',
-    transactionCode: 'PAY20250525001',
-    userId: 1,
-    listingId: 1,
-    transactionType: 'listing_fee',
-    amount: 50000,
-    currency: 'VND',
-    paymentMethod: 'momo',
-    transactionDate: '2025-05-25T10:30:00Z',
-    status: 'completed',
-    description: 'Phí đăng tin VIP cho tin ID 1',
-    gatewayTransactionId: 'MOMO123XYZ',
-  },
-  {
-    id: 'TXN002',
-    transactionCode: 'SUB20250524001',
-    userId: 201,
-    transactionType: 'subscription_payment',
-    amount: 200000,
-    currency: 'VND',
-    paymentMethod: 'credit_card',
-    transactionDate: '2025-05-24T15:00:00Z',
-    status: 'completed',
-    description: 'Thanh toán gói Môi giới Pro - 1 tháng',
-    gatewayTransactionId: 'VISA456ABC',
-  },
-  {
-    id: 'TXN003',
-    transactionCode: 'REF20250523001',
-    userId: 101,
-    listingId: null,
-    transactionType: 'refund',
-    amount: 20000,
-    currency: 'VND',
-    paymentMethod: 'bank_transfer',
-    transactionDate: '2025-05-23T09:00:00Z',
-    status: 'completed',
-    description: 'Hoàn tiền do hủy dịch vụ X',
-  },
-  {
-    id: 'TXN004',
-    transactionCode: 'PAY20250522001',
-    userId: 102,
-    listingId: null,
-    transactionType: 'service_fee',
-    amount: 100000,
-    currency: 'VND',
-    paymentMethod: 'zalopay',
-    transactionDate: '2025-05-22T11:00:00Z',
-    status: 'pending',
-    description: 'Phí dịch vụ xem nhà trực tuyến',
-    gatewayTransactionId: 'ZLP789DEF',
-  },
-  {
-    id: 'TXN005',
-    transactionCode: 'COM20250520001',
-    userId: 201,
-    listingId: 2,
-    transactionType: 'commission_payout',
-    amount: 5000000,
-    currency: 'VND',
-    paymentMethod: 'bank_transfer',
-    transactionDate: '2025-05-20T17:00:00Z',
-    status: 'processing',
-    description: 'Chi trả hoa hồng cho tin ID 2',
-  },
-  {
-    id: 'TXN006',
-    transactionCode: 'FAIL20250519001',
-    userId: 1,
-    transactionType: 'listing_fee',
-    amount: 50000,
-    currency: 'VND',
-    paymentMethod: 'momo',
-    transactionDate: '2025-05-19T14:20:00Z',
-    status: 'failed',
-    description: 'Giao dịch Momo thất bại - Phí tin thường',
-    gatewayTransactionId: 'MOMOFAIL123',
-  },
-]
-
 const primaryColor = '#4a90e2'
 
 const transactionTypes = {
@@ -197,23 +101,25 @@ const TransactionManagement = () => {
   const [transactionToUpdateStatus, setTransactionToUpdateStatus] =
     useState(null)
 
+  const [pagination, setPagination] = useState({
+    current: 1,
+    pageSize: 10,
+    total: 0,
+  });
+
   const [form] = Form.useForm()
 
   // Fetch transactions from API
-  const fetchTransactions = async () => {
+  const fetchTransactions = async (page = 1, pageSize = 10) => {
     setLoading(true)
     setError(null)
 
     try {
       const token = localStorage.getItem('token')
-      const userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}')
-
-      if (!token) {
-        throw new Error('No authentication token found')
-      }
+      if (!token) throw new Error('No authentication token found')
 
       const response = await fetch(
-        'https://bemodernestate.site/api/v1/transactions',
+        `${import.meta.env.VITE_API_URL}transactions?page_current=${page}&page_size=${pageSize}`,
         {
           method: 'GET',
           headers: {
@@ -223,71 +129,45 @@ const TransactionManagement = () => {
         }
       )
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`)
-      }
+      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`)
 
       const data = await response.json()
-      console.log('API Response:', data) // Debug log
-
-      // Handle the correct response structure
       let transactionsArray = []
+      let total = 0;
       if (data.success && data.data && data.data.rowDatas) {
         transactionsArray = data.data.rowDatas
-      } else if (data.success && data.data && Array.isArray(data.data)) {
-        transactionsArray = data.data
-      } else if (Array.isArray(data)) {
-        transactionsArray = data
+        total = data.data.totalCount || data.data.total || 0;
       }
 
-      if (transactionsArray.length === 0) {
-        console.log('No transactions found or empty response')
-        setDataSource([])
-        return
-      }
-
-      // Map API data to match our table structure based on the sample data
+      // Map API data to match our table structure
       const mappedTransactions = transactionsArray.map((transaction) => ({
         id: transaction.transactionId || transaction.id,
-        transactionCode:
-          transaction.transactionCode ||
-          transaction.code ||
-          `TXN${transaction.id}`,
-        userId: transaction.accountId || transaction.userId,
-        listingId: transaction.propertyId || transaction.listingId,
-        transactionType:
-          transaction.enumTypeTransaction ||
-          transaction.transactionType ||
-          transaction.type ||
-          'service_fee',
+        transactionCode: transaction.transactionCode || `TXN${transaction.transactionId?.slice(-6) || ''}`,
+        userId: transaction.account?.id,
+        user: transaction.account
+          ? {
+              fullName: `${transaction.account.lastName || ''} ${transaction.account.firstName || ''}`.trim(),
+              email: transaction.account.email,
+            }
+          : undefined,
         amount: transaction.amount,
         currency: transaction.currency || 'VND',
-        paymentMethod:
-          transaction.enumPaymentMethod ||
-          transaction.paymentMethod ||
-          transaction.method ||
-          'bank_transfer',
-        transactionDate:
-          transaction.createdAt ||
-          transaction.transactionDate ||
-          transaction.date ||
-          new Date().toISOString(),
+        transactionType: transaction.enumTypeTransaction || 'service_fee',
+        paymentMethod: transaction.enumPaymentMethod || 'bank_transfer',
+        transactionDate: transaction.createdAt,
         status: transaction.status?.toLowerCase() || transaction.status,
-        description:
-          transaction.description ||
-          transaction.note ||
-          'Giao dịch bất động sản',
-        gatewayTransactionId:
-          transaction.gatewayTransactionId || transaction.gatewayId,
-        // Add user and property info if available
-        user: transaction.account || transaction.user,
-        property: transaction.property || transaction.listing,
+        description: '', // API không trả về, bạn có thể bổ sung nếu có
+        gatewayTransactionId: transaction.transactionCode, // Nếu có trường riêng thì sửa lại
       }))
 
-      console.log('Mapped transactions:', mappedTransactions) // Debug log
       setDataSource(mappedTransactions)
+      setPagination((prev) => ({
+        ...prev,
+        current: page,
+        pageSize,
+        total,
+      }))
     } catch (err) {
-      console.error('Error fetching transactions:', err)
       setError(err.message)
       message.error('Không thể tải danh sách giao dịch: ' + err.message)
     } finally {
@@ -296,8 +176,9 @@ const TransactionManagement = () => {
   }
 
   useEffect(() => {
-    fetchTransactions()
-  }, [])
+    fetchTransactions(pagination.current, pagination.pageSize);
+    // eslint-disable-next-line
+  }, []);
 
   const filteredDataSource = dataSource.filter((transaction) => {
     const search = searchText.toLowerCase()
@@ -361,6 +242,10 @@ const TransactionManagement = () => {
     })
   }
 
+  const handleTableChange = (pagination) => {
+    fetchTransactions(pagination.current, pagination.pageSize);
+  };
+
   const columns = [
     {
       title: 'Mã GD',
@@ -394,19 +279,6 @@ const TransactionManagement = () => {
     {
       title: (
         <Space>
-          <FileTextOutlined />
-          Tin đăng
-        </Space>
-      ),
-      dataIndex: 'property',
-      key: 'listingId',
-      width: 200,
-      render: (property) =>
-        property?.title || <Text type="secondary">N/A</Text>,
-    },
-    {
-      title: (
-        <Space>
           <TagsOutlined />
           Loại GD
         </Space>
@@ -415,11 +287,6 @@ const TransactionManagement = () => {
       key: 'transactionType',
       width: 150,
       align: 'center',
-      filters: Object.entries(transactionTypes).map(([value, { text }]) => ({
-        text,
-        value,
-      })),
-      onFilter: (value, record) => record.transactionType === value,
       render: (type) => (
         <Tag color={transactionTypes[type]?.color || 'default'}>
           {transactionTypes[type]?.text || type}
@@ -637,16 +504,17 @@ const TransactionManagement = () => {
             dataSource={filteredDataSource}
             rowKey="id"
             bordered
-            pagination={{
-              pageSize: 10,
-              showSizeChanger: true,
-              pageSizeOptions: ['10', '20', '50'],
-              responsive: true,
-              showTotal: (total, range) =>
-                `${range[0]}-${range[1]} của ${total} GD`,
-            }}
             scroll={{ x: 1800 }}
             style={{ boxShadow: '0 1px 4px rgba(0,0,0,0.1)' }}
+            pagination={{
+              current: pagination.current,
+              pageSize: pagination.pageSize,
+              total: pagination.total,
+              showSizeChanger: true,
+              pageSizeOptions: ['10', '20', '50', '100'],
+              showTotal: (total, range) => `${range[0]}-${range[1]} của ${total} GD`,
+            }}
+            onChange={handleTableChange}
           />
         )}
       </Space>
