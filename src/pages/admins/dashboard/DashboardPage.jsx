@@ -117,7 +117,7 @@ const DashboardPage = () => {
           <StatCard title="Tổng Người dùng" value={accountData.totalAccounts} icon={<UserOutlined />} color={primaryColor} loading={loadingStats} />
         </Col>
         <Col xs={24} sm={12} md={12} lg={6}>
-          <StatCard title="Tổng Tin đăng" value={postData.totalCount} icon={<ContainerOutlined />} color="#FAAD14" loading={loadingStats} />
+          <StatCard title="Tổng Số Giao Dịch" value={postData.totalCount} icon={<ContainerOutlined />} color="#FAAD14" loading={loadingStats} />
         </Col>
         <Col xs={24} sm={12} md={12} lg={6}>
           <StatCard title="Doanh thu" value={revenue.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })} icon={<DollarCircleOutlined />} color="#13C2C2" loading={loadingStats} />
