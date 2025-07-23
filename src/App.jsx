@@ -25,7 +25,7 @@ import DashboardPage from "./pages/admins/dashboard/DashboardPage";
 import AdminProfile from "./pages/admins/profile/AdminProfile";
 import ReviewManagement from "./pages/admins/reviews/ReviewManagement";
 import StaffLayout from "./components/ui/layouts/staff/StaffLayout";
-import ServiceManagementPage from "./pages/staff/listings/services/ServiceManagement";
+import PackageManagement from "./pages/staff/listings/services/PackageManagement";
 import ApartmentsPage from "./pages/ApartmentsPage/ApartmentsPage";
 import ApartmentDetail from "./pages/ApartmentsPage/ApartmentDetail";
 import ProjectsPage from "./pages/ProjectsPage/ProjectsPage";
@@ -268,8 +268,8 @@ const router = createBrowserRouter([
         element: <ListingManagement />,
       },
       {
-        path: "services",
-        element: <ServiceManagementPage />,
+        path: "listings/services/package-management",
+        element: <PackageManagement />,
       },
       {
         path: "projects",

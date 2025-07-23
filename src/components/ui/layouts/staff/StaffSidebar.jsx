@@ -58,8 +58,8 @@ const StaffSidebar = ({ collapsed, onCollapse }) => {
     {
       key: "services",
       icon: <FileTextOutlined />,
-      label: "Quản lý dịch vụ",
-      path: "/staff/services",
+      label: "Quản lý gói tin đăng",
+      path: "/staff/listings/services/package-management",
     },
     {
       key: "projects",
@@ -72,18 +72,6 @@ const StaffSidebar = ({ collapsed, onCollapse }) => {
       icon: <FileTextOutlined />,
       label: "Quản lý tin tức",
       path: "/staff/news",
-    },
-    {
-      key: "notifications",
-      icon: <BellOutlined />,
-      label: "Thông báo",
-      path: "/staff/notifications",
-    },
-    {
-      key: "settings",
-      icon: <SettingOutlined />,
-      label: "Cài đặt",
-      path: "/staff/settings",
     },
   ];
 

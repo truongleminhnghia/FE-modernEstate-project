@@ -271,7 +271,7 @@ const NewsManagement = () => {
 
   const columns = [
     { 
-      title: "Mã Bài viết", 
+      title: "Mã tin tức", 
       dataIndex: "id", 
       key: "id", 
       width: 120, 

@@ -332,7 +332,16 @@ const ListingManagement = () => {
   };
 
   const columns = [
-    { title: "ID", dataIndex: "id", key: "id", width: 65, sorter: (a,b)=> a.id.localeCompare(b.id), fixed: 'left', align:'center' },
+    { 
+      title: "Mã tin đăng", 
+      dataIndex: "code", 
+      key: "code", 
+      width: 120, 
+      sorter: (a,b)=> (a.code || '').localeCompare(b.code || ''), 
+      fixed: 'left', 
+      align:'center',
+      render: (code) => <code>{code || 'N/A'}</code>
+    },
     {
       title: <Space><FileTextOutlined />Tiêu đề</Space>,
       dataIndex: "property",
@@ -419,132 +428,7 @@ const ListingManagement = () => {
         <Col xs={24} sm={12} md={10} lg={8} xl={6}>
           <Input placeholder="Tìm ID, tiêu đề, địa chỉ, chủ sở hữu..." prefix={<SearchOutlined />} value={searchText} onChange={handleSearchInputChange} allowClear onClear={handleClearSearch} style={{ width: '100%' }}/>
         </Col>
-        <Col>
-          <Button type="primary" icon={<PlusOutlined />} style={{ backgroundColor: primaryColor, borderColor: primaryColor, marginRight: 8 }} onClick={showAddModal}>Thêm Tin đăng</Button>
-          <Button type="default" onClick={async () => {
-            try {
-              // Test GET request trước
-              console.log('Testing GET /posts endpoint...');
-              const testGet = await getPosts(1, 5);
-              console.log('GET /posts success:', testGet);
-              
-              // Test các endpoint khác có thể tồn tại
-              console.log('Testing other possible endpoints...');
-              try {
-                const testPost = await axios.post('https://bemodernestate.site/api/v1/post', { test: 'data' });
-                console.log('POST /post (singular) success:', testPost);
-              } catch (e) {
-                console.log('POST /post failed:', e.response?.status);
-              }
-              
-              try {
-                const testProperty = await axios.post('https://bemodernestate.site/api/v1/properties', { test: 'data' });
-                console.log('POST /properties success:', testProperty);
-              } catch (e) {
-                console.log('POST /properties failed:', e.response?.status);
-              }
-              
-              // Test với authentication header
-              const token = localStorage.getItem('token');
-              if (token) {
-                console.log('Testing with auth token...');
-                try {
-                  const authTest = await axios.post('https://bemodernestate.site/api/v1/posts', 
-                    { test: 'data' },
-                    { headers: { Authorization: `Bearer ${token}` } }
-                  );
-                  console.log('POST with auth success:', authTest);
-                } catch (e) {
-                  console.log('POST with auth failed:', e.response?.status);
-                }
-              }
-              
-              const data = {
-                postBy: "08dda40b-e895-4779-8e2a-85cc7c729403",
-                demand: "MUA_BÁN",
-                newProperty: {
-                  title: "string",
-                  description: "string",
-                  attribute: ["string"],
-                  type: "Căn_hộ_Chung_cư",
-                  area: 0,
-                  areaUnit: "m2",
-                  price: 0,
-                  priceUnit: "VND",
-                  document: ["string"],
-                  interior: "string",
-                  numberOfBedrooms: 0,
-                  numberOfBathrooms: 0,
-                  houseDirection: "Đông",
-                  videoUrl: ["string"],
-                  address: {
-                    ward: "string",
-                    district: "string",
-                    city: "string",
-                    country: "string",
-                    addressDetail: "string"
-                  },
-                  projectId: "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-                  images: [
-                    { imageUrl: "string" }
-                  ]
-                },
-                contact: {
-                  contactName: "string",
-                  contactEmail: "string",
-                  contactPhone: "string"
-                },
-                postPackagesRequest: {
-                  startDate: "2025-07-03",
-                  endDate: "2025-07-03",
-                  totalAmout: 0,
-                  currency: "VND",
-                  accountId: "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-                  packageId: "3fa85f64-5717-4562-b3fc-2c963f66afa6"
-                }
-              };
-              console.log('Testing POST /posts with data:', data);
-              const res = await createPost(data);
-              message.success('Tạo tin đăng mẫu thành công!');
-              // Sau khi tạo, reload lại danh sách
-              setPagination(prev => ({ ...prev }));
-            } catch (err) {
-              console.error('API Error details:', {
-                status: err.response?.status,
-                statusText: err.response?.statusText,
-                url: err.config?.url,
-                method: err.config?.method,
-                data: err.response?.data
-              });
-              message.error(`API Error: ${err.response?.status} - ${err.response?.statusText || err.message}`);
-            }
-          }}>Test API</Button>
-          <Button type="default" onClick={async () => {
-            try {
-              const propertyData = {
-                title: "Test Property",
-                description: "Test description",
-                type: "Căn_hộ_Chung_cư",
-                area: 80,
-                price: 2500000000,
-                address: {
-                  ward: "001",
-                  district: "001", 
-                  city: "01",
-                  country: "Việt Nam",
-                  addressDetail: "123 Test Street"
-                }
-              };
-              console.log('Testing POST /properties with data:', propertyData);
-              const res = await createPost(propertyData);
-              message.success('Tạo property thành công!');
-              console.log('Property created:', res);
-            } catch (err) {
-              console.error('Property API Error:', err);
-              message.error(`Property API Error: ${err.response?.status} - ${err.response?.statusText || err.message}`);
-            }
-          }}>Test Properties API</Button>
-        </Col>
+        {/* Đã xoá 2 button Test API và Test Properties */}
       </Row>
 
       <Table
@@ -587,7 +471,6 @@ const ListingManagement = () => {
               <Col xs={24} sm={12}><strong>Hướng:</strong> {selectedListing.property?.houseDirection || 'N/A'}</Col>
               <Col xs={24} sm={12}><strong>Nội thất:</strong> {selectedListing.property?.interior || 'N/A'}</Col>
               <Col xs={24} sm={12}><strong>Pháp lý:</strong> {selectedListing.property?.document?.join(', ') || 'N/A'}</Col>
-              <Col xs={24} sm={12}><strong>Lượt xem:</strong> {selectedListing.viewCount ?? 'N/A'}</Col>
             </Row>
             <p style={{marginTop: 10}}><strong><SolutionOutlined /> Mô tả:</strong> <div style={{whiteSpace: 'pre-line'}}>{selectedListing.property?.description || 'N/A'}</div></p>
             <p><strong><AuditOutlined /> Tiện ích:</strong> {selectedListing.property?.attribute?.join(', ') || 'Chưa cập nhật'}</p>
@@ -600,11 +483,9 @@ const ListingManagement = () => {
                 </Col>
               )) : <Col><span>Không có hình ảnh</span></Col>}
             </Row>
-            <p><strong><UserOutlined /> Chủ sở hữu:</strong> {selectedListing.contact?.contactName || 'N/A'}</p>
-            <p><strong><UsergroupAddOutlined /> Môi giới:</strong> {selectedListing.brokerId || 'Không có'}</p>
             <p><strong>Liên hệ:</strong> {selectedListing.contact?.contactName || '-'} - {selectedListing.contact?.contactPhone || '-'} - {selectedListing.contact?.contactEmail || '-'}</p>
             <Row gutter={16}>
-                <Col xs={24} sm={12}><strong>Ngày đăng:</strong> {selectedListing.createAt && selectedListing.createAt !== '0001-01-01T00:00:00' ? moment(selectedListing.createAt).format('DD/MM/YYYY HH:mm') : 'N/A'}</Col>
+                <Col xs={24} sm={12}><strong>Ngày đăng:</strong> {selectedListing.postPackages?.[0]?.startDate ? moment(selectedListing.postPackages[0].startDate).format('DD/MM/YYYY') : 'Không xác định'}</Col>
                 <Col xs={24} sm={12}><strong>Ngày hết hạn:</strong> {selectedListing.postPackages?.[0]?.endDate ? moment(selectedListing.postPackages[0].endDate).format('DD/MM/YYYY') : 'Không xác định'}</Col>
             </Row>
             <p><strong>Trạng thái:</strong> <Tag color={selectedListing.status === 'ACTIVE' ? 'green' : selectedListing.status === 'INACTIVE' ? 'red' : 'orange'}>{selectedListing.status || 'N/A'}</Tag></p>

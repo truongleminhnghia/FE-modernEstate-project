@@ -30,7 +30,7 @@ const Header = () => {
     menuItems = [
       { label: "Trang nhân viên", key: "staff-dashboard" },
       { label: "Quản lý tin đăng", key: "staff-listings" },
-      { label: "Quản lý dịch vụ", key: "staff-services" },
+      { label: "Quản lý gói tin đăng", key: "staff-services" },
       { label: "Quản lý dự án", key: "staff-projects" },
       { label: "Tin chờ duyệt", key: "staff-pending" },
       { label: "Quản lý tin tức", key: "staff-news" },
@@ -106,7 +106,7 @@ const Header = () => {
         } else if (info.key === "staff-dashboard" || info.key === "staff-listings") {
           navigate("/staff/listings");
         } else if (info.key === "staff-services") {
-          navigate("/staff/services");
+          navigate("/staff/listings/services/package-management");
         } else if (info.key === "staff-projects") {
           navigate("/staff/projects");
         } else if (info.key === "staff-pending") {
