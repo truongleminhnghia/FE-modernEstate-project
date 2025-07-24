@@ -1,87 +1,83 @@
-import React from "react";
-import { createBrowserRouter, Navigate, RouterProvider } from "react-router-dom";
-import LayoutGuest from "./components/layouts/LayoutGuest";
-import HomeScreen from "./pages/User/home/HomeScreen";
-import LoginScreen from "./pages/auth/LoginScreen";
-import RegisterScreen from "./pages/auth/RegisterScreen";
-import VerifySuccess from './pages/auth/VerifySuccess';
-import TransactionHistory from "./pages/User/transactions/TransactionHistory";
-import FavoriteList from "./pages/User/favorites/FavoritesList";
-import BrokerProfile from "./pages/Broker/profile/BrokerProfile";
-import BrokerTransactionHistory from "./pages/Broker/transaction/BrokerTransactionHistory";
-import BrokerWatchedApartments from "./pages/Broker/favorite/BrokerWatchedApartments";
-import MyProfile from "./pages/User/profile/MyProfile";
-import Introduction from "./pages/publics/Introduction";
-import News from "./pages/publics/News";
-import ProtectedRoute from "./protectedRoute/ProtectedRoute";
-import NewsDetail from "./pages/publics/NewsDetail";
-import OwnerTransactions from "./pages/Owner/OwnerTransactions";
-import OwnerFavorites from "./pages/Owner/OwnerFavorites";
-import OwnerInfo from "./pages/Owner/OwnerInfo";
-import AdminLayout from "./components/ui/layouts/admin/AdminLayout";
-import ListingManagement from "./pages/staff/listings/ListingManagement";
-import TransactionManagement from "./pages/admins/transactions/TransactionManagement";
-import DashboardPage from "./pages/admins/dashboard/DashboardPage";
-import AdminProfile from "./pages/admins/profile/AdminProfile";
-import ReviewManagement from "./pages/admins/reviews/ReviewManagement";
-import StaffLayout from "./components/ui/layouts/staff/StaffLayout";
-import PackageManagement from "./pages/staff/listings/services/PackageManagement";
-import ApartmentsPage from "./pages/ApartmentsPage/ApartmentsPage";
-import ApartmentDetail from "./pages/ApartmentsPage/ApartmentDetail";
-import ProjectsPage from "./pages/ProjectsPage/ProjectsPage";
-import ProjectDetailsPage from "./pages/ProjectDetailsPage/ProjectDetailsPage";
-import CheckEmailNotice from './pages/auth/CheckEmailNotice';
-import NotFound from './pages/auth/NotFound';
-import ServicePage from "./pages/services/ServicePage";
-import ProjectManagement from "./pages/staff/listings/ProjectManagement";
-import NewsManagement from "./pages/staff/listings/NewsManagement";
-import UserManagement from "./pages/admins/users/UserManagement"; 
-import { ROLES } from './constants/roles';
-import ForgotPassword from "./pages/auth/ForgotPassword";
-import MarketAnalysis from "./pages/User/marketAnalysis/MarketAnalysis";
-import CreatePost from "./pages/post/CreatePost";
-import NewPost from "./pages/post/new-post";
-import PropertyListings from "./pages/PropertyListings";
-import ProjectListing from "./pages/ProjectListing";
-import Success from "./pages/post/new-post/Success";
-import Failure from "./pages/post/new-post/Failure";
-import PendingApproval from "./pages/staff/listings/PendingApproval";
+import React from 'react'
+import { createBrowserRouter, Navigate, RouterProvider } from 'react-router-dom'
+import LayoutGuest from './components/layouts/LayoutGuest'
+import HomeScreen from './pages/User/home/HomeScreen'
+import LoginScreen from './pages/auth/LoginScreen'
+import RegisterScreen from './pages/auth/RegisterScreen'
+import VerifySuccess from './pages/auth/VerifySuccess'
+import TransactionHistory from './pages/User/transactions/TransactionHistory'
+import FavoriteList from './pages/User/favorites/FavoritesList'
+import BrokerProfile from './pages/Broker/profile/BrokerProfile'
+import BrokerTransactionHistory from './pages/Broker/transaction/BrokerTransactionHistory'
+import MyProfile from './pages/User/profile/MyProfile'
+import Introduction from './pages/publics/Introduction'
+import News from './pages/publics/News'
+import ProtectedRoute from './protectedRoute/ProtectedRoute'
+import NewsDetail from './pages/publics/NewsDetail'
+import OwnerTransactions from './pages/Owner/OwnerTransactions'
+import OwnerInfo from './pages/Owner/OwnerInfo'
+import AdminLayout from './components/ui/layouts/admin/AdminLayout'
+import ListingManagement from './pages/staff/listings/ListingManagement'
+import TransactionManagement from './pages/admins/transactions/TransactionManagement'
+import DashboardPage from './pages/admins/dashboard/DashboardPage'
+import AdminProfile from './pages/admins/profile/AdminProfile'
+import ReviewManagement from './pages/admins/reviews/ReviewManagement'
+import StaffLayout from './components/ui/layouts/staff/StaffLayout'
+import PackageManagement from './pages/staff/listings/services/PackageManagement'
+import ApartmentsPage from './pages/ApartmentsPage/ApartmentsPage'
+import ApartmentDetail from './pages/ApartmentsPage/ApartmentDetail'
+import ProjectDetailsPage from './pages/ProjectDetailsPage/ProjectDetailsPage'
+import CheckEmailNotice from './pages/auth/CheckEmailNotice'
+import NotFound from './pages/auth/NotFound'
+import ServicePage from './pages/services/ServicePage'
+import ProjectManagement from './pages/staff/listings/ProjectManagement'
+import NewsManagement from './pages/staff/listings/NewsManagement'
+import UserManagement from './pages/admins/users/UserManagement'
+import { ROLES } from './constants/roles'
+import ForgotPassword from './pages/auth/ForgotPassword'
+import MarketAnalysis from './pages/User/marketAnalysis/MarketAnalysis'
+import NewPost from './pages/post/new-post'
+import PropertyListings from './pages/PropertyListings'
+import ProjectListing from './pages/ProjectListing'
+import Success from './pages/post/new-post/Success'
+import Failure from './pages/post/new-post/Failure'
+import PendingApproval from './pages/staff/listings/PendingApproval'
 
 const router = createBrowserRouter([
   {
-    path: "/",
+    path: '/',
     element: <LayoutGuest />,
     children: [
       {
-        path: "/",
+        path: '/',
         element: <HomeScreen />,
       },
       {
-        path: "/login",
+        path: '/login',
         element: <LoginScreen />,
       },
       {
-        path: "/can-ho",
+        path: '/can-ho',
         element: <PropertyListings />,
       },
       {
-        path: "/can-ho/:id",
+        path: '/can-ho/:id',
         element: <ApartmentDetail />,
       },
       {
-        path: "/post",
+        path: '/post',
         element: <NewPost />,
       },
       {
-        path: "/register",
+        path: '/register',
         element: <RegisterScreen />,
       },
       {
-        path: "/information",
+        path: '/information',
         element: <Introduction />,
       },
       {
-        path: "/market-analysis",
+        path: '/market-analysis',
         element: <MarketAnalysis />,
       },
       // {
@@ -89,20 +85,17 @@ const router = createBrowserRouter([
       //   element: <Packages />,
       // },
       {
-        path: "/news",
+        path: '/news',
         element: <News />,
-      }, 
+      },
       {
-        path: "/user-profile",
+        path: '/user-profile',
         element: (
-          <ProtectedRoute
-            element={<MyProfile />}
-            allowedRoles={[ROLES.USER]}
-          />
+          <ProtectedRoute element={<MyProfile />} allowedRoles={[ROLES.USER]} />
         ),
       },
       {
-        path: "/user-transactions",
+        path: '/user-transactions',
         element: (
           <ProtectedRoute
             element={<TransactionHistory />}
@@ -111,7 +104,7 @@ const router = createBrowserRouter([
         ),
       },
       {
-        path: "/user-favorite",
+        path: '/user-favorite',
         element: (
           <ProtectedRoute
             element={<FavoriteList />}
@@ -120,7 +113,7 @@ const router = createBrowserRouter([
         ),
       },
       {
-        path: "/broker-profile",
+        path: '/broker-profile',
         element: (
           <ProtectedRoute
             element={<BrokerProfile />}
@@ -129,7 +122,7 @@ const router = createBrowserRouter([
         ),
       },
       {
-        path: "/broker-transaction",
+        path: '/broker-transaction',
         element: (
           <ProtectedRoute
             element={<BrokerTransactionHistory />}
@@ -138,20 +131,20 @@ const router = createBrowserRouter([
         ),
       },
       {
-        path: "/broker-favorite",
+        path: '/broker-favorite',
         element: (
           <ProtectedRoute
-            element={<BrokerWatchedApartments />}
+            element={<FavoriteList />}
             allowedRoles={[ROLES.BROKER]}
           />
         ),
       },
       {
-        path: "/news/:id",
+        path: '/news/:id',
         element: <NewsDetail />,
       },
       {
-        path: "/owner-transaction",
+        path: '/owner-transaction',
         element: (
           <ProtectedRoute
             element={<OwnerTransactions />}
@@ -160,16 +153,16 @@ const router = createBrowserRouter([
         ),
       },
       {
-        path: "/owner-favorites",
+        path: '/owner-favorites',
         element: (
           <ProtectedRoute
-            element={<OwnerFavorites />}
+            element={<FavoriteList />}
             allowedRoles={[ROLES.OWNER]}
           />
         ),
       },
       {
-        path: "/owner-profile",
+        path: '/owner-profile',
         element: (
           <ProtectedRoute
             element={<OwnerInfo />}
@@ -178,50 +171,47 @@ const router = createBrowserRouter([
         ),
       },
       {
-        path: "/du-an",
+        path: '/du-an',
         element: <ProjectListing />,
       },
       {
-        path: "/du-an/:id",
+        path: '/du-an/:id',
         element: <ProjectDetailsPage />,
       },
       {
-        path: "/verify-success",
+        path: '/verify-success',
         element: <VerifySuccess />,
       },
       {
-        path: "/check-email-notice",
+        path: '/check-email-notice',
         element: <CheckEmailNotice />,
       },
       {
-        path: "/services",
+        path: '/services',
         element: <ServicePage />,
       },
       {
-        path: "/forgot-password",
+        path: '/forgot-password',
         element: <ForgotPassword />,
       },
       {
-        path: "/create-post-success",
+        path: '/create-post-success',
         element: <Success />,
       },
       {
-        path: "/create-post-failure",
+        path: '/create-post-failure',
         element: <Failure />,
       },
       {
-        path: "*",
+        path: '*',
         element: <NotFound />,
       },
     ],
   },
   {
-    path: "/admin",
+    path: '/admin',
     element: (
-      <ProtectedRoute
-        element={<AdminLayout/>}
-        allowedRoles={[ROLES.ADMIN]}
-      />
+      <ProtectedRoute element={<AdminLayout />} allowedRoles={[ROLES.ADMIN]} />
     ),
     children: [
       {
@@ -229,68 +219,63 @@ const router = createBrowserRouter([
         element: <Navigate to="dashboard" replace />,
       },
       {
-        path: "dashboard",
+        path: 'dashboard',
         element: <DashboardPage />,
       },
       {
-        path: "users",
+        path: 'users',
         element: <UserManagement />,
       },
       {
-        path: "transactions",
+        path: 'transactions',
         element: <TransactionManagement />,
       },
       {
-        path: "reviews",
+        path: 'reviews',
         element: <ReviewManagement />,
       },
       {
-        path: "profile",
+        path: 'profile',
         element: <AdminProfile />,
-      }
+      },
     ],
   },
   {
-    path: "/staff",
+    path: '/staff',
     element: (
-      <ProtectedRoute
-        element={<StaffLayout />}
-        allowedRoles={[ROLES.STAFF]}
-      />
+      <ProtectedRoute element={<StaffLayout />} allowedRoles={[ROLES.STAFF]} />
     ),
     children: [
       {
         index: true,
-        element: <Navigate to="listings" replace />, 
+        element: <Navigate to="listings" replace />,
       },
       {
-        path: "listings",
+        path: 'listings',
         element: <ListingManagement />,
       },
       {
-        path: "listings/services/package-management",
+        path: 'listings/services/package-management',
         element: <PackageManagement />,
       },
       {
-        path: "projects",
+        path: 'projects',
         element: <ProjectManagement />,
       },
       {
-        path: "listings/pending-approval",
+        path: 'listings/pending-approval',
         element: <PendingApproval />,
       },
       {
-        path: "news",
+        path: 'news',
         element: <NewsManagement />,
-      }
-    ]
-  }
-]);
-
+      },
+    ],
+  },
+])
 
 function App() {
-  return <RouterProvider router={router} />;
+  return <RouterProvider router={router} />
 }
 
-
-export default App;
+export default App
